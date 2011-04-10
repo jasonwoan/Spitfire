@@ -2,48 +2,6 @@ var SPITFIRE = SPITFIRE || {};
 
 var $s = $s || SPITFIRE;
 
-// Allows for binding context to functions
-// when using in event listeners and timeouts
-Function.prototype.context = function(obj) {
-  var method = this;
-  temp = function() {
-    return method.apply(obj, arguments);
-  };
-  return temp;
-};
-
-// Augments Array if indexOf is unavailable (IE7, IE8)
-if(!Array.indexOf){
-  Array.prototype.indexOf = function(obj) {
-      for (var i = 0, len = this.length; i < len; i += 1){
-          if (this[i] == obj) {
-              return i;
-          }
-      }
-      return -1;
-  }
-}
-
-// make sure Object.create is available in the browser for prototypal inheritance
-if (typeof Object.create !== 'function') {
-  Object.create = function(o) {
-    function F() {}
-    F.prototype = o;
-    return new F();
-  };
-}
-
-// usage: log('inside coolFunc', this, arguments);
-// paulirish.com/2009/log-a-lightweight-wrapper-for-consolelog/
-window.log = function(){
-  log.history = log.history || [];   // store logs to an array for reference
-  log.history.push(arguments);
-  arguments.callee = arguments.callee.caller;  
-  if(this.console) console.log( Array.prototype.slice.call(arguments) );
-};
-// make it safe to use console.log always
-(function(b){function c(){}for(var d="assert,count,debug,dir,dirxml,error,exception,group,groupCollapsed,groupEnd,info,log,markTimeline,profile,profileEnd,time,timeEnd,trace,warn".split(","),a;a=d.pop();)b[a]=b[a]||c})(window.console=window.console||{});
-
 SPITFIRE.isArray = function(obj) {
   return typeof obj === 'object' && obj.length;
 };
@@ -82,6 +40,23 @@ SPITFIRE.isPlainObject = function(obj) {
 
 	return key === undefined || hasOwn.call( obj, key );
 }
+
+SPITFIRE.isSynthesizedProperty = function(property, classDefinition) {
+  var arr = classDefinition.synthesizedProperties,
+      isSynthesizedProperty = false;
+  
+  if (arr) {
+    var i, len;
+    for (i = 0, len = arr.length; i < len; i += 1) {
+    	if (arr[i] == property) {
+        isSynthesizedProperty = true;
+        break;
+      }
+    }
+  }
+  
+  return isSynthesizedProperty;
+};
 
 SPITFIRE.objectHasMethod = function (obj, method) {
     return obj !== null && obj[method] !== undefined && SPITFIRE.isFunction(obj[method]);
@@ -167,4 +142,54 @@ SPITFIRE.extend = function() {
 
 	// Return the modified object
 	return target;
+};
+
+//--------------------------------------
+// SPITFIRE.extendDOM(selector)
+//--------------------------------------
+
+SPITFIRE.extendDOM = function(selector) {
+  var $parent = $(selector);
+    
+  SPITFIRE.extendChildren($parent);
+};
+
+//--------------------------------------
+// SPITFIRE.extendChild($element)
+//--------------------------------------
+// Recursively loop through children of given element
+// to extend children before the parent
+
+SPITFIRE.extendChildren = function($parent) {
+  
+  var self = $parent.filter('[sf-class]');
+  var children = $parent.children();
+
+  var i, len;
+  for (i = 0, len = children.length; i < len; i += 1) {
+  	SPITFIRE.extendChildren($(children[i]));
+  }
+  
+  if (self.length) {
+    
+    var el = self[0];
+    var basePath = el.getAttribute('sf-class');
+
+  	// loop through namespace to retrieve class function
+  	var nsObjects = basePath.split('.');
+  	var j, obj, len2;
+  	obj = window;
+  	
+  	for (j = 0, len2 = nsObjects.length; j < len2; j += 1) {
+  		obj = obj[nsObjects[j]];
+  	}
+  	
+  	if (!obj) {
+      throw new SPITFIRE.Error('base class not found');
+    }
+  	
+  	var inst = new obj();
+  	SPITFIRE.extend(el, inst);
+  	el.init();
+  }
 };

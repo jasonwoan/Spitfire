@@ -15,8 +15,8 @@ SPITFIRE.Class = function(classDefinition) {
       name,
       proto;
       
-  // add meta to each method in class
-  // this is used for callSuper method defined in SPITFIRE.Object
+  // add meta to relate each prototype method to the classDefinition and the method's name
+  // this is used for the super retrieval in the callSuper method defined in SPITFIRE.Object
   proto = classDefinition.prototype;
   for (name in proto) {
     if (SPITFIRE.isFunction(proto[name])) {
@@ -60,18 +60,6 @@ SPITFIRE.Class = function(classDefinition) {
     };
   }
   
-  // var defineGetterHelper = function(getterName) {
-  //   return function() {
-  //   return this[getterName]();
-  //   };
-  // };
-  
-  // var defineSetterHelper = function(setterName) {
-  //   return function(value) {
-  //     return this[setterName](value);
-  //   };
-  // };
-  
   var accessorMethodHelper = function(getterName, setterName) {
     return function() {
       if (arguments.length > 0) {
@@ -104,11 +92,6 @@ SPITFIRE.Class = function(classDefinition) {
     if (!(setterName in classMethods)) {
       classMethods[setterName] = setterHelper(propertyName);
     }
-    
-    // __defineGetter & __defineSetter unsupported in < IE8
-    // use a single accessor method for now until old versions of IE die
-    // classMethods.__defineGetter__(propertyName, defineGetterHelper(getterName));
-    // classMethods.__defineSetter__(propertyName, defineSetterHelper(setterName));
     
     classMethods[propertyName] = accessorMethodHelper(getterName, setterName);
   }

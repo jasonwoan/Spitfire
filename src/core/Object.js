@@ -9,6 +9,10 @@ SPITFIRE.Object = function() {
 SPITFIRE.Object.synthesizedProperties = ['qualifiedClassName'];
 
 SPITFIRE.Object.prototype = {
+  init: function() {
+  
+  },
+  
   callSuper: function() {
     var caller = SPITFIRE.Object.prototype.callSuper.caller;
     
