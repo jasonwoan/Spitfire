@@ -28,6 +28,8 @@
     <img id="instagram" sf-class="SPITFIRE.display.DisplayObject" sf-outlet="instagram" src="instagram.jpg" alt="instagram" />
   </div>
   
+  <img id="fast" src="fast.jpg" alt="fast" />
+  
   <script type="text/javascript" src="../../../src/libs/jquery-1.5.2.min.js"></script>
   <script type="text/javascript" src="../../../src/polyfills.js"></script>
   <script type="text/javascript" src="../../../src/utils.js"></script>
@@ -45,8 +47,12 @@
     
     var img = document.getElementById('instagram');
     var container = document.getElementById('imageContainer');
+    var fast = document.getElementById('fast');
     
-    img.animate({left: 300, scale: .5}, {duration: 1000});
+    container.l(800);
+    container.animate({l: 300}, {duration: 1000});
+    img.animate({width: 100}, {duration: 1000});
+    $(fast).animate({width: 300}, {duration: 1000});
     
   </script>
 </body>

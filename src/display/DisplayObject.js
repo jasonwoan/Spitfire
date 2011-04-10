@@ -16,8 +16,8 @@ SPITFIRE.display.DisplayObject = function() {
 SPITFIRE.display.DisplayObject.superclass = SPITFIRE.Object;
 SPITFIRE.display.DisplayObject.synthesizedProperties = [
   '$this',
-  'x',
-  'y',
+  'l',
+  't',
   'w',
   'h',
   'scaleX',
@@ -31,20 +31,20 @@ SPITFIRE.display.DisplayObject.prototype = {
   // Getters / Setters
   //--------------------------------------
   
-  setX: function(value) {
+  setL: function(value) {
     this.$this().css('left', value);
   },
   
-  getX: function() {
-    return this.$this().css('left');
+  getL: function() {
+    return parseFloat(this.$this().css('left'));
   },
   
-  setY: function(value) {
+  setT: function(value) {
     this.$this().css('top', value);
   },
   
-  getY: function() {
-    return this.$this().css('top');
+  getT: function() {
+    return parseFloat(this.$this().css('top'));
   },
   
   getW: function() {
