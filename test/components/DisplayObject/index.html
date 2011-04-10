@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>DisplayObject</title>
+  
+  <style type="text/css">
+  
+    div, img {
+      position: absolute;
+    }
+    
+    #imageContainer {
+      height: 200px;
+      border: 1px solid red;
+    }
+    
+    #instagram {
+      top: 50px;
+      left: 50px;
+    }
+  
+  </style>
+</head>
+
+<body>
+  <div id="imageContainer" sf-class="SPITFIRE.display.DisplayObject">
+    <img id="instagram" sf-class="SPITFIRE.display.DisplayObject" sf-outlet="instagram" src="instagram.jpg" alt="instagram" />
+  </div>
+  
+  <script type="text/javascript" src="../../../src/libs/jquery-1.5.2.min.js"></script>
+  <script type="text/javascript" src="../../../src/polyfills.js"></script>
+  <script type="text/javascript" src="../../../src/utils.js"></script>
+  <script type="text/javascript" src="../../../src/Spitfire.js"></script>
+  <script type="text/javascript" src="../../../src/core/Class.js"></script>
+  <script type="text/javascript" src="../../../src/core/Object.js"></script>
+  <script type="text/javascript" src="../../../src/core/Error.js"></script>
+  <script type="text/javascript" src="../../../src/display/DisplayObject.js"></script>
+  
+  <script type="text/javascript">
+    
+    $s = SPITFIRE;
+    
+    $s.extendDOM('body');
+    
+    var img = document.getElementById('instagram');
+    var container = document.getElementById('imageContainer');
+    
+    img.animate({left: 300, scale: .5}, {duration: 1000});
+    
+  </script>
+</body>
+</html>
