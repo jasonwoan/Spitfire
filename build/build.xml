@@ -1,0 +1,48 @@
+<project name="Spitfire Build" default="build" basedir="../">
+  <target name="concatenate" description="Concatenate all js files">
+    <concat destfile="${basedir}/publish/spitfire.js" fixlastline="yes">
+      <fileset dir="${basedir}/src/libs">
+        <include name="**/*.js" />
+      </fileset>
+      
+      <!-- Dependencies -->
+      <filelist dir="${basedir}/src">
+        <file name="Spitfire.js" />
+        <file name="polyfills.js" />
+        <file name="utils.js" />
+        <file name="core/Class.js" />
+        <file name="core/Object.js" />
+        <file name="core/Error.js" />
+        <file name="events/Event.js" />
+        <file name="events/EventDispatcher.js" />
+        <file name="display/DisplayObject.js" />
+      </filelist>
+      
+      
+      <!-- Everything else -->
+      <fileset dir="${basedir}/src">
+        <include name="**/*.js" />
+        <exclude name="core/*.js" />
+        <exclude name="libs/*.js" />
+        <exclude name="Spitfire.js" />
+        <exclude name="polyfills.js" />
+        <exclude name="utils.js" />
+        <exclude name="display/DisplayObject.js" />
+        <exclude name="events/Event.js" />
+        <exclude name="events/EventDispatcher.js" />
+      </fileset>
+    </concat>
+  </target>
+  
+  <target name="build" depends="concatenate" description="Compress spitfire.js to spitfire.min.js">
+    <apply executable="java" parallel="false">
+      <filelist dir="publish" files="spitfire.js" />
+      <arg line="-jar" />
+      <arg path="${basedir}/build/tools/yuicompressor-2.4.2.jar" />
+      <srcfile />
+      <arg line="-o" />
+      <mapper type="glob" from="*.js" to="${basedir}/publish/*.min.js" />
+      <targetfile />
+    </apply>
+  </target>
+</project>

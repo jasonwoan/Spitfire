@@ -112,7 +112,7 @@ SPITFIRE.utils.ArrayUtils.getItemsByAnyKey = function(inArray, keyValues) {
 // Port of org.casalib.util.ArrayUtil.getItemByKey() from CASA lib for ActionScript 3.0
 // http://casalib.org/
 
-SPITFIRE.utils.ArrayUtils.getItemByKey(inArray, key, match) {
+SPITFIRE.utils.ArrayUtils.getItemByKey = function(inArray, key, match) {
   var i, len, item;
   for (var i = 0, len = inArray.length; i < len; i += 1) {
     item = inArray[i];
@@ -132,7 +132,7 @@ SPITFIRE.utils.ArrayUtils.getItemByKey(inArray, key, match) {
 // Port of org.casalib.util.ArrayUtil.getItemsByKey() from CASA lib for ActionScript 3.0
 // http://casalib.org/
 
-SPITFIRE.utils.ArrayUtils.getItemsByKey(inArray, key, match) {
+SPITFIRE.utils.ArrayUtils.getItemsByKey = function(inArray, key, match) {
   var i, len, item,
       t = [];
   for (var i = 0, len = inArray.length; i < len; i += 1) {

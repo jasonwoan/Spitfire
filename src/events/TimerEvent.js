@@ -1,14 +1,16 @@
+SPITFIRE.events = SPITFIRE.events || {};
+
 //--------------------------------------
 // TimerEvent
 //--------------------------------------
 
-SPITFIRE.TimerEvent = function(type, data, bubbles, cancelable) {  
+SPITFIRE.events.TimerEvent = function(type, data, bubbles, cancelable) {  
   this.callSuper(type, data, bubbles, cancelable);
-  this.qualifiedClassName('SPITFIRE.TimerEvent');
+  this.qualifiedClassName('SPITFIRE.events.TimerEvent');
 };
 
-SPITFIRE.TimerEvent.TIMER = 'timer';
-SPITFIRE.TimerEvent.TIMER_COMPLETE = 'timerComplete';
+SPITFIRE.events.TimerEvent.TIMER = 'timer';
+SPITFIRE.events.TimerEvent.TIMER_COMPLETE = 'timerComplete';
 
-SPITFIRE.TimerEvent.superclass = SPITFIRE.Event;
-SPITFIRE.Class(SPITFIRE.TimerEvent);
+SPITFIRE.events.TimerEvent.superclass = SPITFIRE.events.Event;
+SPITFIRE.Class(SPITFIRE.events.TimerEvent);

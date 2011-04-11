@@ -13,7 +13,7 @@ SPITFIRE.utils.Timer = function(delay, repeatCount) {
   this._currentCount = 0;
 };
 
-SPITFIRE.utils.Timer.superclass = SPITFIRE.EventDispatcher;
+SPITFIRE.utils.Timer.superclass = SPITFIRE.events.EventDispatcher;
 SPITFIRE.utils.Timer.synthesizedProperties = [
   'currentCount',
   'delay',
@@ -55,13 +55,13 @@ SPITFIRE.utils.Timer.prototype = {
   tick: function() {
     this._currentCount += 1;
     if (this.repeatCount() && this._currentCount >= this.repeatCount()) {
-      this.dispatchEvent(new SPITFIRE.utils.TimerEvent(SPITFIRE.utils.TimerEvent.TIMER_COMPLETE));
+      this.dispatchEvent(new SPITFIRE.utils.TimerEvent(SPITFIRE.events.TimerEvent.TIMER_COMPLETE));
       this.reset();
       return;
     }
     
     this._interval = setTimeout(this.tick.context(this), this.delay());
-    this.dispatchEvent(new SPITFIRE.utils.TimerEvent(SPITFIRE.utils.TimerEvent.TIMER));
+    this.dispatchEvent(new SPITFIRE.utils.TimerEvent(SPITFIRE.events.TimerEvent.TIMER));
   }
 }
 

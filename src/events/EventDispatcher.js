@@ -1,16 +1,18 @@
+SPITFIRE.events = SPITFIRE.events || {};
+
 //--------------------------------------
 // EventDispatcher
 //--------------------------------------
 
-SPITFIRE.EventDispatcher = function() {
+SPITFIRE.events.EventDispatcher = function() {
   this.callSuper();
-  this.qualifiedClassName('SPITFIRE.EventDispatcher');
+  this.qualifiedClassName('SPITFIRE.events.EventDispatcher');
   this._eventListeners = {};
 };
 
-SPITFIRE.EventDispatcher.superclass = SPITFIRE.Object;
+SPITFIRE.events.EventDispatcher.superclass = SPITFIRE.Object;
 
-SPITFIRE.EventDispatcher.prototype = {
+SPITFIRE.events.EventDispatcher.prototype = {
   addEventListener: function(type, handler) {
     if (!this._eventListeners[type]) {
       this._eventListeners[type] = [];
@@ -38,4 +40,4 @@ SPITFIRE.EventDispatcher.prototype = {
   }
 };
 
-SPITFIRE.Class(SPITFIRE.EventDispatcher);
+SPITFIRE.Class(SPITFIRE.events.EventDispatcher);
