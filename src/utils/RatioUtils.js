@@ -1,5 +1,4 @@
 SPITFIRE.utils = SPITFIRE.utils || {};
-SPITFIRE.utils.RatioUtils = SPITFIRE.utils.RatioUtils || {};
 
 // Ported to JS from CasaLib AS3
 // http://casalib.org/

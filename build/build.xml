@@ -16,6 +16,8 @@
         <file name="events/Event.js" />
         <file name="events/EventDispatcher.js" />
         <file name="display/DisplayObject.js" />
+        <file name="tasks/Task.js" />
+        <file name="tasks/TaskManager.js" />
       </filelist>
       
       
@@ -30,6 +32,8 @@
         <exclude name="display/DisplayObject.js" />
         <exclude name="events/Event.js" />
         <exclude name="events/EventDispatcher.js" />
+        <exclude name="tasks/Task.js" />
+        <exclude name="tasks/TaskManager.js" />
       </fileset>
     </concat>
   </target>

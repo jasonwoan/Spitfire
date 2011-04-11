@@ -22,7 +22,8 @@ SPITFIRE.display.DisplayObject.synthesizedProperties = [
   'h',
   'scaleX',
   'scaleY',
-  'scale'
+  'scale',
+  'rect',
 ];
 
 SPITFIRE.display.DisplayObject.prototype = {
@@ -83,6 +84,17 @@ SPITFIRE.display.DisplayObject.prototype = {
   setScaleY: function(value) {
     this._scaleY = value;
     this.h(this.h());
+  },
+  
+  getRect: function() {
+    return new SPITFIRE.geom.Rectangle(this.l(), this.t(), this.w(), this.h());
+  },
+  
+  setRect: function(value) {
+    this.l(value.x());
+    this.t(value.y());
+    this.w(value.width());
+    this.h(value.height());
   },
 
   //--------------------------------------

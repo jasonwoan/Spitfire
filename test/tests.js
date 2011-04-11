@@ -40,7 +40,7 @@ test("Basic inheritance", function() {
     this.qualifiedClassName('Person');
   }
   
-  Person.superclass = TCD.Object;
+  Person.superclass = SPITFIRE.Object;
   Person.synthesizedProperties = ['name', 'weight'];
   
   Person.prototype = {
@@ -53,7 +53,7 @@ test("Basic inheritance", function() {
     }
   }
   
-  TCD.Class(Person);
+  SPITFIRE.Class(Person);
   
   //--------------------------------------
   // Employee
@@ -78,7 +78,7 @@ test("Basic inheritance", function() {
     }
   }
   
-  TCD.Class(Employee);
+  SPITFIRE.Class(Employee);
   
   //--------------------------------------
   // Developer
@@ -106,7 +106,7 @@ test("Basic inheritance", function() {
     }
   }
   
-  TCD.Class(Developer);
+  SPITFIRE.Class(Developer);
   
   //--------------------------------------
   // Test Objects
@@ -137,9 +137,9 @@ test("Basic inheritance", function() {
 //--------------------------------------
 
 test("Error works", function() {
-  var error = new TCD.Error('this is an error');
+  var error = new SPITFIRE.Error('this is an error');
   
-  equals(error.toString(), 'Error: [TCD.Error] "this is an error"', 'toString works');
+  equals(error.toString(), 'Error: [SPITFIRE.Error] "this is an error"', 'toString works');
 });
 
 //--------------------------------------
@@ -147,10 +147,10 @@ test("Error works", function() {
 //--------------------------------------
 
 test("State works", function() {
-  var state = new TCD.State('testState');
-  var childState = new TCD.State('testChildState');
-  var childState2 = new TCD.State('testChildState2');
-  var childState3 = new TCD.State('testChildState3');
+  var state = new SPITFIRE.state.State('testState');
+  var childState = new SPITFIRE.state.State('testChildState');
+  var childState2 = new SPITFIRE.state.State('testChildState2');
+  var childState3 = new SPITFIRE.state.State('testChildState3');
   
   state.addChild(childState);
   state.addChild(childState2);
@@ -159,7 +159,7 @@ test("State works", function() {
   equals(state.name(), 'testState', 'name property works');
   equals(QUnit.equiv(state.root(), this), true, 'root property works');
   equals(childState.name(), 'testChildState', 'child name property works');
-  equals(state.qualifiedClassName(), 'TCD.State', 'qualified class name works');
+  equals(state.qualifiedClassName(), 'SPITFIRE.state.State', 'qualified class name works');
   equals(QUnit.equiv(state.getChildAt(0), childState), true, 'addChild and getChildAt works');
   equals(QUnit.equiv(state.getChildByName('testChildState'), childState), true, 'getChildByName works');
   
@@ -186,7 +186,7 @@ test("State works", function() {
   state.removeChildAt(0);
   equals(QUnit.equiv(state.getChildAt(0), childState3), true, 'removeChildAt works');
   
-  raises(state.setChildIndex, TCD.Error, 'setChildIndex exception works');
+  raises(state.setChildIndex, SPITFIRE.Error, 'setChildIndex exception works');
 });
 
 //--------------------------------------
@@ -194,11 +194,11 @@ test("State works", function() {
 //--------------------------------------
 
 test('Task works', function() {
-  var task = new TCD.Task();
+  var task = new SPITFIRE.tasks.Task();
   task.start();
   
   equals(task.progress(), 0, 'start works');
-  equals(task, '[TCD.Task name=undefined]', 'toString works');
+  equals(task, '[SPITFIRE.tasks.Task name=undefined]', 'toString works');
   
   task.complete();
   
@@ -210,10 +210,10 @@ test('Task works', function() {
 //--------------------------------------
 
 test('PropertyTask works', function() {
-  var state = new TCD.State('testState');
-  var propertyTask = new TCD.PropertyTask(state, 'selected', true);
+  var state = new SPITFIRE.state.State('testState');
+  var propertyTask = new SPITFIRE.tasks.PropertyTask(state, 'selected', true);
   
-  equals(propertyTask.toString(), '[TCD.PropertyTask target=[State name=testState title=undefined className=TCD.State defaultChild=undefined] property=selected value=true]', 'toString works');
+  equals(propertyTask.toString(), '[SPITFIRE.tasks.PropertyTask target=[State name=testState title=undefined className=SPITFIRE.state.State defaultChild=undefined] property=selected value=true]', 'toString works');
   
   propertyTask.start();
   
@@ -225,12 +225,12 @@ test('PropertyTask works', function() {
 //--------------------------------------
 
 test('TaskManager works', function() {
-  var taskManager = new TCD.TaskManager();
-  var state = new TCD.State('testState');
-  var propertyTask = new TCD.PropertyTask(state, 'selected', true);
+  var taskManager = new SPITFIRE.tasks.TaskManager();
+  var state = new SPITFIRE.state.State('testState');
+  var propertyTask = new SPITFIRE.tasks.PropertyTask(state, 'selected', true);
   propertyTask.name('propertyTask');
-  var propertyTask2 = new TCD.PropertyTask(state, 'selected', false);
-  var propertyTask3 = new TCD.PropertyTask(state, 'selected', true);
+  var propertyTask2 = new SPITFIRE.tasks.PropertyTask(state, 'selected', false);
+  var propertyTask3 = new SPITFIRE.tasks.PropertyTask(state, 'selected', true);
   
   taskManager.tasks([propertyTask, propertyTask2]);
   
@@ -259,13 +259,13 @@ test('TaskManager works', function() {
 //--------------------------------------
 
 asyncTest('ASYNC: SequentialTask works', function() {
-  var state = new TCD.State('testState');
-  var propertyTask = new TCD.PropertyTask(state, 'selected', true);
+  var state = new SPITFIRE.state.State('testState');
+  var propertyTask = new SPITFIRE.tasks.PropertyTask(state, 'selected', true);
   propertyTask.name('propertyTask');
-  var propertyTask2 = new TCD.PropertyTask(state, 'selected', false);
-  var propertyTask3 = new TCD.PropertyTask(state, 'selected', true);
+  var propertyTask2 = new SPITFIRE.tasks.PropertyTask(state, 'selected', false);
+  var propertyTask3 = new SPITFIRE.tasks.PropertyTask(state, 'selected', true);
   
-  var sequentialTask = new TCD.SequentialTask(propertyTask, propertyTask2);
+  var sequentialTask = new SPITFIRE.tasks.SequentialTask(propertyTask, propertyTask2);
   //sequentialTask.debug(true);
   sequentialTask.start();
   
@@ -280,17 +280,17 @@ asyncTest('ASYNC: SequentialTask works', function() {
 //--------------------------------------
 
 asyncTest('ASYNC: ParallelTask works', function() {
-  var state = new TCD.State('testState');
-  var propertyTask = new TCD.PropertyTask(state, 'selected', true);
+  var state = new SPITFIRE.state.State('testState');
+  var propertyTask = new SPITFIRE.tasks.PropertyTask(state, 'selected', true);
   propertyTask.name('propertyTask');
-  var propertyTask2 = new TCD.PropertyTask(state, 'selected', false);
-  var propertyTask3 = new TCD.PropertyTask(state, 'selected', true);
+  var propertyTask2 = new SPITFIRE.tasks.PropertyTask(state, 'selected', false);
+  var propertyTask3 = new SPITFIRE.tasks.PropertyTask(state, 'selected', true);
   var complete = false;
   
-  var parallelTask = new TCD.ParallelTask(propertyTask, propertyTask2, propertyTask3);
+  var parallelTask = new SPITFIRE.tasks.ParallelTask(propertyTask, propertyTask2, propertyTask3);
   //parallelTask.debug(true);
   
-  parallelTask.addEventListener(TCD.Event.COMPLETE, function() {
+  parallelTask.addEventListener(SPITFIRE.events.Event.COMPLETE, function() {
     complete = true;
   });
   
@@ -307,21 +307,21 @@ asyncTest('ASYNC: ParallelTask works', function() {
 //--------------------------------------
 
 test("StateManager works", function() {
-  var stateManager = new TCD.StateManager('testName', this);
+  var stateManager = new SPITFIRE.state.StateManager('testName', this);
   
   equals(stateManager.name(), 'testName', 'name property works');
-  equals(stateManager.qualifiedClassName(), 'TCD.StateManager', 'qualified class name works');
+  equals(stateManager.qualifiedClassName(), 'SPITFIRE.state.StateManager', 'qualified class name works');
 });
 
 asyncTest('ASYNC: StateManager works', function() {
-  var stateManager = new TCD.StateManager('testName', this);
+  var stateManager = new SPITFIRE.state.StateManager('testName', this);
   //stateManager.deepLinking($.address);
   
-  var treeState = new TCD.State('tree');
-  var homeState = new TCD.State('home');
-  var portfolioState = new TCD.State('portfolio');
-  var aboutState = new TCD.State('about');
-  var contactState = new TCD.State('contactState');
+  var treeState = new SPITFIRE.state.State('tree');
+  var homeState = new SPITFIRE.state.State('home');
+  var portfolioState = new SPITFIRE.state.State('portfolio');
+  var aboutState = new SPITFIRE.state.State('about');
+  var contactState = new SPITFIRE.state.State('contactState');
   
   treeState.addChild(homeState);
   treeState.addChild(portfolioState);
@@ -344,29 +344,29 @@ asyncTest('ASYNC: StateManager works', function() {
 //--------------------------------------
 
 asyncTest('ASYNC: JQueryAjaxTask works', function() {
-  var cssTask = new TCD.JQueryAjaxTask('test.css');
+  var cssTask = new SPITFIRE.tasks.JQueryAjaxTask('test.css');
   var cssData;
   var cssSuccess = false;
-  cssTask.addEventListener(TCD.Event.COMPLETE, function() {
+  cssTask.addEventListener(SPITFIRE.events.Event.COMPLETE, function() {
     cssData = this.content();
     cssSuccess = true;
   });
   cssTask.start();
   
-  var htmlTask = new TCD.JQueryAjaxTask('test.html');
+  var htmlTask = new SPITFIRE.tasks.JQueryAjaxTask('test.html');
   var htmlData;
   var htmlSuccess = false;
-  htmlTask.addEventListener(TCD.Event.COMPLETE, function() {
+  htmlTask.addEventListener(SPITFIRE.events.Event.COMPLETE, function() {
     htmlData = this.content();
     htmlSuccess = true;
   });
   htmlTask.start();
   
-  var failTask = new TCD.JQueryAjaxTask('fail.html');
+  var failTask = new SPITFIRE.tasks.JQueryAjaxTask('fail.html');
   //failTask.debug(true);
   var failSuccess = false;
   var failContent;
-  failTask.addEventListener(TCD.Event.COMPLETE, function() {
+  failTask.addEventListener(SPITFIRE.events.Event.COMPLETE, function() {
     failContent = this.content();
     failSuccess = true;
   });
@@ -385,9 +385,9 @@ asyncTest('ASYNC: JQueryAjaxTask works', function() {
 //--------------------------------------
 
 asyncTest('ASYNC: JQueryImageLoaderTask works', function() {
-  var task = new TCD.JQueryImageLoaderTask('test.png');
+  var task = new SPITFIRE.tasks.JQueryImageLoaderTask('test.png');
   var $img;
-  task.addEventListener(TCD.Event.COMPLETE, function() {
+  task.addEventListener(SPITFIRE.events.Event.COMPLETE, function() {
     $img = task.$content();
   });
   task.start();
