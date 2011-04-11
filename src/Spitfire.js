@@ -62,6 +62,14 @@ SPITFIRE.objectHasMethod = function (obj, method) {
     return obj !== null && obj[method] !== undefined && SPITFIRE.isFunction(obj[method]);
 };
 
+SPITFIRE.slice = function(array, startIndex, endIndex) {
+  var args = [], i;
+  for (i = startIndex; i <= endIndex; i += 1) {
+  	args.push(array[i]);
+  }
+  return args;
+};
+
 //  Credit: jQuery
 //  Augmented to merge accessor methods
 SPITFIRE.extend = function() {
