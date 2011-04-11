@@ -1,8 +1,8 @@
-var SPITFIRE = SPITFIRE || {};
+var TCD = TCD || {};
 
-var $s = $s || SPITFIRE;
+var $s = $s || TCD;
 
-SPITFIRE.browser = {  
+TCD.browser = {  
   Opera: window.opera ? true : false,
   IE: document.all && !this.Opera ? true : false,
   IE6: this.IE && typeof(window.XMLHttpRequest) == "undefined" ? true : false,
@@ -18,26 +18,26 @@ SPITFIRE.browser = {
   Gecko19: this.Gecko && Array.reduce ? true : false
 };
 
-SPITFIRE.isArray = function(obj) {
+TCD.isArray = function(obj) {
   return typeof obj === 'object' && obj.length;
 };
 
-SPITFIRE.isFunction = function(obj) {
+TCD.isFunction = function(obj) {
   return typeof obj === 'function';
 };
 
 //  Credit: jQuery
 //  A crude way of determining if an object is a window
-SPITFIRE.isWindow = function(obj) {
+TCD.isWindow = function(obj) {
 		return obj && typeof obj === "object" && "setInterval" in obj;
 };
 
 //  Credit: jQuery
-SPITFIRE.isPlainObject = function(obj) {
+TCD.isPlainObject = function(obj) {
 	// Must be an Object.
 	// Because of IE, we also have to check the presence of the constructor property.
 	// Make sure that DOM nodes and window objects don't pass through, as well
-	if (!obj || typeof obj !== "object" || obj.nodeType || SPITFIRE.isWindow(obj)) {
+	if (!obj || typeof obj !== "object" || obj.nodeType || TCD.isWindow(obj)) {
 		return false;
 	}
 
@@ -57,7 +57,7 @@ SPITFIRE.isPlainObject = function(obj) {
 	return key === undefined || hasOwn.call( obj, key );
 }
 
-SPITFIRE.isSynthesizedProperty = function(property, classDefinition) {
+TCD.isSynthesizedProperty = function(property, classDefinition) {
   var arr = classDefinition.synthesizedProperties,
       isSynthesizedProperty = false;
   
@@ -74,11 +74,11 @@ SPITFIRE.isSynthesizedProperty = function(property, classDefinition) {
   return isSynthesizedProperty;
 };
 
-SPITFIRE.objectHasMethod = function (obj, method) {
-    return obj !== null && obj[method] !== undefined && SPITFIRE.isFunction(obj[method]);
+TCD.objectHasMethod = function (obj, method) {
+    return obj !== null && obj[method] !== undefined && TCD.isFunction(obj[method]);
 };
 
-SPITFIRE.slice = function(array, startIndex, endIndex) {
+TCD.slice = function(array, startIndex, endIndex) {
   var args = [], i;
   for (i = startIndex; i <= endIndex; i += 1) {
   	args.push(array[i]);
@@ -88,7 +88,7 @@ SPITFIRE.slice = function(array, startIndex, endIndex) {
 
 //  Credit: jQuery
 //  Augmented to merge accessor methods
-SPITFIRE.extend = function() {
+TCD.extend = function() {
   var options, name, src, copy, copyIsArray, clone,
 		target = arguments[0] || {},
 		i = 1,
@@ -106,7 +106,7 @@ SPITFIRE.extend = function() {
 	}
 
 	// Handle case when target is a string or something (possible in deep copy)
-	if ( typeof target !== "object" && !SPITFIRE.isFunction(target) ) {
+	if ( typeof target !== "object" && !TCD.isFunction(target) ) {
 		target = {};
 	}
 
@@ -143,17 +143,17 @@ SPITFIRE.extend = function() {
 				//   }
 				// } else {
 				  // Recurse if we're merging plain objects or arrays
-  				if ( deep && copy && ( SPITFIRE.isPlainObject(copy) || (copyIsArray = SPITFIRE.isArray(copy)) ) ) {
+  				if ( deep && copy && ( TCD.isPlainObject(copy) || (copyIsArray = TCD.isArray(copy)) ) ) {
   					if ( copyIsArray ) {
   						copyIsArray = false;
-  						clone = src && SPITFIRE.isArray(src) ? src : [];
+  						clone = src && TCD.isArray(src) ? src : [];
   
   					} else {
-  						clone = src && SPITFIRE.isPlainObject(src) ? src : {};
+  						clone = src && TCD.isPlainObject(src) ? src : {};
   					}
   
   					// Never move original objects, clone them
-  					target[ name ] = SPITFIRE.extend( deep, clone, copy );
+  					target[ name ] = TCD.extend( deep, clone, copy );
   
   				// Don't bring in undefined values
   				} else if ( copy !== undefined ) {
@@ -168,10 +168,10 @@ SPITFIRE.extend = function() {
 	return target;
 };
 
-SPITFIRE.addListener = function(target, event, handler, context) {
+TCD.addListener = function(target, event, handler, context) {
   context = context || target;
   
-  if (SPITFIRE.browser.IE) {
+  if (TCD.browser.IE) {
     target.attachEvent('on' + event, context[handler].context(context));
   } else {
     target.addEventListener(event, context[handler].context(context), false);
@@ -179,29 +179,29 @@ SPITFIRE.addListener = function(target, event, handler, context) {
 };
 
 //--------------------------------------
-// SPITFIRE.extendDOM(selector)
+// TCD.extendDOM(selector)
 //--------------------------------------
 
-SPITFIRE.extendDOM = function(selector) {
+TCD.extendDOM = function(selector) {
   var $parent = $(selector);
     
-  SPITFIRE.extendChildren($parent);
+  TCD.extendChildren($parent);
 };
 
 //--------------------------------------
-// SPITFIRE.extendChild($element)
+// TCD.extendChild($element)
 //--------------------------------------
 // Recursively loop through children of given element
 // to extend children before the parent
 
-SPITFIRE.extendChildren = function($parent) {
+TCD.extendChildren = function($parent) {
   
   var self = $parent.filter('[sf-class]');
   var children = $parent.children();
 
   var i, len;
   for (i = 0, len = children.length; i < len; i += 1) {
-  	SPITFIRE.extendChildren($(children[i]));
+  	TCD.extendChildren($(children[i]));
   }
   
   if (self.length) {
@@ -219,12 +219,12 @@ SPITFIRE.extendChildren = function($parent) {
   	}
   	
   	if (!obj) {
-      throw new SPITFIRE.Error('base class not found');
+      throw new TCD.Error('base class not found');
     }
   	
   	var inst = new obj();
   	
-  	SPITFIRE.extend(el, inst);
+  	TCD.extend(el, inst);
   	el.init();
   }
 };
@@ -274,7 +274,7 @@ window.log = function(){
 // Heavily inspired by Ben Nadel's "Implementing JavaScript Inheritance and Synthesized Properties"
 // http://www.bennadel.com/blog/2040-Implementing-Javascript-Inheritance-And-Synthesized-Accessors-With-Annotation.htm
 
-SPITFIRE.Class = function(classDefinition) {
+TCD.Class = function(classDefinition) {
   var classMethods = {},
       i = 0,
       len,
@@ -286,10 +286,10 @@ SPITFIRE.Class = function(classDefinition) {
       proto;
       
   // add meta to relate each prototype method to the classDefinition and the method's name
-  // this is used for the super retrieval in the callSuper method defined in SPITFIRE.Object
+  // this is used for the super retrieval in the callSuper method defined in TCD.Object
   proto = classDefinition.prototype;
   for (name in proto) {
-    if (SPITFIRE.isFunction(proto[name])) {
+    if (TCD.isFunction(proto[name])) {
       proto[name]._class = classDefinition;
       proto[name]._name = name;
     }
@@ -300,14 +300,14 @@ SPITFIRE.Class = function(classDefinition) {
     baseClass = classDefinition.superclass;
     
     if (!baseClass.isInitialized) {
-      SPITFIRE.Class(baseClass);
+      TCD.Class(baseClass);
     }
     
-    classMethods = SPITFIRE.extend(classMethods, baseClass.prototype);
+    classMethods = TCD.extend(classMethods, baseClass.prototype);
   }
   
   // add the class's base methods to its prototype
-  classMethods = SPITFIRE.extend(classMethods, classDefinition.prototype);
+  classMethods = TCD.extend(classMethods, classDefinition.prototype);
   
   var prepareAccessorName = function(accessor, propertyName) {
     return accessor + propertyName.charAt(0).toUpperCase() + propertyName.slice(1);
@@ -374,21 +374,21 @@ SPITFIRE.Class = function(classDefinition) {
 // Object
 //--------------------------------------
 
-SPITFIRE.Object = function() {
-  this.qualifiedClassName('SPITFIRE.Object');
+TCD.Object = function() {
+  this.qualifiedClassName('TCD.Object');
 };
 
-SPITFIRE.Object.synthesizedProperties = ['qualifiedClassName'];
+TCD.Object.synthesizedProperties = ['qualifiedClassName'];
 
-SPITFIRE.Object.prototype = {
+TCD.Object.prototype = {
   init: function() {
   
   },
   
   callSuper: function() {
-    var caller = SPITFIRE.Object.prototype.callSuper.caller;
+    var caller = TCD.Object.prototype.callSuper.caller;
     
-    if (SPITFIRE.objectHasMethod(caller, 'superclass')) {
+    if (TCD.objectHasMethod(caller, 'superclass')) {
       // constructor super
       caller.superclass.apply(this, arguments);
     } else {
@@ -396,68 +396,68 @@ SPITFIRE.Object.prototype = {
       var proto = caller._class.superclass.prototype;
       var name = caller._name;
       
-      if (SPITFIRE.objectHasMethod(proto, name)) {
+      if (TCD.objectHasMethod(proto, name)) {
         return proto[name].apply(this, arguments);
       }
     }
   }
 }
 
-SPITFIRE.Class(SPITFIRE.Object);
+TCD.Class(TCD.Object);
 //--------------------------------------
 // Error
 //--------------------------------------
 
-SPITFIRE.Error = function(message) {
+TCD.Error = function(message) {
   this.callSuper();
   this.message(message);
   this.name('Error');
-  this.qualifiedClassName('SPITFIRE.Error');
+  this.qualifiedClassName('TCD.Error');
 };
 
-SPITFIRE.Error.superclass = SPITFIRE.Object;
-SPITFIRE.Error.synthesizedProperties = ['message', 'name'];
+TCD.Error.superclass = TCD.Object;
+TCD.Error.synthesizedProperties = ['message', 'name'];
 
-SPITFIRE.Error.prototype = {
+TCD.Error.prototype = {
   toString: function() {
     return this.name() + ': [' + this.qualifiedClassName() + '] "' + this.message() + '"';
   }
 }
 
-SPITFIRE.Class(SPITFIRE.Error);
-SPITFIRE.events = SPITFIRE.events || {};
+TCD.Class(TCD.Error);
+TCD.events = TCD.events || {};
 
 //--------------------------------------
 // Event
 //--------------------------------------
 
-SPITFIRE.events.Event = function(type, data, bubbles, cancelable) {
+TCD.events.Event = function(type, data, bubbles, cancelable) {
   this.bubbles(bubbles || false);
   this.cancelable(cancelable || false);
   this.data(data || {});
   this.type(type);
 };
 
-SPITFIRE.events.Event.COMPLETE = 'complete';
+TCD.events.Event.COMPLETE = 'complete';
 
-SPITFIRE.events.Event.synthesizedProperties = ['bubbles', 'cancelable', 'data', 'target', 'type'];
-SPITFIRE.events.Event.superclass = SPITFIRE.Object;
-SPITFIRE.Class(SPITFIRE.events.Event);
-SPITFIRE.events = SPITFIRE.events || {};
+TCD.events.Event.synthesizedProperties = ['bubbles', 'cancelable', 'data', 'target', 'type'];
+TCD.events.Event.superclass = TCD.Object;
+TCD.Class(TCD.events.Event);
+TCD.events = TCD.events || {};
 
 //--------------------------------------
 // EventDispatcher
 //--------------------------------------
 
-SPITFIRE.events.EventDispatcher = function() {
+TCD.events.EventDispatcher = function() {
   this.callSuper();
-  this.qualifiedClassName('SPITFIRE.events.EventDispatcher');
+  this.qualifiedClassName('TCD.events.EventDispatcher');
   this._eventListeners = {};
 };
 
-SPITFIRE.events.EventDispatcher.superclass = SPITFIRE.Object;
+TCD.events.EventDispatcher.superclass = TCD.Object;
 
-SPITFIRE.events.EventDispatcher.prototype = {
+TCD.events.EventDispatcher.prototype = {
   addEventListener: function(type, handler) {
     if (!this._eventListeners[type]) {
       this._eventListeners[type] = [];
@@ -485,24 +485,24 @@ SPITFIRE.events.EventDispatcher.prototype = {
   }
 };
 
-SPITFIRE.Class(SPITFIRE.events.EventDispatcher);
-SPITFIRE.display = SPITFIRE.display || {};
+TCD.Class(TCD.events.EventDispatcher);
+TCD.display = TCD.display || {};
 
 //--------------------------------------
-// SPITFIRE.display.DisplayObject
+// TCD.display.DisplayObject
 //--------------------------------------
 
-SPITFIRE.display.DisplayObject = function() {
+TCD.display.DisplayObject = function() {
   this.callSuper();
-  this.qualifiedClassName('SPITFIRE.display.DisplayObject');
+  this.qualifiedClassName('TCD.display.DisplayObject');
   this._scaleX = 1;
   this._scaleY = 1;
   this._scale = 1;
   this._placeholderProperties = [];
 };
 
-SPITFIRE.display.DisplayObject.superclass = SPITFIRE.Object;
-SPITFIRE.display.DisplayObject.synthesizedProperties = [
+TCD.display.DisplayObject.superclass = TCD.Object;
+TCD.display.DisplayObject.synthesizedProperties = [
   '$this',
   'l',
   't',
@@ -514,7 +514,7 @@ SPITFIRE.display.DisplayObject.synthesizedProperties = [
   'rect',
 ];
 
-SPITFIRE.display.DisplayObject.prototype = {
+TCD.display.DisplayObject.prototype = {
 
   //--------------------------------------
   // Getters / Setters
@@ -577,7 +577,7 @@ SPITFIRE.display.DisplayObject.prototype = {
   },
   
   getRect: function() {
-    return new SPITFIRE.geom.Rectangle(this.l(), this.t(), this.w(), this.h());
+    return new TCD.geom.Rectangle(this.l(), this.t(), this.w(), this.h());
   },
   
   setRect: function(value) {
@@ -599,7 +599,7 @@ SPITFIRE.display.DisplayObject.prototype = {
     
     // handle custom properties
     for (var prop in properties) {
-      if (SPITFIRE.isSynthesizedProperty(prop, SPITFIRE.display.DisplayObject)) {
+      if (TCD.isSynthesizedProperty(prop, TCD.display.DisplayObject)) {
         // create a placeholder property to tween
         var placeHolderName = prop + 'AnimationValue';
         properties[placeHolderName] = properties[prop];
@@ -662,28 +662,28 @@ SPITFIRE.display.DisplayObject.prototype = {
   }
 };
 
-SPITFIRE.Class(SPITFIRE.display.DisplayObject);
-SPITFIRE.tasks = SPITFIRE.tasks || {};
+TCD.Class(TCD.display.DisplayObject);
+TCD.tasks = TCD.tasks || {};
 
 //--------------------------------------
-// SPITFIRE.tasks.Task
+// TCD.tasks.Task
 //--------------------------------------
 
-SPITFIRE.tasks.Task = function() {
+TCD.tasks.Task = function() {
   this.callSuper();
-  this.qualifiedClassName('SPITFIRE.tasks.Task');
+  this.qualifiedClassName('TCD.tasks.Task');
   this.progress(0);
 };
 
-SPITFIRE.tasks.Task.superclass = SPITFIRE.events.EventDispatcher;
-SPITFIRE.tasks.Task.synthesizedProperties = [
+TCD.tasks.Task.superclass = TCD.events.EventDispatcher;
+TCD.tasks.Task.synthesizedProperties = [
   'progress',
   'progressive',
   'name',
   'debug'
 ];
 
-SPITFIRE.tasks.Task.prototype = {
+TCD.tasks.Task.prototype = {
   //--------------------------------------
   // Methods
   //--------------------------------------
@@ -694,7 +694,7 @@ SPITFIRE.tasks.Task.prototype = {
   
   complete: function() {
     this.progress(1);
-    this.dispatchEvent(new SPITFIRE.events.Event(SPITFIRE.events.Event.COMPLETE));
+    this.dispatchEvent(new TCD.events.Event(TCD.events.Event.COMPLETE));
   },
   
   toString: function() {
@@ -702,26 +702,26 @@ SPITFIRE.tasks.Task.prototype = {
   }
 };
 
-SPITFIRE.Class(SPITFIRE.tasks.Task);
-SPITFIRE.tasks = SPITFIRE.tasks || {};
+TCD.Class(TCD.tasks.Task);
+TCD.tasks = TCD.tasks || {};
 
 //--------------------------------------
-// SPITFIRE.tasks.TaskManager
+// TCD.tasks.TaskManager
 //--------------------------------------
 
-SPITFIRE.tasks.TaskManager = function() {
+TCD.tasks.TaskManager = function() {
   this._progressiveTasks = [];
   this._createdTasks = [];
   this._tasks = [];
   
   this.callSuper();
-  this.qualifiedClassName('SPITFIRE.tasks.TaskManager');
+  this.qualifiedClassName('TCD.tasks.TaskManager');
 };
 
-SPITFIRE.tasks.TaskManager.superclass = SPITFIRE.tasks.Task;
-SPITFIRE.tasks.TaskManager.synthesizedProperties = ['tasks'];
+TCD.tasks.TaskManager.superclass = TCD.tasks.Task;
+TCD.tasks.TaskManager.synthesizedProperties = ['tasks'];
 
-SPITFIRE.tasks.TaskManager.prototype = {
+TCD.tasks.TaskManager.prototype = {
   //--------------------------------------
   // Getters / Setters
   //--------------------------------------
@@ -823,7 +823,7 @@ SPITFIRE.tasks.TaskManager.prototype = {
   
   getTaskIndex: function(task) {
     if (!this.contains(task)) {
-			throw new SPITFIRE.Error("The supplied task must be a child of the caller.");
+			throw new TCD.Error("The supplied task must be a child of the caller.");
 		}
 
 		return this.tasks().indexOf(task);
@@ -831,7 +831,7 @@ SPITFIRE.tasks.TaskManager.prototype = {
   
   removeTask: function(task) {
     if (!this.contains(task)) {
-			throw new SPITFIRE.Error("The supplied task must be a child of the caller.");
+			throw new TCD.Error("The supplied task must be a child of the caller.");
 		}
 		var index = this.getTaskIndex(task);
 		if (index != -1) {
@@ -854,7 +854,7 @@ SPITFIRE.tasks.TaskManager.prototype = {
   
   setTaskIndex: function(task, index) {
     if (!this.contains(task)) {
-			throw new SPITFIRE.Error("The supplied task must be a child of the caller.");
+			throw new TCD.Error("The supplied task must be a child of the caller.");
 		}
 		var taskIndex = this.getTaskIndex(task);
 		this.tasks().splice(index, 0, this.tasks()[taskIndex]);
@@ -876,98 +876,98 @@ SPITFIRE.tasks.TaskManager.prototype = {
   }
 };
 
-SPITFIRE.Class(SPITFIRE.tasks.TaskManager);
-SPITFIRE.events = SPITFIRE.events || {};
+TCD.Class(TCD.tasks.TaskManager);
+TCD.events = TCD.events || {};
 
 //--------------------------------------
-// SPITFIRE.events.ModelEvent
+// TCD.events.ModelEvent
 //--------------------------------------
 
-SPITFIRE.events.ModelEvent = function(type, data, bubbles, cancelable) {
+TCD.events.ModelEvent = function(type, data, bubbles, cancelable) {
   this.callSuper(type, data, bubbles, cancelable);
 };
 
-SPITFIRE.events.ModelEvent.DATA_UPDATE = 'dataUpdate';
+TCD.events.ModelEvent.DATA_UPDATE = 'dataUpdate';
 
-SPITFIRE.events.ModelEvent.superclass = SPITFIRE.events.Event;
-SPITFIRE.Class(SPITFIRE.events.ModelEvent);
-SPITFIRE.events = SPITFIRE.events || {};
+TCD.events.ModelEvent.superclass = TCD.events.Event;
+TCD.Class(TCD.events.ModelEvent);
+TCD.events = TCD.events || {};
 
 //--------------------------------------
-// SPITFIRE.events.StateEvent
+// TCD.events.StateEvent
 //--------------------------------------
 
-SPITFIRE.events.StateEvent = function(type, data, bubbles, cancelable) {
+TCD.events.StateEvent = function(type, data, bubbles, cancelable) {
   this.callSuper(type, data, bubbles, cancelable);
 };
 
-SPITFIRE.events.StateEvent.CHILD_STATE_CHANGE = 'childStateChange';
-SPITFIRE.events.StateEvent.STATE_CHANGE = 'stateChange';
-SPITFIRE.events.StateEvent.STATE_ACTIVATED = 'stateActivated';
+TCD.events.StateEvent.CHILD_STATE_CHANGE = 'childStateChange';
+TCD.events.StateEvent.STATE_CHANGE = 'stateChange';
+TCD.events.StateEvent.STATE_ACTIVATED = 'stateActivated';
 
-SPITFIRE.events.StateEvent.superclass = SPITFIRE.events.Event;
-SPITFIRE.Class(SPITFIRE.events.StateEvent);
-SPITFIRE.events = SPITFIRE.events || {};
+TCD.events.StateEvent.superclass = TCD.events.Event;
+TCD.Class(TCD.events.StateEvent);
+TCD.events = TCD.events || {};
 
 //--------------------------------------
 // StateManagerEvent
 //--------------------------------------
 
-SPITFIRE.events.StateManagerEvent = function(type, data, bubbles, cancelable, state) {
+TCD.events.StateManagerEvent = function(type, data, bubbles, cancelable, state) {
   this.callSuper(type, data, bubbles, cancelable);
   this.state(state);
-  this.qualifiedClassName('SPITFIRE.events.StateManagerEvent');
+  this.qualifiedClassName('TCD.events.StateManagerEvent');
 };
 
-SPITFIRE.events.StateManagerEvent.LOAD_IN_START = 'loadInStart';
-SPITFIRE.events.StateManagerEvent.LOAD_IN_COMPLETE = 'loadInComplete';
-SPITFIRE.events.StateManagerEvent.TRANSITION_IN_START = 'transitionInStart';
-SPITFIRE.events.StateManagerEvent.TRANSITION_IN_COMPLETE = 'transitionInComplete';
-SPITFIRE.events.StateManagerEvent.LOAD_OUT_START = 'loadOutStart';
-SPITFIRE.events.StateManagerEvent.LOAD_OUT_COMPLETE = 'loadOutComplete';
-SPITFIRE.events.StateManagerEvent.TRANSITION_OUT_START = 'transitionOutStart';
-SPITFIRE.events.StateManagerEvent.TRANSITION_OUT_COMPLETE = 'transitionOutComplete';
-SPITFIRE.events.StateManagerEvent.TRANSITION_IN_STATE_COMPLETE = 'transitionInStateComplete';
-SPITFIRE.events.StateManagerEvent.TRANSITION_OUT_STATE_COMPLETE = 'transitionOutStateComplete';
-SPITFIRE.events.StateManagerEvent.LOAD_IN_STATE_COMPLETE = 'loadInStateComplete';
-SPITFIRE.events.StateManagerEvent.LOAD_OUT_STATE_COMPLETE = 'loadOutStateComplete';
-SPITFIRE.events.StateManagerEvent.DEEPLINK = 'deeplink';
+TCD.events.StateManagerEvent.LOAD_IN_START = 'loadInStart';
+TCD.events.StateManagerEvent.LOAD_IN_COMPLETE = 'loadInComplete';
+TCD.events.StateManagerEvent.TRANSITION_IN_START = 'transitionInStart';
+TCD.events.StateManagerEvent.TRANSITION_IN_COMPLETE = 'transitionInComplete';
+TCD.events.StateManagerEvent.LOAD_OUT_START = 'loadOutStart';
+TCD.events.StateManagerEvent.LOAD_OUT_COMPLETE = 'loadOutComplete';
+TCD.events.StateManagerEvent.TRANSITION_OUT_START = 'transitionOutStart';
+TCD.events.StateManagerEvent.TRANSITION_OUT_COMPLETE = 'transitionOutComplete';
+TCD.events.StateManagerEvent.TRANSITION_IN_STATE_COMPLETE = 'transitionInStateComplete';
+TCD.events.StateManagerEvent.TRANSITION_OUT_STATE_COMPLETE = 'transitionOutStateComplete';
+TCD.events.StateManagerEvent.LOAD_IN_STATE_COMPLETE = 'loadInStateComplete';
+TCD.events.StateManagerEvent.LOAD_OUT_STATE_COMPLETE = 'loadOutStateComplete';
+TCD.events.StateManagerEvent.DEEPLINK = 'deeplink';
 
-SPITFIRE.events.StateManagerEvent.superclass = SPITFIRE.events.Event;
-SPITFIRE.events.StateManagerEvent.synthesizedProperties = ['state'];
-SPITFIRE.Class(SPITFIRE.events.StateManagerEvent);
-SPITFIRE.events = SPITFIRE.events || {};
+TCD.events.StateManagerEvent.superclass = TCD.events.Event;
+TCD.events.StateManagerEvent.synthesizedProperties = ['state'];
+TCD.Class(TCD.events.StateManagerEvent);
+TCD.events = TCD.events || {};
 
 //--------------------------------------
 // TimerEvent
 //--------------------------------------
 
-SPITFIRE.events.TimerEvent = function(type, data, bubbles, cancelable) {  
+TCD.events.TimerEvent = function(type, data, bubbles, cancelable) {  
   this.callSuper(type, data, bubbles, cancelable);
-  this.qualifiedClassName('SPITFIRE.events.TimerEvent');
+  this.qualifiedClassName('TCD.events.TimerEvent');
 };
 
-SPITFIRE.events.TimerEvent.TIMER = 'timer';
-SPITFIRE.events.TimerEvent.TIMER_COMPLETE = 'timerComplete';
+TCD.events.TimerEvent.TIMER = 'timer';
+TCD.events.TimerEvent.TIMER_COMPLETE = 'timerComplete';
 
-SPITFIRE.events.TimerEvent.superclass = SPITFIRE.events.Event;
-SPITFIRE.Class(SPITFIRE.events.TimerEvent);
-SPITFIRE.geom = SPITFIRE.geom || {};
+TCD.events.TimerEvent.superclass = TCD.events.Event;
+TCD.Class(TCD.events.TimerEvent);
+TCD.geom = TCD.geom || {};
 
 //--------------------------------------
-// SPITFIRE.geom.Point
+// TCD.geom.Point
 //--------------------------------------
 
-SPITFIRE.geom.Point = function(x, y) {
+TCD.geom.Point = function(x, y) {
   this.callSuper();
-  this.qualifiedClassName('SPITFIRE.geom.Point');
+  this.qualifiedClassName('TCD.geom.Point');
   this.x = x;
   this.y = y;
 };
 
-SPITFIRE.geom.Point.superclass = SPITFIRE.Object;
+TCD.geom.Point.superclass = TCD.Object;
 
-SPITFIRE.geom.Point.prototype = {  
+TCD.geom.Point.prototype = {  
   //--------------------------------------
   // Methods
   //--------------------------------------
@@ -977,16 +977,16 @@ SPITFIRE.geom.Point.prototype = {
   }
 };
 
-SPITFIRE.Class(SPITFIRE.geom.Point);
-SPITFIRE.geom = SPITFIRE.geom || {};
+TCD.Class(TCD.geom.Point);
+TCD.geom = TCD.geom || {};
 
 //--------------------------------------
-// SPITFIRE.geom.Rectangle
+// TCD.geom.Rectangle
 //--------------------------------------
 
-SPITFIRE.geom.Rectangle = function(x, y, width, height) {
+TCD.geom.Rectangle = function(x, y, width, height) {
   this.callSuper();
-  this.qualifiedClassName('SPITFIRE.geom.Rectangle');
+  this.qualifiedClassName('TCD.geom.Rectangle');
   
   this.x(x);
   this.y(y);
@@ -994,8 +994,8 @@ SPITFIRE.geom.Rectangle = function(x, y, width, height) {
   this.height(height);
 };
 
-SPITFIRE.geom.Rectangle.superclass = SPITFIRE.Object;
-SPITFIRE.geom.Rectangle.synthesizedProperties = [
+TCD.geom.Rectangle.superclass = TCD.Object;
+TCD.geom.Rectangle.synthesizedProperties = [
   'x',
   'y',
   'width',
@@ -1009,7 +1009,7 @@ SPITFIRE.geom.Rectangle.synthesizedProperties = [
   'topLeft'
 ];
 
-SPITFIRE.geom.Rectangle.prototype = {
+TCD.geom.Rectangle.prototype = {
   //--------------------------------------
   // Getters / Setters
   //--------------------------------------
@@ -1031,15 +1031,15 @@ SPITFIRE.geom.Rectangle.prototype = {
   },
   
   getSize: function() {
-    return new SPITFIRE.geom.Point(this.width(), this.height());
+    return new TCD.geom.Point(this.width(), this.height());
   },
   
   getTopLeft: function() {
-    return new SPITFIRE.geom.Point(this.top(), this.left());
+    return new TCD.geom.Point(this.top(), this.left());
   },
   
   getBottomRight: function() {
-    return new SPITFIRE.geom.Point(this.bottom(), this.right());
+    return new TCD.geom.Point(this.bottom(), this.right());
   },
   
   //--------------------------------------
@@ -1047,7 +1047,7 @@ SPITFIRE.geom.Rectangle.prototype = {
   //--------------------------------------
   
   clone: function() {
-    return new SPITFIRE.geom.Rectangle(this.x(), this.y(), this.width(), this.height());
+    return new TCD.geom.Rectangle(this.x(), this.y(), this.width(), this.height());
   },
   
   toString: function() {
@@ -1055,8 +1055,8 @@ SPITFIRE.geom.Rectangle.prototype = {
   }
 };
 
-SPITFIRE.Class(SPITFIRE.geom.Rectangle);
-SPITFIRE.math = SPITFIRE.math || {};
+TCD.Class(TCD.geom.Rectangle);
+TCD.math = TCD.math || {};
 
 //--------------------------------------
 // Percent
@@ -1064,7 +1064,7 @@ SPITFIRE.math = SPITFIRE.math || {};
 // Port of org.casalib.math.Percent from CASA lib for ActionScript 3.0
 // http://casalib.org/
 
-SPITFIRE.math.Percent = function(percentage, isDecimalPercentage) {
+TCD.math.Percent = function(percentage, isDecimalPercentage) {
   this.callSuper();
   
   percentage = isDecimalPercentage || 0;
@@ -1077,10 +1077,10 @@ SPITFIRE.math.Percent = function(percentage, isDecimalPercentage) {
   }
 };
 
-SPITFIRE.math.Percent.superclass = SPITFIRE.Object;
-SPITFIRE.synthesizedProperties = ['percentage', 'decimalPercentage'];
+TCD.math.Percent.superclass = TCD.Object;
+TCD.synthesizedProperties = ['percentage', 'decimalPercentage'];
 
-SPITFIRE.prototype = {
+TCD.prototype = {
   getPercentage: function() {
     return 100 * this._percent;
   },
@@ -1102,7 +1102,7 @@ SPITFIRE.prototype = {
   },
   
   clone: function() {
-    return new SPITFIRE.math.Percent(this.decimalPercentage());
+    return new TCD.math.Percent(this.decimalPercentage());
   },
   
   valueOf: function() {
@@ -1114,22 +1114,22 @@ SPITFIRE.prototype = {
   }
 };
 
-SPITFIRE.Class(SPITFIRE.math.Percent);
-SPITFIRE.model = SPITFIRE.model || {};
+TCD.Class(TCD.math.Percent);
+TCD.model = TCD.model || {};
 
 //--------------------------------------
-// SPITFIRE.model.Model
+// TCD.model.Model
 //--------------------------------------
 
-SPITFIRE.model.Model = function() {
+TCD.model.Model = function() {
   this.callSuper();
-  this.qualifiedClassName('SPITFIRE.model.Model');
+  this.qualifiedClassName('TCD.model.Model');
 };
 
-SPITFIRE.model.Model.superclass = SPITFIRE.events.EventDispatcher;
-SPITFIRE.model.Model.synthesizedProperties = ['data'];
+TCD.model.Model.superclass = TCD.events.EventDispatcher;
+TCD.model.Model.synthesizedProperties = ['data'];
 
-SPITFIRE.model.Model.prototype = {
+TCD.model.Model.prototype = {
 
   //--------------------------------------
   // Getters / Setters
@@ -1137,7 +1137,7 @@ SPITFIRE.model.Model.prototype = {
   
   setData: function(value) {
     this._data = value;
-    this.dispatchEvent(new SPITFIRE.events.ModelEvent(SPITFIRE.events.ModelEvent.DATA_UPDATE));
+    this.dispatchEvent(new TCD.events.ModelEvent(TCD.events.ModelEvent.DATA_UPDATE));
   },
 
   //--------------------------------------
@@ -1149,39 +1149,39 @@ SPITFIRE.model.Model.prototype = {
   }
 };
 
-SPITFIRE.Class(SPITFIRE.model.Model);
-SPITFIRE.state = SPITFIRE.state || {};
+TCD.Class(TCD.model.Model);
+TCD.state = TCD.state || {};
 
 //--------------------------------------
 // Redirect
 //--------------------------------------
 
-SPITFIRE.state.Redirect = function(location, newLocation) {
+TCD.state.Redirect = function(location, newLocation) {
   this.callSuper();
-  this.qualifiedClassName('SPITFIRE.state.Redirect');
+  this.qualifiedClassName('TCD.state.Redirect');
   this.location(location);
   this.newLocation(newLocation);
 }
 
-SPITFIRE.state.Redirect.superclass = SPITFIRE.Object;
-SPITFIRE.state.Redirect.synthesizedProperties = ['location', 'newLocation'];
+TCD.state.Redirect.superclass = TCD.Object;
+TCD.state.Redirect.synthesizedProperties = ['location', 'newLocation'];
 
-SPITFIRE.Class(SPITFIRE.state.Redirect);
-SPITFIRE.state = SPITFIRE.state || {};
+TCD.Class(TCD.state.Redirect);
+TCD.state = TCD.state || {};
 
 //--------------------------------------
-// SPITFIRE.state.State
+// TCD.state.State
 //--------------------------------------
 
-SPITFIRE.state.State = function(name) {
+TCD.state.State = function(name) {
   this.callSuper();
   this.name(name);
   this._children = [];
-  this.qualifiedClassName('SPITFIRE.state.State');
+  this.qualifiedClassName('TCD.state.State');
 };
 
-SPITFIRE.state.State.superclass = SPITFIRE.events.EventDispatcher;
-SPITFIRE.state.State.synthesizedProperties = [
+TCD.state.State.superclass = TCD.events.EventDispatcher;
+TCD.state.State.synthesizedProperties = [
   'root',
   'children',
   'stateManager',
@@ -1207,7 +1207,7 @@ SPITFIRE.state.State.synthesizedProperties = [
   'childClass'
 ];
 
-SPITFIRE.state.State.prototype = {
+TCD.state.State.prototype = {
   //--------------------------------------
   // Getters / Setters
   //--------------------------------------
@@ -1240,7 +1240,7 @@ SPITFIRE.state.State.prototype = {
   
   setSelectedChild: function(value) {
     if (!this.contains(value)) {
-      throw new SPITFIRE.Error('The supplied child must be a child of the caller.');
+      throw new TCD.Error('The supplied child must be a child of the caller.');
     }
     
     this._selectedChild = value;
@@ -1279,7 +1279,7 @@ SPITFIRE.state.State.prototype = {
   setSelected: function(value) {
     if (value != this.selected()) {
       this._selected = value;
-      this.dispatchEvent(new SPITFIRE.events.StateEvent(SPITFIRE.events.StateEvent.STATE_CHANGE));
+      this.dispatchEvent(new TCD.events.StateEvent(TCD.events.StateEvent.STATE_CHANGE));
     }
   },
   
@@ -1324,7 +1324,7 @@ SPITFIRE.state.State.prototype = {
       this._selectedChild = undefined;
     }
     
-    this.dispatchEvent(new SPITFIRE.events.StateEvent(SPITFIRE.events.StateEvent.CHILD_STATE_CHANGE));
+    this.dispatchEvent(new TCD.events.StateEvent(TCD.events.StateEvent.CHILD_STATE_CHANGE));
   },
   
   //--------------------------------------
@@ -1336,7 +1336,7 @@ SPITFIRE.state.State.prototype = {
     child.stateManager(this.stateManager());
     child.root(this.root());
     this.children().push(child);
-    child.addEventListener(SPITFIRE.events.StateEvent.STATE_CHANGE, this.childChangeHandler.context(this));
+    child.addEventListener(TCD.events.StateEvent.STATE_CHANGE, this.childChangeHandler.context(this));
   },
   
   addChildAt: function(child, index) {
@@ -1344,7 +1344,7 @@ SPITFIRE.state.State.prototype = {
     child.stateManager(this.stateManager());
     child.root(this.root());
     this.children().splice(index, 0, child);
-    child.addEventListener(SPITFIRE.events.StateEvent.STATE_CHANGE, this.childChangeHandler.context(this));
+    child.addEventListener(TCD.events.StateEvent.STATE_CHANGE, this.childChangeHandler.context(this));
     return child;
   },
   
@@ -1371,7 +1371,7 @@ SPITFIRE.state.State.prototype = {
   
   getChildIndex: function(child) {
     if (!this.contains(child)) {
-      throw new SPITFIRE.Error('The supplied child must be a child of the caller.');
+      throw new TCD.Error('The supplied child must be a child of the caller.');
     }
     
     return this.children().indexOf(child);
@@ -1379,7 +1379,7 @@ SPITFIRE.state.State.prototype = {
   
   removeChild: function(child) {
     if (!this.contains(child)) {
-      throw new SPITFIRE.Error('The supplied child must be a child of the caller.');
+      throw new TCD.Error('The supplied child must be a child of the caller.');
     }
     
     var index = this.getChildIndex(child),
@@ -1394,14 +1394,14 @@ SPITFIRE.state.State.prototype = {
   
   removeChildAt: function(index) {
     var child = this.getChildAt(index);
-    child.removeEventListener(SPITFIRE.events.StateEvent.STATE_CHANGE, this.childChangeHandler.context(this));
+    child.removeEventListener(TCD.events.StateEvent.STATE_CHANGE, this.childChangeHandler.context(this));
     this.children().splice(index, 1);
     return child;
   },
   
   setChildIndex: function(child, index) {
     if (!this.contains(child)) {
-      throw new SPITFIRE.Error('The supplied child must be a child of the caller.');
+      throw new TCD.Error('The supplied child must be a child of the caller.');
     }
     
     var childIndex = this.getChildIndex(child);
@@ -1428,7 +1428,7 @@ SPITFIRE.state.State.prototype = {
     if (foundChild) {
       this.selectedChild(foundChild);
     } else {
-      throw new SPITFIRE.Error('The supplied child must be a child of the caller.');
+      throw new TCD.Error('The supplied child must be a child of the caller.');
     }
   },
   
@@ -1491,7 +1491,7 @@ SPITFIRE.state.State.prototype = {
   createChildByName: function(value) {
     
     if (!this.childClass()) {
-      throw new SPITFIRE.Error(this + ': no child class defined');
+      throw new TCD.Error(this + ': no child class defined');
     }
     
     var state = new this.childClass();
@@ -1505,21 +1505,21 @@ SPITFIRE.state.State.prototype = {
   }
 };
 
-SPITFIRE.Class(SPITFIRE.state.State);
-SPITFIRE.state = SPITFIRE.state || {};
+TCD.Class(TCD.state.State);
+TCD.state = TCD.state || {};
 
 //--------------------------------------
-// SPITFIRE.state.StateManager
+// TCD.state.StateManager
 //--------------------------------------
 
-SPITFIRE.state.StateManager = function(name, root) {
+TCD.state.StateManager = function(name, root) {
   this.callSuper();
   this.root(root);
-  this.qualifiedClassName('SPITFIRE.state.StateManager');
+  this.qualifiedClassName('TCD.state.StateManager');
   this.name(name || this.qualifiedClassName() + Math.round(Math.random() * 100000));
-  this.pageViewType(SPITFIRE.state.StateManager.PAGE_VIEW_LOCATION);
-  this._progressTimer = new SPITFIRE.utils.Timer(33);
-  this._progressTimer.addEventListener(SPITFIRE.events.TimerEvent.TIMER, this.taskManagerProgressHandler.context(this));
+  this.pageViewType(TCD.state.StateManager.PAGE_VIEW_LOCATION);
+  this._progressTimer = new TCD.utils.Timer(33);
+  this._progressTimer.addEventListener(TCD.events.TimerEvent.TIMER, this.taskManagerProgressHandler.context(this));
   this._transitionInPath;
   this._transitionWasInterrupted;
   this._isInTransition;
@@ -1528,11 +1528,11 @@ SPITFIRE.state.StateManager = function(name, root) {
   this._redirects = [];
 };
 
-SPITFIRE.state.StateManager.PAGE_VIEW_LOCATION = 'pageViewLocation';
-SPITFIRE.state.StateManager.PAGE_VIEW_NAME = 'pageViewName';
+TCD.state.StateManager.PAGE_VIEW_LOCATION = 'pageViewLocation';
+TCD.state.StateManager.PAGE_VIEW_NAME = 'pageViewName';
 
-SPITFIRE.state.StateManager.superclass = SPITFIRE.events.EventDispatcher;
-SPITFIRE.state.StateManager.synthesizedProperties = [
+TCD.state.StateManager.superclass = TCD.events.EventDispatcher;
+TCD.state.StateManager.synthesizedProperties = [
   'root',
   'deepLinking',
   'tree',
@@ -1549,7 +1549,7 @@ SPITFIRE.state.StateManager.synthesizedProperties = [
   'name'
 ];
 
-SPITFIRE.state.StateManager.prototype = {
+TCD.state.StateManager.prototype = {
   //--------------------------------------
   // Getters / Setters
   //--------------------------------------
@@ -1652,10 +1652,10 @@ SPITFIRE.state.StateManager.prototype = {
     if (this.trackPageViews()) {
   		var param;
   		switch(this.pageViewType()) {
-  			case SPITFIRE.state.StateManager.PAGE_VIEW_LOCATION:
+  			case TCD.state.StateManager.PAGE_VIEW_LOCATION:
   				param = this.location();
   			break;
-  			case SPITFIRE.state.StateManager.PAGE_VIEW_NAME:
+  			case TCD.state.StateManager.PAGE_VIEW_NAME:
   				param = this.location();
   			break;
   		}
@@ -1663,13 +1663,13 @@ SPITFIRE.state.StateManager.prototype = {
   },
   
   taskManagerCompleteHandler: function(event) {
-    this.taskManager().removeEventListener(SPITFIRE.events.Event.COMPLETE, this.taskManagerCompleteHandler.context(this));
+    this.taskManager().removeEventListener(TCD.events.Event.COMPLETE, this.taskManagerCompleteHandler.context(this));
 		if (this.taskManager().progressive()) {
 			this.taskManagerProgressHandler();
 			this._progressTimer.stop();
 		}
 		
-		this.dispatchEvent(new SPITFIRE.events.Event(this._currentTransition.transitionName() + "Complete"));
+		this.dispatchEvent(new TCD.events.Event(this._currentTransition.transitionName() + "Complete"));
 		this._currentTransition = null;
 		if (this._transitions.length > 0) {
 			this.startTransition();
@@ -1750,8 +1750,8 @@ SPITFIRE.state.StateManager.prototype = {
     
     this.deactivateStates(transitionOutPaths);
     
-    this._transitions.push(new SPITFIRE.state.TransitionProperties(transitionOutPaths.slice(), 'loadOut', false));
-    this._transitions.push(new SPITFIRE.state.TransitionProperties(transitionOutPaths.slice(), 'transitionOut', false));
+    this._transitions.push(new TCD.state.TransitionProperties(transitionOutPaths.slice(), 'loadOut', false));
+    this._transitions.push(new TCD.state.TransitionProperties(transitionOutPaths.slice(), 'transitionOut', false));
     
     var transitionInPaths = [];
     for (i = breakIndex, len = nextLocationArray.length; i < len; i+=1) {
@@ -1765,8 +1765,8 @@ SPITFIRE.state.StateManager.prototype = {
       transitionInPaths = this.checkForDefaultStates(this._transitionInPath);
     }
     
-    this._transitions.push(new SPITFIRE.state.TransitionProperties(transitionInPaths.slice(), 'loadIn', false));
-    this._transitions.push(new SPITFIRE.state.TransitionProperties(transitionInPaths.slice(), 'transitionIn', false));
+    this._transitions.push(new TCD.state.TransitionProperties(transitionInPaths.slice(), 'loadIn', false));
+    this._transitions.push(new TCD.state.TransitionProperties(transitionInPaths.slice(), 'transitionIn', false));
     
     this.startTransition();
   },
@@ -1854,16 +1854,16 @@ SPITFIRE.state.StateManager.prototype = {
   
   startTransition: function() {
     this._currentTransition = this._transitions.shift();
-		this.dispatchEvent(new SPITFIRE.events.Event(this._currentTransition.transitionName() + "Start"));
+		this.dispatchEvent(new TCD.events.Event(this._currentTransition.transitionName() + "Start"));
 		
-		this.taskManager(new SPITFIRE.tasks.SequentialTask());
+		this.taskManager(new TCD.tasks.SequentialTask());
 		
 		this.taskManager().name(this._currentTransition.transitionName());
 		if (this.debug()) {
 			this.taskManager().debug(this.debug());
 		}
 		
-		this.taskManager().addEventListener(SPITFIRE.events.Event.COMPLETE, this.taskManagerCompleteHandler.context(this));
+		this.taskManager().addEventListener(TCD.events.Event.COMPLETE, this.taskManagerCompleteHandler.context(this));
 		
 		var i, len;
 		
@@ -1887,14 +1887,14 @@ SPITFIRE.state.StateManager.prototype = {
 			if (this._currentTransition.transitionName() == "transitionOut") {
 				stateSelected = false;
 			}
-			this.taskManager().addTask(new SPITFIRE.tasks.PropertyTask(state, "selected", stateSelected));
+			this.taskManager().addTask(new TCD.tasks.PropertyTask(state, "selected", stateSelected));
 		}
 		if (this.taskManager().progress() == 1) {
 			this.taskManager().progressive(false);
 		}
 		if (this.taskManager().progressive()) {
 			if (this.preloader()) {
-				this.taskManager().addTaskAt(new SPITFIRE.tasks.PropertyTask(this.preloader(), "progress", 0), 0);
+				this.taskManager().addTaskAt(new TCD.tasks.PropertyTask(this.preloader(), "progress", 0), 0);
 				this.taskManager().addTaskAt(this.preloader().transitionIn(), 1);
 				this.taskManager().addTask(this.preloader().transitionOut());
 			}
@@ -1906,7 +1906,7 @@ SPITFIRE.state.StateManager.prototype = {
   
   addRedirect: function(location, newLocation) {
     this.removeRedirect(location);
-		this.redirects.push(new SPITFIRE.state.Redirect(location, newLocation));
+		this.redirects.push(new TCD.state.Redirect(location, newLocation));
   },
   
   removeRedirect: function(location) {
@@ -1938,39 +1938,39 @@ SPITFIRE.state.StateManager.prototype = {
   }
 };
 
-SPITFIRE.Class(SPITFIRE.state.StateManager);
-SPITFIRE.state = SPITFIRE.state || {};
+TCD.Class(TCD.state.StateManager);
+TCD.state = TCD.state || {};
 
 //--------------------------------------
-// SPITFIRE.state.TransitionProperties
+// TCD.state.TransitionProperties
 //--------------------------------------
 
-SPITFIRE.state.TransitionProperties = function(locations, transitionName, showPreloader) {
+TCD.state.TransitionProperties = function(locations, transitionName, showPreloader) {
   this.callSuper();
   this.locations(locations);
   this.transitionName(transitionName);
   this.showPreloader(showPreloader);
 }
 
-SPITFIRE.state.TransitionProperties.superclass = SPITFIRE.Object;
-SPITFIRE.state.TransitionProperties.synthesizedProperties = ['locations', 'transitionName', 'showPreloader', 'currentState'];
+TCD.state.TransitionProperties.superclass = TCD.Object;
+TCD.state.TransitionProperties.synthesizedProperties = ['locations', 'transitionName', 'showPreloader', 'currentState'];
 
-SPITFIRE.state.TransitionProperties.prototype = {
+TCD.state.TransitionProperties.prototype = {
   toString: function() {
     return this.transitionName();
   }
 }
 
-SPITFIRE.Class(SPITFIRE.state.TransitionProperties);
-SPITFIRE.tasks = SPITFIRE.tasks || {};
+TCD.Class(TCD.state.TransitionProperties);
+TCD.tasks = TCD.tasks || {};
 
 //--------------------------------------
-// SPITFIRE.tasks.FunctionTask
+// TCD.tasks.FunctionTask
 //--------------------------------------
 
-SPITFIRE.tasks.FunctionTask = function(context, method) {
+TCD.tasks.FunctionTask = function(context, method) {
   this.callSuper();
-  this.qualifiedClassName('SPITFIRE.tasks.FunctionTask');
+  this.qualifiedClassName('TCD.tasks.FunctionTask');
   this.method(method);
   this.context(context);
   this.args([]);
@@ -1980,10 +1980,10 @@ SPITFIRE.tasks.FunctionTask = function(context, method) {
   }
 };
 
-SPITFIRE.tasks.FunctionTask.superclass = SPITFIRE.tasks.Task;
-SPITFIRE.tasks.FunctionTask.synthesizedProperties = ['context', 'method', 'args'];
+TCD.tasks.FunctionTask.superclass = TCD.tasks.Task;
+TCD.tasks.FunctionTask.synthesizedProperties = ['context', 'method', 'args'];
 
-SPITFIRE.tasks.FunctionTask.prototype = {
+TCD.tasks.FunctionTask.prototype = {
   //--------------------------------------
   // Methods
   //--------------------------------------
@@ -1998,24 +1998,24 @@ SPITFIRE.tasks.FunctionTask.prototype = {
   }
 };
 
-SPITFIRE.Class(SPITFIRE.tasks.FunctionTask);
-SPITFIRE.tasks = SPITFIRE.tasks || {};
+TCD.Class(TCD.tasks.FunctionTask);
+TCD.tasks = TCD.tasks || {};
 
 //--------------------------------------
-// SPITFIRE.tasks.JQueryAjaxTask
+// TCD.tasks.JQueryAjaxTask
 //--------------------------------------
 
-SPITFIRE.tasks.JQueryAjaxTask = function(url, settings) {
+TCD.tasks.JQueryAjaxTask = function(url, settings) {
   this.callSuper();
-  this.qualifiedClassName('SPITFIRE.tasks.JQueryAjaxTask');
+  this.qualifiedClassName('TCD.tasks.JQueryAjaxTask');
   this.url(url);
   this.settings(settings);
 };
 
-SPITFIRE.tasks.JQueryAjaxTask.superclass = SPITFIRE.tasks.Task;
-SPITFIRE.tasks.JQueryAjaxTask.synthesizedProperties = ['url', 'settings', 'content'];
+TCD.tasks.JQueryAjaxTask.superclass = TCD.tasks.Task;
+TCD.tasks.JQueryAjaxTask.synthesizedProperties = ['url', 'settings', 'content'];
 
-SPITFIRE.tasks.JQueryAjaxTask.prototype = {  
+TCD.tasks.JQueryAjaxTask.prototype = {  
   //--------------------------------------
   // Event Handlers
   //--------------------------------------
@@ -2054,21 +2054,21 @@ SPITFIRE.tasks.JQueryAjaxTask.prototype = {
   }
 };
 
-SPITFIRE.Class(SPITFIRE.tasks.JQueryAjaxTask);
-SPITFIRE.tasks = SPITFIRE.tasks || {};
+TCD.Class(TCD.tasks.JQueryAjaxTask);
+TCD.tasks = TCD.tasks || {};
 
 //--------------------------------------
-// SPITFIRE.tasks.JQueryEffectTask
+// TCD.tasks.JQueryEffectTask
 //--------------------------------------
 
-SPITFIRE.tasks.JQueryEffectTask = function(target, effect) {
+TCD.tasks.JQueryEffectTask = function(target, effect) {
   this.callSuper();
-  this.qualifiedClassName('SPITFIRE.tasks.JQueryEffectTask');
+  this.qualifiedClassName('TCD.tasks.JQueryEffectTask');
   
-  var args = SPITFIRE.slice(arguments, 2, arguments.length - 1);
+  var args = TCD.slice(arguments, 2, arguments.length - 1);
   
-  if (!SPITFIRE.isFunction(target[effect])) {
-    throw new SPITFIRE.Error('target does not support this effect');
+  if (!TCD.isFunction(target[effect])) {
+    throw new TCD.Error('target does not support this effect');
   }
   
   this.target(target);
@@ -2076,10 +2076,10 @@ SPITFIRE.tasks.JQueryEffectTask = function(target, effect) {
   this.args(args);
 };
 
-SPITFIRE.tasks.JQueryEffectTask.superclass = SPITFIRE.tasks.Task;
-SPITFIRE.tasks.JQueryEffectTask.synthesizedProperties = ['target', 'effect', 'args'];
+TCD.tasks.JQueryEffectTask.superclass = TCD.tasks.Task;
+TCD.tasks.JQueryEffectTask.synthesizedProperties = ['target', 'effect', 'args'];
 
-SPITFIRE.tasks.JQueryEffectTask.prototype = {
+TCD.tasks.JQueryEffectTask.prototype = {
 
   //--------------------------------------
   // Event Handlers
@@ -2103,24 +2103,24 @@ SPITFIRE.tasks.JQueryEffectTask.prototype = {
   }
 };
 
-SPITFIRE.Class(SPITFIRE.tasks.JQueryEffectTask);
-SPITFIRE.tasks = SPITFIRE.tasks || {};
+TCD.Class(TCD.tasks.JQueryEffectTask);
+TCD.tasks = TCD.tasks || {};
 
 //--------------------------------------
-// SPITFIRE.tasks.JQueryGetJSONTask
+// TCD.tasks.JQueryGetJSONTask
 //--------------------------------------
 
-SPITFIRE.tasks.JQueryGetJSONTask = function(url, data) {
+TCD.tasks.JQueryGetJSONTask = function(url, data) {
   this.callSuper();
-  this.qualifiedClassName('SPITFIRE.tasks.JQueryGetJSONTask');    
+  this.qualifiedClassName('TCD.tasks.JQueryGetJSONTask');    
   this.url(url);
   this.data(data);
 };
 
-SPITFIRE.tasks.JQueryGetJSONTask.superclass = SPITFIRE.tasks.Task;
-SPITFIRE.tasks.JQueryGetJSONTask.synthesizedProperties = ['url', 'data', 'content'];
+TCD.tasks.JQueryGetJSONTask.superclass = TCD.tasks.Task;
+TCD.tasks.JQueryGetJSONTask.synthesizedProperties = ['url', 'data', 'content'];
 
-SPITFIRE.tasks.JQueryGetJSONTask.prototype = {
+TCD.tasks.JQueryGetJSONTask.prototype = {
   
   //--------------------------------------
   // Event Handlers
@@ -2149,16 +2149,16 @@ SPITFIRE.tasks.JQueryGetJSONTask.prototype = {
   }
 };
 
-SPITFIRE.Class(SPITFIRE.tasks.JQueryGetJSONTask);
-SPITFIRE.tasks = SPITFIRE.tasks || {};
+TCD.Class(TCD.tasks.JQueryGetJSONTask);
+TCD.tasks = TCD.tasks || {};
 
 //--------------------------------------
-// SPITFIRE.tasks.JQueryImageLoaderTask
+// TCD.tasks.JQueryImageLoaderTask
 //--------------------------------------
 
-SPITFIRE.tasks.JQueryImageLoaderTask = function(url) {
+TCD.tasks.JQueryImageLoaderTask = function(url) {
   this.callSuper();
-  this.qualifiedClassName('SPITFIRE.tasks.JQueryImageLoaderTask');
+  this.qualifiedClassName('TCD.tasks.JQueryImageLoaderTask');
   
   this.url(url);
   this.content(new Image());
@@ -2169,10 +2169,10 @@ SPITFIRE.tasks.JQueryImageLoaderTask = function(url) {
     .error(this.errorHandler.context(this));
 };
 
-SPITFIRE.tasks.JQueryImageLoaderTask.superclass = SPITFIRE.tasks.Task;
-SPITFIRE.tasks.JQueryImageLoaderTask.synthesizedProperties = ['url', 'content', '$content'];
+TCD.tasks.JQueryImageLoaderTask.superclass = TCD.tasks.Task;
+TCD.tasks.JQueryImageLoaderTask.synthesizedProperties = ['url', 'content', '$content'];
 
-SPITFIRE.tasks.JQueryImageLoaderTask.prototype = {
+TCD.tasks.JQueryImageLoaderTask.prototype = {
 
   //--------------------------------------
   // Event Handlers
@@ -2202,27 +2202,27 @@ SPITFIRE.tasks.JQueryImageLoaderTask.prototype = {
   }
 };
 
-SPITFIRE.Class(SPITFIRE.tasks.JQueryImageLoaderTask);
-SPITFIRE.tasks = SPITFIRE.tasks || {};
+TCD.Class(TCD.tasks.JQueryImageLoaderTask);
+TCD.tasks = TCD.tasks || {};
 
 //--------------------------------------
-// SPITFIRE.tasks.JQueryLoadTask
+// TCD.tasks.JQueryLoadTask
 //--------------------------------------
 
-SPITFIRE.tasks.JQueryLoadTask = function(url, $target) {
+TCD.tasks.JQueryLoadTask = function(url, $target) {
   this.callSuper();
-  this.qualifiedClassName('SPITFIRE.tasks.JQueryLoadTask');
+  this.qualifiedClassName('TCD.tasks.JQueryLoadTask');
   
-  if (!url) throw new SPITFIRE.Error('a valid url must be specified');
+  if (!url) throw new TCD.Error('a valid url must be specified');
   
   this.url(url);
   this.$target($target || $('body'));
 };
 
-SPITFIRE.tasks.JQueryLoadTask.superclass = SPITFIRE.tasks.Task;
-SPITFIRE.tasks.JQueryLoadTask.synthesizedProperties = ['url', '$target'];
+TCD.tasks.JQueryLoadTask.superclass = TCD.tasks.Task;
+TCD.tasks.JQueryLoadTask.synthesizedProperties = ['url', '$target'];
 
-SPITFIRE.tasks.JQueryLoadTask.prototype = {
+TCD.tasks.JQueryLoadTask.prototype = {
   //--------------------------------------
   // Event Handlers
   //--------------------------------------
@@ -2248,25 +2248,25 @@ SPITFIRE.tasks.JQueryLoadTask.prototype = {
   }
 };
 
-SPITFIRE.Class(SPITFIRE.tasks.JQueryLoadTask);
-SPITFIRE.tasks = SPITFIRE.tasks || {};
+TCD.Class(TCD.tasks.JQueryLoadTask);
+TCD.tasks = TCD.tasks || {};
 
 //--------------------------------------
-// SPITFIRE.tasks.ParallelTask
+// TCD.tasks.ParallelTask
 //--------------------------------------
 
-SPITFIRE.tasks.ParallelTask = function() {
+TCD.tasks.ParallelTask = function() {
   this.callSuper();
-  this.qualifiedClassName('SPITFIRE.tasks.ParallelTask');
+  this.qualifiedClassName('TCD.tasks.ParallelTask');
   
   if (arguments.length > 0) {
     this.tasks(arguments);
   }
 };
 
-SPITFIRE.tasks.ParallelTask.superclass = SPITFIRE.tasks.TaskManager;
+TCD.tasks.ParallelTask.superclass = TCD.tasks.TaskManager;
 
-SPITFIRE.tasks.ParallelTask.prototype = {
+TCD.tasks.ParallelTask.prototype = {
   //--------------------------------------
   // Event Handlers
   //--------------------------------------
@@ -2276,7 +2276,7 @@ SPITFIRE.tasks.ParallelTask.prototype = {
 		if (this.debug()) {
 			log("taskComplete " + task);
 		}
-		task.removeEventListener(SPITFIRE.events.Event.COMPLETE, this.taskCompleteHandler.context(this));
+		task.removeEventListener(TCD.events.Event.COMPLETE, this.taskCompleteHandler.context(this));
 		this._createdTasks.push(task);
 		if (this._createdTasks.length == this.tasks().length) {
 		  if (this.debug()) {
@@ -2296,7 +2296,7 @@ SPITFIRE.tasks.ParallelTask.prototype = {
       var i, len;
       for (i = 0, len = this.tasks().length; i < len; i += 1) {
         	var task = this.tasks()[i];
-        	task.addEventListener(SPITFIRE.events.Event.COMPLETE, this.taskCompleteHandler.context(this));
+        	task.addEventListener(TCD.events.Event.COMPLETE, this.taskCompleteHandler.context(this));
         	if (this.debug()) {
         	 log('taskStart ' + task);
         	}
@@ -2312,25 +2312,25 @@ SPITFIRE.tasks.ParallelTask.prototype = {
   }
 };
 
-SPITFIRE.Class(SPITFIRE.tasks.ParallelTask);
-SPITFIRE.tasks = SPITFIRE.tasks || {};
+TCD.Class(TCD.tasks.ParallelTask);
+TCD.tasks = TCD.tasks || {};
 
 //--------------------------------------
-// SPITFIRE.tasks.PropertyTask
+// TCD.tasks.PropertyTask
 //--------------------------------------
 
-SPITFIRE.tasks.PropertyTask = function(target, property, value) {
+TCD.tasks.PropertyTask = function(target, property, value) {
   this.callSuper();
-  this.qualifiedClassName('SPITFIRE.tasks.PropertyTask');
+  this.qualifiedClassName('TCD.tasks.PropertyTask');
   this.target(target);
   this.property(property);
   this.value(value);
 };
 
-SPITFIRE.tasks.PropertyTask.superclass = SPITFIRE.tasks.Task;
-SPITFIRE.tasks.PropertyTask.synthesizedProperties = ['target', 'property', 'value'];
+TCD.tasks.PropertyTask.superclass = TCD.tasks.Task;
+TCD.tasks.PropertyTask.synthesizedProperties = ['target', 'property', 'value'];
 
-SPITFIRE.tasks.PropertyTask.prototype = {
+TCD.tasks.PropertyTask.prototype = {
   //--------------------------------------
   // Methods
   //--------------------------------------
@@ -2345,26 +2345,26 @@ SPITFIRE.tasks.PropertyTask.prototype = {
   }
 };
 
-SPITFIRE.Class(SPITFIRE.tasks.PropertyTask);
-SPITFIRE.tasks = SPITFIRE.tasks || {};
+TCD.Class(TCD.tasks.PropertyTask);
+TCD.tasks = TCD.tasks || {};
 
 //--------------------------------------
-// SPITFIRE.tasks.SequentialTask
+// TCD.tasks.SequentialTask
 //--------------------------------------
 
-SPITFIRE.tasks.SequentialTask = function() {
+TCD.tasks.SequentialTask = function() {
   this.callSuper();
-  this.qualifiedClassName('SPITFIRE.tasks.SequentialTask');
+  this.qualifiedClassName('TCD.tasks.SequentialTask');
   
   if (arguments.length > 0) {
     this.tasks(arguments);
   }
 };
 
-SPITFIRE.tasks.SequentialTask.superclass = SPITFIRE.tasks.TaskManager;
-SPITFIRE.tasks.SequentialTask.synthesizedProperties = [];
+TCD.tasks.SequentialTask.superclass = TCD.tasks.TaskManager;
+TCD.tasks.SequentialTask.synthesizedProperties = [];
 
-SPITFIRE.tasks.SequentialTask.prototype = {
+TCD.tasks.SequentialTask.prototype = {
 
   //--------------------------------------
   // Event Handlers
@@ -2375,7 +2375,7 @@ SPITFIRE.tasks.SequentialTask.prototype = {
 		if (this.debug()) {
 			log("taskComplete " + task);
 		}
-		task.removeEventListener(SPITFIRE.events.Event.COMPLETE, this.taskCompleteHandler.context(this));
+		task.removeEventListener(TCD.events.Event.COMPLETE, this.taskCompleteHandler.context(this));
 		this._createdTasks.push(task);
 		if (this._createdTasks.length == this.tasks().length) {
 			this.complete();
@@ -2400,7 +2400,7 @@ SPITFIRE.tasks.SequentialTask.prototype = {
   createTask: function() {
     var index = this._createdTasks.length;
 		var task = this.tasks()[index];
-		task.addEventListener(SPITFIRE.events.Event.COMPLETE, this.taskCompleteHandler.context(this));
+		task.addEventListener(TCD.events.Event.COMPLETE, this.taskCompleteHandler.context(this));
 		if (this.debug()) {
 			log("taskStart " + task);
 		}
@@ -2412,22 +2412,22 @@ SPITFIRE.tasks.SequentialTask.prototype = {
   }
 };
 
-SPITFIRE.Class(SPITFIRE.tasks.SequentialTask);
-SPITFIRE.ui = SPITFIRE.ui || {};
+TCD.Class(TCD.tasks.SequentialTask);
+TCD.ui = TCD.ui || {};
 
 //--------------------------------------
-// SPITFIRE.ui.UIButton
+// TCD.ui.UIButton
 //--------------------------------------
 
-SPITFIRE.ui.UIButton = function() {
+TCD.ui.UIButton = function() {
   this.callSuper();
-  this.qualifiedClassName('SPITFIRE.ui.UIButton');
+  this.qualifiedClassName('TCD.ui.UIButton');
 };
 
-SPITFIRE.ui.UIButton.superclass = SPITFIRE.display.DisplayObject;
-SPITFIRE.ui.UIButton.synthesizedProperties = [];
+TCD.ui.UIButton.superclass = TCD.display.DisplayObject;
+TCD.ui.UIButton.synthesizedProperties = [];
 
-SPITFIRE.ui.UIButton.prototype = {
+TCD.ui.UIButton.prototype = {
   
   //--------------------------------------
   // Event Handlers
@@ -2460,11 +2460,11 @@ SPITFIRE.ui.UIButton.prototype = {
     this.callSuper();
     
     // add event listeners
-    SPITFIRE.addListener(this, 'click', 'clickHandler');
-    SPITFIRE.addListener(this, 'mouseover', 'mouseOverHandler');
-    SPITFIRE.addListener(this, 'mouseout', 'mouseOutHandler');
-    SPITFIRE.addListener(this, 'mouseup', 'mouseUpHandler');
-    SPITFIRE.addListener(this, 'mousedown', 'mouseDownHandler');
+    TCD.addListener(this, 'click', 'clickHandler');
+    TCD.addListener(this, 'mouseover', 'mouseOverHandler');
+    TCD.addListener(this, 'mouseout', 'mouseOutHandler');
+    TCD.addListener(this, 'mouseup', 'mouseUpHandler');
+    TCD.addListener(this, 'mousedown', 'mouseDownHandler');
   },
   
   toString: function() {
@@ -2472,16 +2472,16 @@ SPITFIRE.ui.UIButton.prototype = {
   }
 };
 
-SPITFIRE.Class(SPITFIRE.ui.UIButton);
-SPITFIRE.ui = SPITFIRE.ui || {};
+TCD.Class(TCD.ui.UIButton);
+TCD.ui = TCD.ui || {};
 
 //--------------------------------------
-// SPITFIRE.ui.UICarousel
+// TCD.ui.UICarousel
 //--------------------------------------
 
-SPITFIRE.ui.UICarousel = function() {
+TCD.ui.UICarousel = function() {
   this.callSuper();
-  this.qualifiedClassName('SPITFIRE.ui.UICarousel');
+  this.qualifiedClassName('TCD.ui.UICarousel');
   this._items = [];
   this._itemHeight = 150;
   this._neighbors = 1;
@@ -2489,8 +2489,8 @@ SPITFIRE.ui.UICarousel = function() {
   this._speed = 500;
 };
 
-SPITFIRE.ui.UICarousel.superclass = SPITFIRE.display.DisplayObject;
-SPITFIRE.ui.UICarousel.synthesizedProperties = [
+TCD.ui.UICarousel.superclass = TCD.display.DisplayObject;
+TCD.ui.UICarousel.synthesizedProperties = [
   'items',
   'center',
   'itemHeight',
@@ -2502,7 +2502,7 @@ SPITFIRE.ui.UICarousel.synthesizedProperties = [
   'speed'
 ];
 
-SPITFIRE.ui.UICarousel.prototype = {
+TCD.ui.UICarousel.prototype = {
 
   //--------------------------------------
   // Getters / Setters
@@ -2558,7 +2558,7 @@ SPITFIRE.ui.UICarousel.prototype = {
     this.callSuper();
     
     // set center point
-    this.center(new SPITFIRE.geom.Point(Math.round(this.w() * 0.5), Math.round(this.h() * 0.5)));
+    this.center(new TCD.geom.Point(Math.round(this.w() * 0.5), Math.round(this.h() * 0.5)));
     
     // add class to element
     this.$this().addClass('sf-carousel');
@@ -2640,21 +2640,21 @@ SPITFIRE.ui.UICarousel.prototype = {
   }
 };
 
-SPITFIRE.Class(SPITFIRE.ui.UICarousel);
-SPITFIRE.ui = SPITFIRE.ui || {};
+TCD.Class(TCD.ui.UICarousel);
+TCD.ui = TCD.ui || {};
 
 //--------------------------------------
-// SPITFIRE.ui.UICarouselItem
+// TCD.ui.UICarouselItem
 //--------------------------------------
 
-SPITFIRE.ui.UICarouselItem = function() {
+TCD.ui.UICarouselItem = function() {
   this.callSuper();
-  this.qualifiedClassName('SPITFIRE.ui.UICarouselItem');
+  this.qualifiedClassName('TCD.ui.UICarouselItem');
   this._itemHeight = 100;
 };
 
-SPITFIRE.ui.UICarouselItem.superclass = SPITFIRE.display.DisplayObject;
-SPITFIRE.ui.UICarouselItem.synthesizedProperties = [
+TCD.ui.UICarouselItem.superclass = TCD.display.DisplayObject;
+TCD.ui.UICarouselItem.synthesizedProperties = [
   'index',
   'carouselIndex',
   'carousel',
@@ -2663,7 +2663,7 @@ SPITFIRE.ui.UICarouselItem.synthesizedProperties = [
   'itemWidth'
 ];
 
-SPITFIRE.ui.UICarouselItem.prototype = {
+TCD.ui.UICarouselItem.prototype = {
 
   //--------------------------------------
   // Getters / Setters
@@ -2703,7 +2703,7 @@ SPITFIRE.ui.UICarouselItem.prototype = {
     this.img(this.getElementsByTagName('img')[0]);
     
     if (!this.img().complete) {
-      SPITFIRE.addListener(this.img(), 'load', 'imageLoadedHandler', this);
+      TCD.addListener(this.img(), 'load', 'imageLoadedHandler', this);
     } else {
       this.scaleAndPositionImage();
     }
@@ -2711,8 +2711,8 @@ SPITFIRE.ui.UICarouselItem.prototype = {
   
   scaleAndPositionImage: function() {
     // scale
-    var rect = new SPITFIRE.geom.Rectangle(0, 0, this.img().w(), this.img().h());
-    var newRect = SPITFIRE.utils.RatioUtils.scaleWidth(rect, this._itemHeight * this._scale, true);
+    var rect = new TCD.geom.Rectangle(0, 0, this.img().w(), this.img().h());
+    var newRect = TCD.utils.RatioUtils.scaleWidth(rect, this._itemHeight * this._scale, true);
     this.img().w(newRect.width());
     this.img().h(newRect.height());
     
@@ -2726,9 +2726,9 @@ SPITFIRE.ui.UICarouselItem.prototype = {
   }
 };
 
-SPITFIRE.Class(SPITFIRE.ui.UICarouselItem);
-SPITFIRE.utils = SPITFIRE.utils || {};
-SPITFIRE.utils.ArrayUtils = SPITFIRE.utils.ArrayUtils || {};
+TCD.Class(TCD.ui.UICarouselItem);
+TCD.utils = TCD.utils || {};
+TCD.utils.ArrayUtils = TCD.utils.ArrayUtils || {};
 
 //--------------------------------------
 // getItemByKeys()
@@ -2736,7 +2736,7 @@ SPITFIRE.utils.ArrayUtils = SPITFIRE.utils.ArrayUtils || {};
 // Port of org.casalib.util.ArrayUtil.getItemByKeys() from CASA lib for ActionScript 3.0
 // http://casalib.org/
 
-SPITFIRE.utils.ArrayUtils.getItemByKeys = function(inArray, keyValues) {
+TCD.utils.ArrayUtils.getItemByKeys = function(inArray, keyValues) {
   var i = -1,
       item,
       hasKeys;
@@ -2763,7 +2763,7 @@ SPITFIRE.utils.ArrayUtils.getItemByKeys = function(inArray, keyValues) {
 // Port of org.casalib.util.ArrayUtil.getItemsByKeys() from CASA lib for ActionScript 3.0
 // http://casalib.org/
 
-SPITFIRE.utils.ArrayUtils.getItemsByKeys = function(inArray, keyValues) {
+TCD.utils.ArrayUtils.getItemsByKeys = function(inArray, keyValues) {
   var t = [],
       i = -1,
       item,
@@ -2791,7 +2791,7 @@ SPITFIRE.utils.ArrayUtils.getItemsByKeys = function(inArray, keyValues) {
 // Port of org.casalib.util.ArrayUtil.getItemByAnyKey() from CASA lib for ActionScript 3.0
 // http://casalib.org/
 
-SPITFIRE.utils.ArrayUtils.getItemByAnyKey = function(inArray, keyValues) {
+TCD.utils.ArrayUtils.getItemByAnyKey = function(inArray, keyValues) {
   var i = -1,
       item;
   
@@ -2813,7 +2813,7 @@ SPITFIRE.utils.ArrayUtils.getItemByAnyKey = function(inArray, keyValues) {
 // Port of org.casalib.util.ArrayUtil.getItemsByAnyKey() from CASA lib for ActionScript 3.0
 // http://casalib.org/
 
-SPITFIRE.utils.ArrayUtils.getItemsByAnyKey = function(inArray, keyValues) {
+TCD.utils.ArrayUtils.getItemsByAnyKey = function(inArray, keyValues) {
   var t = [],
       i = -1,
       item,
@@ -2841,7 +2841,7 @@ SPITFIRE.utils.ArrayUtils.getItemsByAnyKey = function(inArray, keyValues) {
 // Port of org.casalib.util.ArrayUtil.getItemByKey() from CASA lib for ActionScript 3.0
 // http://casalib.org/
 
-SPITFIRE.utils.ArrayUtils.getItemByKey = function(inArray, key, match) {
+TCD.utils.ArrayUtils.getItemByKey = function(inArray, key, match) {
   var i, len, item;
   for (var i = 0, len = inArray.length; i < len; i += 1) {
     item = inArray[i];
@@ -2861,7 +2861,7 @@ SPITFIRE.utils.ArrayUtils.getItemByKey = function(inArray, key, match) {
 // Port of org.casalib.util.ArrayUtil.getItemsByKey() from CASA lib for ActionScript 3.0
 // http://casalib.org/
 
-SPITFIRE.utils.ArrayUtils.getItemsByKey = function(inArray, key, match) {
+TCD.utils.ArrayUtils.getItemsByKey = function(inArray, key, match) {
   var i, len, item,
       t = [];
   for (var i = 0, len = inArray.length; i < len; i += 1) {
@@ -2875,11 +2875,11 @@ SPITFIRE.utils.ArrayUtils.getItemsByKey = function(inArray, key, match) {
   
   return t;
 };
-SPITFIRE.utils = SPITFIRE.utils || {};
+TCD.utils = TCD.utils || {};
 
 // Ported to JS from CasaLib AS3
 // http://casalib.org/
-SPITFIRE.utils.RatioUtils = SPITFIRE.utils.RatioUtils || {
+TCD.utils.RatioUtils = TCD.utils.RatioUtils || {
   widthToHeight: function(size) {
     return size.width() / size.height();
   },
@@ -2890,7 +2890,7 @@ SPITFIRE.utils.RatioUtils = SPITFIRE.utils.RatioUtils || {
   
   scale: function(size, amount, snapToPixel) {
     snapToPixel = snapToPixel || true;
-    return SPITFIRE.utils.RatioUtils._defineRect(size, size.width() * amount.decimalPercentage(), size.height() * amount.decimalPercentage(), snapToPixel);
+    return TCD.utils.RatioUtils._defineRect(size, size.width() * amount.decimalPercentage(), size.height() * amount.decimalPercentage(), snapToPixel);
   },
   
   /**
@@ -2902,7 +2902,7 @@ SPITFIRE.utils.RatioUtils = SPITFIRE.utils.RatioUtils || {
 	 */
   scaleWidth: function(size, height, snapToPixel) {
     snapToPixel = snapToPixel || true;
-    return SPITFIRE.utils.RatioUtils._defineRect(size, height * SPITFIRE.utils.RatioUtils.widthToHeight(size), height, snapToPixel);
+    return TCD.utils.RatioUtils._defineRect(size, height * TCD.utils.RatioUtils.widthToHeight(size), height, snapToPixel);
   },
   
   /**
@@ -2914,25 +2914,25 @@ SPITFIRE.utils.RatioUtils = SPITFIRE.utils.RatioUtils || {
    */
   scaleHeight: function(size, width, snapToPixel) {
     snapToPixel = snapToPixel || true;
-    return SPITFIRE.utils.RatioUtils._defineRect(size, width, width * SPITFIRE.utils.RatioUtils.heightToWidth(size), snapToPixel);
+    return TCD.utils.RatioUtils._defineRect(size, width, width * TCD.utils.RatioUtils.heightToWidth(size), snapToPixel);
   },
   
   scaleToFill: function(size, bounds, snapToPixel) {
     snapToPixel = snapToPixel || true;
-    var scaled = SPITFIRE.utils.RatioUtils.scaleHeight(size, bounds.width(), snapToPixel);
+    var scaled = TCD.utils.RatioUtils.scaleHeight(size, bounds.width(), snapToPixel);
 		
 		if (scaled.height() < bounds.height())
-			scaled = SPITFIRE.utils.RatioUtils.scaleWidth(size, bounds.height(), snapToPixel);
+			scaled = TCD.utils.RatioUtils.scaleWidth(size, bounds.height(), snapToPixel);
 		
 		return scaled;
   },
   
   scaleToFit: function(size, bounds, snapToPixel) {
     snapToPixel = snapToPixel || true;
-    var scaled = SPITFIRE.utils.RatioUtils.scaleHeight(size, bounds.width(), snapToPixel);
+    var scaled = TCD.utils.RatioUtils.scaleHeight(size, bounds.width(), snapToPixel);
 		
 		if (scaled.height() > bounds.height())
-			scaled = SPITFIRE.utils.RatioUtils.scaleWidth(size, bounds.height(), snapToPixel);
+			scaled = TCD.utils.RatioUtils.scaleWidth(size, bounds.height(), snapToPixel);
 		
 		return scaled;
   },
@@ -2945,36 +2945,36 @@ SPITFIRE.utils.RatioUtils = SPITFIRE.utils.RatioUtils || {
     return scaled;
   }
 };
-SPITFIRE.utils = SPITFIRE.utils || {};
+TCD.utils = TCD.utils || {};
 
 //--------------------------------------
 // Timer
 //--------------------------------------
 
-SPITFIRE.utils.Timer = function(delay, repeatCount) {
+TCD.utils.Timer = function(delay, repeatCount) {
   this.callSuper();
   this.delay(delay);
   this.repeatCount(repeatCount || 0);
-  this.qualifiedClassName('SPITFIRE.utils.Timer');
+  this.qualifiedClassName('TCD.utils.Timer');
   this._interval;
   this._currentCount = 0;
 };
 
-SPITFIRE.utils.Timer.superclass = SPITFIRE.events.EventDispatcher;
-SPITFIRE.utils.Timer.synthesizedProperties = [
+TCD.utils.Timer.superclass = TCD.events.EventDispatcher;
+TCD.utils.Timer.synthesizedProperties = [
   'currentCount',
   'delay',
   'repeatCount',
   'running'
 ];
 
-SPITFIRE.utils.Timer.prototype = {
+TCD.utils.Timer.prototype = {
   setRunning: function(value) {
-    throw new SPITFIRE.Error('running is read-only');
+    throw new TCD.Error('running is read-only');
   },
   
   setCurrentCount: function(value) {
-    throw new SPITFIRE.Error('currentCount is read-only');
+    throw new TCD.Error('currentCount is read-only');
   },
   
   reset: function() {
@@ -3002,14 +3002,14 @@ SPITFIRE.utils.Timer.prototype = {
   tick: function() {
     this._currentCount += 1;
     if (this.repeatCount() && this._currentCount >= this.repeatCount()) {
-      this.dispatchEvent(new SPITFIRE.utils.TimerEvent(SPITFIRE.events.TimerEvent.TIMER_COMPLETE));
+      this.dispatchEvent(new TCD.utils.TimerEvent(TCD.events.TimerEvent.TIMER_COMPLETE));
       this.reset();
       return;
     }
     
     this._interval = setTimeout(this.tick.context(this), this.delay());
-    this.dispatchEvent(new SPITFIRE.utils.TimerEvent(SPITFIRE.events.TimerEvent.TIMER));
+    this.dispatchEvent(new TCD.utils.TimerEvent(TCD.events.TimerEvent.TIMER));
   }
 }
 
-SPITFIRE.Class(SPITFIRE.utils.Timer);
+TCD.Class(TCD.utils.Timer);

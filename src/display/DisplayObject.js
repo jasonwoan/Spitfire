@@ -115,11 +115,13 @@ SPITFIRE.display.DisplayObject.prototype = {
         // create a placeholder property to tween
         var placeHolderName = prop + 'AnimationValue';
         properties[placeHolderName] = properties[prop];
+        
         delete properties[prop];
         
         // create the same placeholder property on this object
         // and set it to its current value
         this[placeHolderName] = this[prop]();
+        
         this._placeholderProperties.push(placeHolderName);
       }
     }
@@ -128,18 +130,18 @@ SPITFIRE.display.DisplayObject.prototype = {
     if (options.step) {
       this.providedAnimationStep = options.step;
     }
-    options.step = this.animationStep;
+    options.step = this.animationStep.context(this);
     
     // save any provided complete function
     if (options.complete) {
       this.providedAnimationComplete = options.complete;
     }
-    options.complete = this.animationComplete;
+    options.complete = this.animationComplete.context(this);
     
     this.$this().animate(properties, options);
   },
   
-  animationStep: function(now, fx) {
+  animationStep: function(now, fx) {    
     // animate custom properties
     var pattern = /AnimationValue/;
     if (fx.prop.search(pattern) != -1) {
@@ -159,7 +161,7 @@ SPITFIRE.display.DisplayObject.prototype = {
     
     // cleanup
     delete this.providedAnimationComplete;
-    delete this.animationStep;
+    delete this.providedAnimationStep;
     
     while (this._placeholderProperties.length > 0) {
       delete this[this._placeholderProperties[0]];

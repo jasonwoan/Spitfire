@@ -2,6 +2,22 @@ var SPITFIRE = SPITFIRE || {};
 
 var $s = $s || SPITFIRE;
 
+SPITFIRE.browser = {  
+  Opera: window.opera ? true : false,
+  IE: document.all && !this.Opera ? true : false,
+  IE6: this.IE && typeof(window.XMLHttpRequest) == "undefined" ? true : false,
+  IE8: this.IE && typeof(document.querySelectorAll) != "undefined" ? true : false,
+  IE7: this.IE && ! this.IE6 && !this.IE8 ? true : false,
+  WebKit: /WebKit/i.test(navigator.userAgent) ? true : false,
+  iPhone: /iPhone|iPod/i.test(navigator.userAgent)? true : false,
+  Chrome: /Chrome/i.test(navigator.userAgent) ? true : false,
+  Safari: /Safari/i.test(navigator.userAgent) && !this.Chrome ? true : false,
+  Konqueror: navigator.vendor == "KDE" ? true : false,
+  Konqueror4: this.Konqueror && /native code/.test(document.getElementsByClassName) ? true : false,
+  Gecko: !this.WebKit && navigator.product == "Gecko" ? true : false,
+  Gecko19: this.Gecko && Array.reduce ? true : false
+};
+
 SPITFIRE.isArray = function(obj) {
   return typeof obj === 'object' && obj.length;
 };
@@ -150,6 +166,16 @@ SPITFIRE.extend = function() {
 
 	// Return the modified object
 	return target;
+};
+
+SPITFIRE.addListener = function(target, event, handler, context) {
+  context = context || target;
+  
+  if (SPITFIRE.browser.IE) {
+    target.attachEvent('on' + event, context[handler].context(context));
+  } else {
+    target.addEventListener(event, context[handler].context(context), false);
+  }
 };
 
 //--------------------------------------

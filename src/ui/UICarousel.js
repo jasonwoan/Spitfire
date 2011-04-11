@@ -39,7 +39,7 @@ SPITFIRE.ui.UICarousel.prototype = {
     var oldPositionIndex = this._positionIndex || 0;
     
     var delta = this.items()[oldPositionIndex].carouselIndex() - this.items()[value].carouselIndex();
-    var i, len, item, newIndex, newPos, indexFromCenter, opacity;
+    var i, len, item, newIndex, newPos, indexFromCenter, opacity, scale;
     
     for (i = 0, len = this.items().length; i < len; i += 1) {
       item = this.items()[i];
@@ -58,12 +58,15 @@ SPITFIRE.ui.UICarousel.prototype = {
       // opacity
       opacity = (indexFromCenter <= this.neighbors()) ? 1 : 0;
       
+      // scale
+      scale = 1 - indexFromCenter * .2;
+      
       // animate
-      item.$this().animate({
+      item.animate({
         l: newPos,
         t: this.center().y,
         opacity: opacity,
-        scale: 1 - indexFromCenter * .2
+        scale: scale
       }, {
         duration: this._speed * Math.abs(delta)
       });
@@ -80,7 +83,7 @@ SPITFIRE.ui.UICarousel.prototype = {
     this.callSuper();
     
     // set center point
-    this.center(new SPITFIRE.geom.Point(Math.round(this.w() * 0.5), Math.round(this.w() * 0.5)));
+    this.center(new SPITFIRE.geom.Point(Math.round(this.w() * 0.5), Math.round(this.h() * 0.5)));
     
     // add class to element
     this.$this().addClass('sf-carousel');
@@ -91,11 +94,8 @@ SPITFIRE.ui.UICarousel.prototype = {
     for (i = 0, len = nodeList.length; i < len; i += 1) {
       el = nodeList[i];
       el.index(i);
+      el.itemHeight(this.itemHeight());
       this.items().push(el);
-      
-      // scale items according to itemHeight property
-      var rect = SPITFIRE.utils.RatioUtils.scaleWidth(el.rect(), this.itemHeight(), true);
-      nodeList[i].rect(rect);
     }
     
     // position items
