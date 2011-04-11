@@ -189,6 +189,7 @@ SPITFIRE.extendChildren = function($parent) {
     }
   	
   	var inst = new obj();
+  	
   	SPITFIRE.extend(el, inst);
   	el.init();
   }

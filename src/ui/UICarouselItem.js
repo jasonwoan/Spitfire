@@ -13,10 +13,21 @@ SPITFIRE.ui.UICarouselItem.superclass = SPITFIRE.display.DisplayObject;
 SPITFIRE.ui.UICarouselItem.synthesizedProperties = [
   'index',
   'carouselIndex',
-  'carousel'
+  'carousel',
+  'img'
 ];
 
 SPITFIRE.ui.UICarouselItem.prototype = {
+
+  //--------------------------------------
+  // Getters / Setters
+  //--------------------------------------
+  
+  setRect: function(value) {
+    this.callSuper(value);
+    
+    this.img().h(value.height());
+  },
 
   //--------------------------------------
   // Event Handlers
@@ -28,6 +39,8 @@ SPITFIRE.ui.UICarouselItem.prototype = {
   
   init: function() {
     this.callSuper();
+    
+    this.img(this.getElementsByTagName('img')[0]);
   },
 
   toString: function() {

@@ -60,14 +60,12 @@ SPITFIRE.ui.UICarousel.prototype = {
       
       // animate
       item.$this().animate({
-        regXValue: newPos,
-        regYValue: this.center().y,
+        l: newPos,
+        t: this.center().y,
         opacity: opacity,
-        scaleValue: 1 - indexFromCenter * .2
+        scale: 1 - indexFromCenter * .2
       }, {
-        duration: this._speed * Math.abs(delta),
-        step: this.animationStep.context(this),
-        complete: this.animationComplete
+        duration: this._speed * Math.abs(delta)
       });
     }
     
@@ -114,8 +112,8 @@ SPITFIRE.ui.UICarousel.prototype = {
         
     this.centerIndex(Math.floor(this.items().length * 0.5));
     
-    centerItem.regX(xPos);
-    centerItem.regY(yPos);
+    centerItem.l(xPos);
+    centerItem.t(yPos);
     centerItem.$this().css('opacity', 1);
     centerItem.carouselIndex(this.centerIndex());
 
@@ -125,8 +123,8 @@ SPITFIRE.ui.UICarousel.prototype = {
       rightItem = this.items()[rightIndex];
       
       if (rightItem) {
-        rightItem.regX(rightXPos);
-        rightItem.regY(yPos);
+        rightItem.l(rightXPos);
+        rightItem.t(yPos);
         rightItem.carouselIndex(this.centerIndex() + count);
         rightItem.$this().css('opacity', opacity);
         rightXPos += this.itemDistance();
@@ -135,8 +133,8 @@ SPITFIRE.ui.UICarousel.prototype = {
       
       leftItem = this.items()[leftIndex];
       if (leftItem) {
-        leftItem.regX(leftXPos);
-        leftItem.regY(yPos);
+        leftItem.l(leftXPos);
+        leftItem.t(yPos);
         leftItem.carouselIndex(this.centerIndex() - count);
         leftItem.$this().css('opacity', opacity);
         
@@ -145,7 +143,7 @@ SPITFIRE.ui.UICarousel.prototype = {
       }
     }
     
-    startX = leftItem.cssX() + leftItem.registration().x;
+    startX = leftItem.l();
     
     this.positionIndex(0);
   },
@@ -160,27 +158,6 @@ SPITFIRE.ui.UICarousel.prototype = {
     var nextIndex = this.positionIndex() + 1;
     nextIndex = (nextIndex >= this.items().length) ? 0 : nextIndex;
     this.positionIndex(nextIndex);
-  },
-  
-  animationStep: function(now, fx) {
-    var data = fx.elem.id + ' ' + fx.prop + ': ' + now;
-    
-    switch (fx.prop) {
-      case 'scaleValue':
-        fx.elem.scale(now);
-      break;
-      
-      case 'regXValue':
-        fx.elem.regX(now);
-      break;
-      
-      case 'regYValue':
-        fx.elem.regY(now);
-      break;
-    }
-  },
-  
-  animationComplete: function() {
   },
 
   toString: function() {

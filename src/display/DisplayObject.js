@@ -37,7 +37,8 @@ SPITFIRE.display.DisplayObject.prototype = {
   },
   
   getL: function() {
-    return parseFloat(this.$this().css('left'));
+    var flt = parseFloat(this.$this().css('left'));
+    return (flt) ? flt : 0;
   },
   
   setT: function(value) {
@@ -45,7 +46,8 @@ SPITFIRE.display.DisplayObject.prototype = {
   },
   
   getT: function() {
-    return parseFloat(this.$this().css('top'));
+    var flt = parseFloat(this.$this().css('top'));
+    return (flt) ? flt : 0;
   },
   
   getW: function() {
