@@ -59,6 +59,7 @@
       </fileset>
     </concat>
     <replace file="${basedir}/publish/tbwachiat.js" token="SPITFIRE" value="TCD" />
+    <replace file="${basedir}/publish/tbwachiat.js" token="sf-" value="tcd-" />
     <apply executable="java" parallel="false">
       <filelist dir="publish" files="tbwachiat.js" />
       <arg line="-jar" />

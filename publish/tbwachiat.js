@@ -196,7 +196,7 @@ TCD.extendDOM = function(selector) {
 
 TCD.extendChildren = function($parent) {
   
-  var self = $parent.filter('[sf-class]');
+  var self = $parent.filter('[tcd-base]');
   var children = $parent.children();
 
   var i, len;
@@ -207,7 +207,7 @@ TCD.extendChildren = function($parent) {
   if (self.length) {
     
     var el = self[0];
-    var basePath = el.getAttribute('sf-class');
+    var basePath = el.getAttribute('tcd-base');
 
   	// loop through namespace to retrieve class function
   	var nsObjects = basePath.split('.');
@@ -2434,22 +2434,22 @@ TCD.ui.UIButton.prototype = {
   //--------------------------------------
   
   mouseOverHandler: function(event) {
-    this.$this().addClass('sf-over');
+    this.$this().addClass('tcd-over');
   },
   
   mouseOutHandler: function(event) {
-    this.$this().removeClass('sf-over');
+    this.$this().removeClass('tcd-over');
   },
   
   clickHandler: function(event) {
   },
   
   mouseUpHandler: function(event) {
-    this.$this().removeClass('sf-down');
+    this.$this().removeClass('tcd-down');
   },
   
   mouseDownHandler: function(event) {
-    this.$this().addClass('sf-down');
+    this.$this().addClass('tcd-down');
   },
 
   //--------------------------------------
@@ -2561,7 +2561,7 @@ TCD.ui.UICarousel.prototype = {
     this.center(new TCD.geom.Point(Math.round(this.w() * 0.5), Math.round(this.h() * 0.5)));
     
     // add class to element
-    this.$this().addClass('sf-carousel');
+    this.$this().addClass('tcd-carousel');
     
     // init items
     var nodeList = this.getElementsByTagName('div');

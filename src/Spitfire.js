@@ -196,7 +196,7 @@ SPITFIRE.extendDOM = function(selector) {
 
 SPITFIRE.extendChildren = function($parent) {
   
-  var self = $parent.filter('[sf-class]');
+  var self = $parent.filter('[sf-base]');
   var children = $parent.children();
 
   var i, len;
@@ -207,7 +207,7 @@ SPITFIRE.extendChildren = function($parent) {
   if (self.length) {
     
     var el = self[0];
-    var basePath = el.getAttribute('sf-class');
+    var basePath = el.getAttribute('sf-base');
 
   	// loop through namespace to retrieve class function
   	var nsObjects = basePath.split('.');
