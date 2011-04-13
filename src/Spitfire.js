@@ -5,16 +5,16 @@ var $s = $s || SPITFIRE;
 SPITFIRE.browser = {  
   Opera: window.opera ? true : false,
   IE: document.all && !this.Opera ? true : false,
-  IE6: this.IE && typeof(window.XMLHttpRequest) == "undefined" ? true : false,
-  IE8: this.IE && typeof(document.querySelectorAll) != "undefined" ? true : false,
+  IE6: this.IE && typeof(window.XMLHttpRequest) === "undefined" ? true : false,
+  IE8: this.IE && typeof(document.querySelectorAll) !== "undefined" ? true : false,
   IE7: this.IE && ! this.IE6 && !this.IE8 ? true : false,
   WebKit: /WebKit/i.test(navigator.userAgent) ? true : false,
   iPhone: /iPhone|iPod/i.test(navigator.userAgent)? true : false,
   Chrome: /Chrome/i.test(navigator.userAgent) ? true : false,
   Safari: /Safari/i.test(navigator.userAgent) && !this.Chrome ? true : false,
-  Konqueror: navigator.vendor == "KDE" ? true : false,
+  Konqueror: navigator.vendor === "KDE" ? true : false,
   Konqueror4: this.Konqueror && /native code/.test(document.getElementsByClassName) ? true : false,
-  Gecko: !this.WebKit && navigator.product == "Gecko" ? true : false,
+  Gecko: !this.WebKit && navigator.product === "Gecko" ? true : false,
   Gecko19: this.Gecko && Array.reduce ? true : false
 };
 
@@ -29,7 +29,7 @@ SPITFIRE.isFunction = function(obj) {
 //  Credit: jQuery
 //  A crude way of determining if an object is a window
 SPITFIRE.isWindow = function(obj) {
-		return obj && typeof obj === "object" && "setInterval" in obj;
+		return obj && typeof obj === "object" && 'setInterval' in obj;
 };
 
 //  Credit: jQuery
@@ -55,7 +55,7 @@ SPITFIRE.isPlainObject = function(obj) {
 	for ( key in obj ) {}
 
 	return key === undefined || hasOwn.call( obj, key );
-}
+};
 
 SPITFIRE.isSynthesizedProperty = function(property, classDefinition) {
   var arr = classDefinition.synthesizedProperties,
@@ -64,7 +64,7 @@ SPITFIRE.isSynthesizedProperty = function(property, classDefinition) {
   if (arr) {
     var i, len;
     for (i = 0, len = arr.length; i < len; i += 1) {
-    	if (arr[i] == property) {
+      if (arr[i] === property) {
         isSynthesizedProperty = true;
         break;
       }
@@ -81,7 +81,7 @@ SPITFIRE.objectHasMethod = function (obj, method) {
 SPITFIRE.slice = function(array, startIndex, endIndex) {
   var args = [], i;
   for (i = startIndex; i <= endIndex; i += 1) {
-  	args.push(array[i]);
+    args.push(array[i]);
   }
   return args;
 };
