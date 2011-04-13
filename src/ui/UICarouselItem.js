@@ -8,6 +8,7 @@ SPITFIRE.ui.UICarouselItem = function() {
   this.callSuper();
   this.qualifiedClassName('SPITFIRE.ui.UICarouselItem');
   this._itemHeight = 100;
+  this._isImgInitialized = false;
 };
 
 SPITFIRE.ui.UICarouselItem.superclass = SPITFIRE.display.DisplayObject;
@@ -17,7 +18,8 @@ SPITFIRE.ui.UICarouselItem.synthesizedProperties = [
   'carousel',
   'img',
   'itemHeight',
-  'itemWidth'
+  'itemWidth',
+  'isImgInitialized'
 ];
 
 SPITFIRE.ui.UICarouselItem.prototype = {
@@ -29,13 +31,16 @@ SPITFIRE.ui.UICarouselItem.prototype = {
   setItemHeight: function(value) {
     this._itemHeight = value;
     
-    if (this.img().complete)
-      this.scaleAndPositionImage();
+    if (this.img().complete) {
+      this.imageLoadedHandler();
+    }
   },
   
   setScale: function(value) {
     this._scale = value;
-    this.scaleAndPositionImage();
+    if (this.img().complete) {
+      this.imageLoadedHandler();
+    }
   },
   
   getScale: function() {
@@ -47,6 +52,8 @@ SPITFIRE.ui.UICarouselItem.prototype = {
   //--------------------------------------
   
   imageLoadedHandler: function() {
+    this.initImage();
+    this.resizeImage();
     this.scaleAndPositionImage();
   },
 
@@ -62,16 +69,30 @@ SPITFIRE.ui.UICarouselItem.prototype = {
     if (!this.img().complete) {
       SPITFIRE.addListener(this.img(), 'load', 'imageLoadedHandler', this);
     } else {
-      this.scaleAndPositionImage();
+      this.imageLoadedHandler();
     }
+  },
+  
+  initImage: function() {
+    if (this._isImgInitialized) return;
+    
+    // explicity set width and height to DisplayObject
+    this.img().w(this.img().width);
+    this.img().h(this.img().height);
+    
+    this._isImgInitialized = true;
+  },
+  
+  resizeImage: function() {
+    var rect = new SPITFIRE.geom.Rectangle(0, 0, this.img().w(), this.img().h());
+    var newRect = SPITFIRE.utils.RatioUtils.scaleWidth(rect, this._itemHeight, true);
+    this.img().w(newRect.width());
+    this.img().h(newRect.height());
   },
   
   scaleAndPositionImage: function() {
     // scale
-    var rect = new SPITFIRE.geom.Rectangle(0, 0, this.img().w(), this.img().h());
-    var newRect = SPITFIRE.utils.RatioUtils.scaleWidth(rect, this._itemHeight * this._scale, true);
-    this.img().w(newRect.width());
-    this.img().h(newRect.height());
+    this.img().scale(this._scale);
     
     // position
     this.img().l(Math.round(-this.img().w() * 0.5));

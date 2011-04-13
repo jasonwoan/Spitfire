@@ -23,7 +23,7 @@ SPITFIRE.display.DisplayObject.synthesizedProperties = [
   'scaleX',
   'scaleY',
   'scale',
-  'rect',
+  'rect'
 ];
 
 SPITFIRE.display.DisplayObject.prototype = {
@@ -51,21 +51,21 @@ SPITFIRE.display.DisplayObject.prototype = {
   },
   
   getW: function() {
-    return (this._w) ? this._w : this.$this().width();
+    return (this._w) ? this._w * this._scaleX : this.$this().width();
   },
   
   setW: function(value) {
     this._w = value;
-    this.$this().width(this.scaleX() * value);
+    this.$this().width(this._w * this._scaleX);
   },
 
   getH: function() {
-    return (this._h) ? this._h : this.$this().height();
+    return (this._h) ? this._h * this._scaleY : this.$this().height();
   },
   
   setH: function(value) {
     this._h = value;
-    this.$this().height(this.scaleY() * value);
+    this.$this().height(this._h * this._scaleY);
   },
   
   getScale: function() {
@@ -80,12 +80,12 @@ SPITFIRE.display.DisplayObject.prototype = {
   
   setScaleX: function(value) {
     this._scaleX = value;
-    this.w(this.w());
+    this.w(this._w);
   },
   
   setScaleY: function(value) {
     this._scaleY = value;
-    this.h(this.h());
+    this.h(this._h);
   },
   
   getRect: function() {

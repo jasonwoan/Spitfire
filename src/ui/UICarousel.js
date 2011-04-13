@@ -8,10 +8,12 @@ SPITFIRE.ui.UICarousel = function() {
   this.callSuper();
   this.qualifiedClassName('SPITFIRE.ui.UICarousel');
   this._items = [];
-  this._itemHeight = 150;
-  this._neighbors = 1;
+  this._itemHeight = 200;
+  this._neighbors = 2;
   this._itemDistance = 160;
   this._speed = 500;
+  this._scaleRatio = .3;
+  this._positionIndex = 0;
 };
 
 SPITFIRE.ui.UICarousel.superclass = SPITFIRE.display.DisplayObject;
@@ -24,7 +26,8 @@ SPITFIRE.ui.UICarousel.synthesizedProperties = [
   'positionIndex',
   'startX',
   'centerIndex',
-  'speed'
+  'speed',
+  'scaleRatio'
 ];
 
 SPITFIRE.ui.UICarousel.prototype = {
@@ -33,10 +36,42 @@ SPITFIRE.ui.UICarousel.prototype = {
   // Getters / Setters
   //--------------------------------------
   
-  setPositionIndex: function(value) {  
-    if (this._positionIndex == value) return;
+/*
+  setItemHeight: function(value) {
+    this._itemHeight = value;
     
-    var oldPositionIndex = this._positionIndex || 0;
+    // update items
+    var i, len;
+    for (i = 0, len = this.items().length; i < len; i += 1) {
+      this.items()[i].itemHeight(this._itemHeight);
+    }
+  },
+  
+  setItemDistance: function(value) {
+    this._itemDistance = value;
+    
+    // reposition carousel
+    this.positionItems();
+  },
+  
+  setScaleRatio: function(value) {
+    this._scaleRatio = value;
+    
+    this.positionIndex(this._positionIndex);
+  },
+  
+  setNeighbors: function(value) {
+    this._neighbors = value;
+    
+    this.positionItems();
+    this.positionIndex(this._positionIndex);
+  },
+*/
+  
+  setPositionIndex: function(value) {  
+/*     if (this._positionIndex == value) return; */
+    
+    var oldPositionIndex = this._positionIndex;
     
     var delta = this.items()[oldPositionIndex].carouselIndex() - this.items()[value].carouselIndex();
     var i, len, item, newIndex, newPos, indexFromCenter, opacity, scale;
@@ -59,7 +94,7 @@ SPITFIRE.ui.UICarousel.prototype = {
       opacity = (indexFromCenter <= this.neighbors()) ? 1 : 0;
       
       // scale
-      scale = 1 - indexFromCenter * .2;
+      scale = 1 - indexFromCenter * this.scaleRatio();
       
       // animate
       item.animate({
@@ -98,16 +133,24 @@ SPITFIRE.ui.UICarousel.prototype = {
       this.items().push(el);
     }
     
-    // position items
-    var rightIndex = 1,
-        leftIndex = this.items().length - 1,
+    this.positionItems();
+    
+    this.positionIndex(0);
+  },
+  
+  positionItems: function() {
+    var rightIndex = this._positionIndex + 1,
+        leftIndex = (this._positionIndex - 1 >= 0) ? this._positionIndex - 1 : this.items().length - 1,
+        startLeft = leftIndex,
+        startRight = rightIndex,
         xPos = this.center().x,
         yPos = this.center().y,
-        centerItem = this.items()[0],
+        centerItem = this.items()[this._positionIndex],
         rightXPos = xPos + this.itemDistance(),
         leftXPos = xPos - this.itemDistance(),
         rightItem, leftItem,
         count = 0,
+        halfNumItems = Math.ceil((this.items().length - 1) * 0.5),
         opacity;
         
     this.centerIndex(Math.floor(this.items().length * 0.5));
@@ -117,7 +160,8 @@ SPITFIRE.ui.UICarousel.prototype = {
     centerItem.$this().css('opacity', 1);
     centerItem.carouselIndex(this.centerIndex());
 
-    while (rightIndex <= leftIndex) {
+    while (count < halfNumItems) {
+/*       log('left: ' + leftIndex + ' right: ' + rightIndex); */
       count++;
       opacity = (count > this.neighbors()) ? 0 : 1;
       rightItem = this.items()[rightIndex];
@@ -129,6 +173,9 @@ SPITFIRE.ui.UICarousel.prototype = {
         rightItem.$this().css('opacity', opacity);
         rightXPos += this.itemDistance();
         rightIndex++;
+        
+        if (rightIndex >= this.items().length)
+          rightIndex = 0;
       }
       
       leftItem = this.items()[leftIndex];
@@ -140,12 +187,13 @@ SPITFIRE.ui.UICarousel.prototype = {
         
         leftXPos -= this.itemDistance();
         leftIndex--;
+        
+        if (leftIndex < 0)
+          leftIndex = this.items().length - 1;
       }
     }
     
     startX = leftItem.l();
-    
-    this.positionIndex(0);
   },
   
   previous: function() {

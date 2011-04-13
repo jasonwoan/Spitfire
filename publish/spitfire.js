@@ -511,7 +511,7 @@ SPITFIRE.display.DisplayObject.synthesizedProperties = [
   'scaleX',
   'scaleY',
   'scale',
-  'rect',
+  'rect'
 ];
 
 SPITFIRE.display.DisplayObject.prototype = {
@@ -539,21 +539,21 @@ SPITFIRE.display.DisplayObject.prototype = {
   },
   
   getW: function() {
-    return (this._w) ? this._w : this.$this().width();
+    return (this._w) ? this._w * this._scaleX : this.$this().width();
   },
   
   setW: function(value) {
     this._w = value;
-    this.$this().width(this.scaleX() * value);
+    this.$this().width(this._w * this._scaleX);
   },
 
   getH: function() {
-    return (this._h) ? this._h : this.$this().height();
+    return (this._h) ? this._h * this._scaleY : this.$this().height();
   },
   
   setH: function(value) {
     this._h = value;
-    this.$this().height(this.scaleY() * value);
+    this.$this().height(this._h * this._scaleY);
   },
   
   getScale: function() {
@@ -568,12 +568,12 @@ SPITFIRE.display.DisplayObject.prototype = {
   
   setScaleX: function(value) {
     this._scaleX = value;
-    this.w(this.w());
+    this.w(this._w);
   },
   
   setScaleY: function(value) {
     this._scaleY = value;
-    this.h(this.h());
+    this.h(this._h);
   },
   
   getRect: function() {
@@ -2483,10 +2483,12 @@ SPITFIRE.ui.UICarousel = function() {
   this.callSuper();
   this.qualifiedClassName('SPITFIRE.ui.UICarousel');
   this._items = [];
-  this._itemHeight = 150;
-  this._neighbors = 1;
+  this._itemHeight = 200;
+  this._neighbors = 2;
   this._itemDistance = 160;
   this._speed = 500;
+  this._scaleRatio = .3;
+  this._positionIndex = 0;
 };
 
 SPITFIRE.ui.UICarousel.superclass = SPITFIRE.display.DisplayObject;
@@ -2499,7 +2501,8 @@ SPITFIRE.ui.UICarousel.synthesizedProperties = [
   'positionIndex',
   'startX',
   'centerIndex',
-  'speed'
+  'speed',
+  'scaleRatio'
 ];
 
 SPITFIRE.ui.UICarousel.prototype = {
@@ -2508,10 +2511,42 @@ SPITFIRE.ui.UICarousel.prototype = {
   // Getters / Setters
   //--------------------------------------
   
-  setPositionIndex: function(value) {  
-    if (this._positionIndex == value) return;
+/*
+  setItemHeight: function(value) {
+    this._itemHeight = value;
     
-    var oldPositionIndex = this._positionIndex || 0;
+    // update items
+    var i, len;
+    for (i = 0, len = this.items().length; i < len; i += 1) {
+      this.items()[i].itemHeight(this._itemHeight);
+    }
+  },
+  
+  setItemDistance: function(value) {
+    this._itemDistance = value;
+    
+    // reposition carousel
+    this.positionItems();
+  },
+  
+  setScaleRatio: function(value) {
+    this._scaleRatio = value;
+    
+    this.positionIndex(this._positionIndex);
+  },
+  
+  setNeighbors: function(value) {
+    this._neighbors = value;
+    
+    this.positionItems();
+    this.positionIndex(this._positionIndex);
+  },
+*/
+  
+  setPositionIndex: function(value) {  
+/*     if (this._positionIndex == value) return; */
+    
+    var oldPositionIndex = this._positionIndex;
     
     var delta = this.items()[oldPositionIndex].carouselIndex() - this.items()[value].carouselIndex();
     var i, len, item, newIndex, newPos, indexFromCenter, opacity, scale;
@@ -2534,7 +2569,7 @@ SPITFIRE.ui.UICarousel.prototype = {
       opacity = (indexFromCenter <= this.neighbors()) ? 1 : 0;
       
       // scale
-      scale = 1 - indexFromCenter * .2;
+      scale = 1 - indexFromCenter * this.scaleRatio();
       
       // animate
       item.animate({
@@ -2573,16 +2608,24 @@ SPITFIRE.ui.UICarousel.prototype = {
       this.items().push(el);
     }
     
-    // position items
-    var rightIndex = 1,
-        leftIndex = this.items().length - 1,
+    this.positionItems();
+    
+    this.positionIndex(0);
+  },
+  
+  positionItems: function() {
+    var rightIndex = this._positionIndex + 1,
+        leftIndex = (this._positionIndex - 1 >= 0) ? this._positionIndex - 1 : this.items().length - 1,
+        startLeft = leftIndex,
+        startRight = rightIndex,
         xPos = this.center().x,
         yPos = this.center().y,
-        centerItem = this.items()[0],
+        centerItem = this.items()[this._positionIndex],
         rightXPos = xPos + this.itemDistance(),
         leftXPos = xPos - this.itemDistance(),
         rightItem, leftItem,
         count = 0,
+        halfNumItems = Math.ceil((this.items().length - 1) * 0.5),
         opacity;
         
     this.centerIndex(Math.floor(this.items().length * 0.5));
@@ -2592,7 +2635,8 @@ SPITFIRE.ui.UICarousel.prototype = {
     centerItem.$this().css('opacity', 1);
     centerItem.carouselIndex(this.centerIndex());
 
-    while (rightIndex <= leftIndex) {
+    while (count < halfNumItems) {
+/*       log('left: ' + leftIndex + ' right: ' + rightIndex); */
       count++;
       opacity = (count > this.neighbors()) ? 0 : 1;
       rightItem = this.items()[rightIndex];
@@ -2604,6 +2648,9 @@ SPITFIRE.ui.UICarousel.prototype = {
         rightItem.$this().css('opacity', opacity);
         rightXPos += this.itemDistance();
         rightIndex++;
+        
+        if (rightIndex >= this.items().length)
+          rightIndex = 0;
       }
       
       leftItem = this.items()[leftIndex];
@@ -2615,12 +2662,13 @@ SPITFIRE.ui.UICarousel.prototype = {
         
         leftXPos -= this.itemDistance();
         leftIndex--;
+        
+        if (leftIndex < 0)
+          leftIndex = this.items().length - 1;
       }
     }
     
     startX = leftItem.l();
-    
-    this.positionIndex(0);
   },
   
   previous: function() {
@@ -2651,6 +2699,7 @@ SPITFIRE.ui.UICarouselItem = function() {
   this.callSuper();
   this.qualifiedClassName('SPITFIRE.ui.UICarouselItem');
   this._itemHeight = 100;
+  this._isImgInitialized = false;
 };
 
 SPITFIRE.ui.UICarouselItem.superclass = SPITFIRE.display.DisplayObject;
@@ -2660,7 +2709,8 @@ SPITFIRE.ui.UICarouselItem.synthesizedProperties = [
   'carousel',
   'img',
   'itemHeight',
-  'itemWidth'
+  'itemWidth',
+  'isImgInitialized'
 ];
 
 SPITFIRE.ui.UICarouselItem.prototype = {
@@ -2672,13 +2722,16 @@ SPITFIRE.ui.UICarouselItem.prototype = {
   setItemHeight: function(value) {
     this._itemHeight = value;
     
-    if (this.img().complete)
-      this.scaleAndPositionImage();
+    if (this.img().complete) {
+      this.imageLoadedHandler();
+    }
   },
   
   setScale: function(value) {
     this._scale = value;
-    this.scaleAndPositionImage();
+    if (this.img().complete) {
+      this.imageLoadedHandler();
+    }
   },
   
   getScale: function() {
@@ -2690,6 +2743,8 @@ SPITFIRE.ui.UICarouselItem.prototype = {
   //--------------------------------------
   
   imageLoadedHandler: function() {
+    this.initImage();
+    this.resizeImage();
     this.scaleAndPositionImage();
   },
 
@@ -2705,16 +2760,30 @@ SPITFIRE.ui.UICarouselItem.prototype = {
     if (!this.img().complete) {
       SPITFIRE.addListener(this.img(), 'load', 'imageLoadedHandler', this);
     } else {
-      this.scaleAndPositionImage();
+      this.imageLoadedHandler();
     }
+  },
+  
+  initImage: function() {
+    if (this._isImgInitialized) return;
+    
+    // explicity set width and height to DisplayObject
+    this.img().w(this.img().width);
+    this.img().h(this.img().height);
+    
+    this._isImgInitialized = true;
+  },
+  
+  resizeImage: function() {
+    var rect = new SPITFIRE.geom.Rectangle(0, 0, this.img().w(), this.img().h());
+    var newRect = SPITFIRE.utils.RatioUtils.scaleWidth(rect, this._itemHeight, true);
+    this.img().w(newRect.width());
+    this.img().h(newRect.height());
   },
   
   scaleAndPositionImage: function() {
     // scale
-    var rect = new SPITFIRE.geom.Rectangle(0, 0, this.img().w(), this.img().h());
-    var newRect = SPITFIRE.utils.RatioUtils.scaleWidth(rect, this._itemHeight * this._scale, true);
-    this.img().w(newRect.width());
-    this.img().h(newRect.height());
+    this.img().scale(this._scale);
     
     // position
     this.img().l(Math.round(-this.img().w() * 0.5));

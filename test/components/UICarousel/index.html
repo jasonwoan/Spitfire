@@ -21,9 +21,8 @@
       border: 1px solid black;
       z-index: 20;
       position: absolute;
-      left: 400px;
-      top: 200px;
       overflow: hidden;
+      top: 100px;
     }
     
     #centerLine {
@@ -32,18 +31,17 @@
       width: 300px;
       height: 300px;
       border: 1px solid red;
-      left: 400px;
-      top: 200px;
+      top: 100px;
     }
     
     #previous {
       position: absolute;
-      top: 600px;
+      top: 420px;
     }
     
     #next {
       position: absolute;
-      top: 600px;
+      top: 420px;
       left: 100px;
     }
     
@@ -56,6 +54,7 @@
     
     .itemContainer img {
       position: absolute;
+/*       display: none; */
     }
   
   </style>
@@ -63,7 +62,7 @@
 
 <body>
   <div id="container">
-  
+    <h1>Static Carousel</h1>
     <div id="carousel" sf-base="SPITFIRE.ui.UICarousel">
       <div class="itemContainer" sf-base="SPITFIRE.ui.UICarouselItem">
         <img src="img/image-01.jpg" alt="image-01" sf-base="SPITFIRE.display.DisplayObject" />
@@ -83,9 +82,11 @@
       <div class="itemContainer" sf-base="SPITFIRE.ui.UICarouselItem">
         <img src="img/image-06.jpg" alt="image-06" sf-base="SPITFIRE.display.DisplayObject" />
       </div>
+<!--
       <div class="itemContainer" sf-base="SPITFIRE.ui.UICarouselItem">
         <img src="img/image-07.jpg" alt="image-07" sf-base="SPITFIRE.display.DisplayObject" />
       </div>
+-->
     </div>
     
     <div id="previous">previous</div>
@@ -119,6 +120,13 @@
     function nextClickHandler() {
       carousel.next();
     }
+    
+/*
+    carousel.itemHeight(200);
+    carousel.itemDistance(100);
+    carousel.scaleRatio(.4);
+    carousel.neighbors(2);
+*/
     
   </script>
 </body>
