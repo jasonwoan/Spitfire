@@ -172,9 +172,19 @@ SPITFIRE.addListener = function(target, event, handler, context) {
   context = context || target;
   
   if (SPITFIRE.browser.IE) {
-    target.attachEvent('on' + event, context[handler].context(context));
+    target.attachEvent('on' + event, handler.context(context));
   } else {
-    target.addEventListener(event, context[handler].context(context), false);
+    target.addEventListener(event, handler.context(context), false);
+  }
+};
+
+SPITFIRE.removeListener = function(target, event, handler, context) {
+  context = context || target;
+  
+  if (SPITFIRE.browser.IE) {
+    target.detachEvent('on' + event, handler.context(context));
+  } else {
+    target.removeEventListener(event, handler.context(context), false);
   }
 };
 

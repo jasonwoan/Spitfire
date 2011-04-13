@@ -13,7 +13,7 @@ SPITFIRE.display.DisplayObject = function() {
   this._placeholderProperties = [];
 };
 
-SPITFIRE.display.DisplayObject.superclass = SPITFIRE.Object;
+SPITFIRE.display.DisplayObject.superclass = SPITFIRE.events.EventDispatcher;
 SPITFIRE.display.DisplayObject.synthesizedProperties = [
   '$this',
   'l',

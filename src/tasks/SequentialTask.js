@@ -27,7 +27,7 @@ SPITFIRE.tasks.SequentialTask.prototype = {
 		if (this.debug()) {
 			log("taskComplete " + task);
 		}
-		task.removeEventListener(SPITFIRE.events.Event.COMPLETE, this.taskCompleteHandler.context(this));
+		task.unbind(SPITFIRE.events.Event.COMPLETE, this.taskCompleteHandler.context(this));
 		this._createdTasks.push(task);
 		if (this._createdTasks.length == this.tasks().length) {
 			this.complete();
@@ -52,7 +52,7 @@ SPITFIRE.tasks.SequentialTask.prototype = {
   createTask: function() {
     var index = this._createdTasks.length;
 		var task = this.tasks()[index];
-		task.addEventListener(SPITFIRE.events.Event.COMPLETE, this.taskCompleteHandler.context(this));
+		task.bind(SPITFIRE.events.Event.COMPLETE, this.taskCompleteHandler.context(this));
 		if (this.debug()) {
 			log("taskStart " + task);
 		}

@@ -29,7 +29,7 @@ SPITFIRE.tasks.Task.prototype = {
   
   complete: function() {
     this.progress(1);
-    this.dispatchEvent(new SPITFIRE.events.Event(SPITFIRE.events.Event.COMPLETE));
+    this.trigger(new SPITFIRE.events.Event(SPITFIRE.events.Event.COMPLETE));
   },
   
   toString: function() {

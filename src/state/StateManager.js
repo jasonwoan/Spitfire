@@ -11,7 +11,7 @@ SPITFIRE.state.StateManager = function(name, root) {
   this.name(name || this.qualifiedClassName() + Math.round(Math.random() * 100000));
   this.pageViewType(SPITFIRE.state.StateManager.PAGE_VIEW_LOCATION);
   this._progressTimer = new SPITFIRE.utils.Timer(33);
-  this._progressTimer.addEventListener(SPITFIRE.events.TimerEvent.TIMER, this.taskManagerProgressHandler.context(this));
+  this._progressTimer.bind(SPITFIRE.events.TimerEvent.TIMER, this.taskManagerProgressHandler.context(this));
   this._transitionInPath;
   this._transitionWasInterrupted;
   this._isInTransition;
@@ -155,13 +155,13 @@ SPITFIRE.state.StateManager.prototype = {
   },
   
   taskManagerCompleteHandler: function(event) {
-    this.taskManager().removeEventListener(SPITFIRE.events.Event.COMPLETE, this.taskManagerCompleteHandler.context(this));
+    this.taskManager().unbind(SPITFIRE.events.Event.COMPLETE, this.taskManagerCompleteHandler.context(this));
 		if (this.taskManager().progressive()) {
 			this.taskManagerProgressHandler();
 			this._progressTimer.stop();
 		}
 		
-		this.dispatchEvent(new SPITFIRE.events.Event(this._currentTransition.transitionName() + "Complete"));
+		this.trigger(new SPITFIRE.events.Event(this._currentTransition.transitionName() + "Complete"));
 		this._currentTransition = null;
 		if (this._transitions.length > 0) {
 			this.startTransition();
@@ -346,7 +346,7 @@ SPITFIRE.state.StateManager.prototype = {
   
   startTransition: function() {
     this._currentTransition = this._transitions.shift();
-		this.dispatchEvent(new SPITFIRE.events.Event(this._currentTransition.transitionName() + "Start"));
+		this.trigger(new SPITFIRE.events.Event(this._currentTransition.transitionName() + "Start"));
 		
 		this.taskManager(new SPITFIRE.tasks.SequentialTask());
 		
@@ -355,7 +355,7 @@ SPITFIRE.state.StateManager.prototype = {
 			this.taskManager().debug(this.debug());
 		}
 		
-		this.taskManager().addEventListener(SPITFIRE.events.Event.COMPLETE, this.taskManagerCompleteHandler.context(this));
+		this.taskManager().bind(SPITFIRE.events.Event.COMPLETE, this.taskManagerCompleteHandler.context(this));
 		
 		var i, len;
 		

@@ -20,7 +20,7 @@ SPITFIRE.model.Model.prototype = {
   
   setData: function(value) {
     this._data = value;
-    this.dispatchEvent(new SPITFIRE.events.ModelEvent(SPITFIRE.events.ModelEvent.DATA_UPDATE));
+    this.trigger(new SPITFIRE.events.ModelEvent(SPITFIRE.events.ModelEvent.DATA_UPDATE));
   },
 
   //--------------------------------------

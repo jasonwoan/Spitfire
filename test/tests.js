@@ -290,7 +290,7 @@ asyncTest('ASYNC: ParallelTask works', function() {
   var parallelTask = new SPITFIRE.tasks.ParallelTask(propertyTask, propertyTask2, propertyTask3);
   //parallelTask.debug(true);
   
-  parallelTask.addEventListener(SPITFIRE.events.Event.COMPLETE, function() {
+  parallelTask.bind(SPITFIRE.events.Event.COMPLETE, function() {
     complete = true;
   });
   
@@ -347,7 +347,7 @@ asyncTest('ASYNC: JQueryAjaxTask works', function() {
   var cssTask = new SPITFIRE.tasks.JQueryAjaxTask('test.css');
   var cssData;
   var cssSuccess = false;
-  cssTask.addEventListener(SPITFIRE.events.Event.COMPLETE, function() {
+  cssTask.bind(SPITFIRE.events.Event.COMPLETE, function() {
     cssData = this.content();
     cssSuccess = true;
   });
@@ -356,7 +356,7 @@ asyncTest('ASYNC: JQueryAjaxTask works', function() {
   var htmlTask = new SPITFIRE.tasks.JQueryAjaxTask('test.html');
   var htmlData;
   var htmlSuccess = false;
-  htmlTask.addEventListener(SPITFIRE.events.Event.COMPLETE, function() {
+  htmlTask.bind(SPITFIRE.events.Event.COMPLETE, function() {
     htmlData = this.content();
     htmlSuccess = true;
   });
@@ -366,7 +366,7 @@ asyncTest('ASYNC: JQueryAjaxTask works', function() {
   //failTask.debug(true);
   var failSuccess = false;
   var failContent;
-  failTask.addEventListener(SPITFIRE.events.Event.COMPLETE, function() {
+  failTask.bind(SPITFIRE.events.Event.COMPLETE, function() {
     failContent = this.content();
     failSuccess = true;
   });
@@ -387,7 +387,7 @@ asyncTest('ASYNC: JQueryAjaxTask works', function() {
 asyncTest('ASYNC: JQueryImageLoaderTask works', function() {
   var task = new SPITFIRE.tasks.JQueryImageLoaderTask('test.png');
   var $img;
-  task.addEventListener(SPITFIRE.events.Event.COMPLETE, function() {
+  task.bind(SPITFIRE.events.Event.COMPLETE, function() {
     $img = task.$content();
   });
   task.start();

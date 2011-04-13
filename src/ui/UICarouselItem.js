@@ -52,6 +52,7 @@ SPITFIRE.ui.UICarouselItem.prototype = {
   //--------------------------------------
   
   imageLoadedHandler: function() {
+    SPITFIRE.removeListener(this.img(), 'load', this.imageLoadedHandler);
     this.initImage();
     this.resizeImage();
     this.scaleAndPositionImage();
@@ -67,7 +68,7 @@ SPITFIRE.ui.UICarouselItem.prototype = {
     this.img(this.getElementsByTagName('img')[0]);
     
     if (!this.img().complete) {
-      SPITFIRE.addListener(this.img(), 'load', 'imageLoadedHandler', this);
+      SPITFIRE.addListener(this.img(), 'load', this.imageLoadedHandler, this);
     } else {
       this.imageLoadedHandler();
     }

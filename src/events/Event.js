@@ -12,6 +12,7 @@ SPITFIRE.events.Event = function(type, data, bubbles, cancelable) {
 };
 
 SPITFIRE.events.Event.COMPLETE = 'complete';
+SPITFIRE.events.Event.CHANGE = 'change';
 
 SPITFIRE.events.Event.synthesizedProperties = ['bubbles', 'cancelable', 'data', 'target', 'type'];
 SPITFIRE.events.Event.superclass = SPITFIRE.Object;

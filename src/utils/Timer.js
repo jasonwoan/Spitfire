@@ -55,13 +55,13 @@ SPITFIRE.utils.Timer.prototype = {
   tick: function() {
     this._currentCount += 1;
     if (this.repeatCount() && this._currentCount >= this.repeatCount()) {
-      this.dispatchEvent(new SPITFIRE.utils.TimerEvent(SPITFIRE.events.TimerEvent.TIMER_COMPLETE));
+      this.trigger(new SPITFIRE.utils.TimerEvent(SPITFIRE.events.TimerEvent.TIMER_COMPLETE));
       this.reset();
       return;
     }
     
     this._interval = setTimeout(this.tick.context(this), this.delay());
-    this.dispatchEvent(new SPITFIRE.utils.TimerEvent(SPITFIRE.events.TimerEvent.TIMER));
+    this.trigger(new SPITFIRE.utils.TimerEvent(SPITFIRE.events.TimerEvent.TIMER));
   }
 }
 

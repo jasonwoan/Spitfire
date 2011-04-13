@@ -107,7 +107,9 @@ SPITFIRE.ui.UICarousel.prototype = {
       });
     }
     
-    this._positionIndex = value; 
+    this._positionIndex = value;
+    
+    this.trigger(new SPITFIRE.events.Event(SPITFIRE.events.Event.CHANGE));
   },
 
   //--------------------------------------

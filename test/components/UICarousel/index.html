@@ -110,7 +110,8 @@
     var next = document.getElementById('next');
     var carousel = document.getElementById('carousel');
     
-    previous.addEventListener('click', previousClickHandler);
+    carousel.bind('change', changeHandler);
+    previous.addEventListener('click', previousClickHandler.context(this));
     next.addEventListener('click', nextClickHandler);
     
     function previousClickHandler() {
@@ -119,6 +120,11 @@
     
     function nextClickHandler() {
       carousel.next();
+    }
+    
+    function changeHandler() {
+      log('change');
+      carousel.unbind('change', previousClickHandler);
     }
     
 /*

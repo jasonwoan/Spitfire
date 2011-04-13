@@ -172,9 +172,19 @@ SPITFIRE.addListener = function(target, event, handler, context) {
   context = context || target;
   
   if (SPITFIRE.browser.IE) {
-    target.attachEvent('on' + event, context[handler].context(context));
+    target.attachEvent('on' + event, handler.context(context));
   } else {
-    target.addEventListener(event, context[handler].context(context), false);
+    target.addEventListener(event, handler.context(context), false);
+  }
+};
+
+SPITFIRE.removeListener = function(target, event, handler, context) {
+  context = context || target;
+  
+  if (SPITFIRE.browser.IE) {
+    target.detachEvent('on' + event, handler.context(context));
+  } else {
+    target.removeEventListener(event, handler.context(context), false);
   }
 };
 
@@ -439,6 +449,7 @@ SPITFIRE.events.Event = function(type, data, bubbles, cancelable) {
 };
 
 SPITFIRE.events.Event.COMPLETE = 'complete';
+SPITFIRE.events.Event.CHANGE = 'change';
 
 SPITFIRE.events.Event.synthesizedProperties = ['bubbles', 'cancelable', 'data', 'target', 'type'];
 SPITFIRE.events.Event.superclass = SPITFIRE.Object;
@@ -458,14 +469,14 @@ SPITFIRE.events.EventDispatcher = function() {
 SPITFIRE.events.EventDispatcher.superclass = SPITFIRE.Object;
 
 SPITFIRE.events.EventDispatcher.prototype = {
-  addEventListener: function(type, handler) {
+  bind: function(type, handler) {
     if (!this._eventListeners[type]) {
       this._eventListeners[type] = [];
     }
     this._eventListeners[type].push(handler);
   },
   
-  removeEventListener: function(type, handler) {
+  unbind: function(type, handler) {
     for (var i = 0, len = this._eventListeners[type].length; i < len; i++) {
       if (this._eventListeners[type][i] == handler) {
         this._eventListeners[type].splice(i, 1);
@@ -473,7 +484,7 @@ SPITFIRE.events.EventDispatcher.prototype = {
     }
   },
   
-  dispatchEvent: function(event) {
+  trigger: function(event) {
     event.target(this);
     var args = [event];
     
@@ -501,7 +512,7 @@ SPITFIRE.display.DisplayObject = function() {
   this._placeholderProperties = [];
 };
 
-SPITFIRE.display.DisplayObject.superclass = SPITFIRE.Object;
+SPITFIRE.display.DisplayObject.superclass = SPITFIRE.events.EventDispatcher;
 SPITFIRE.display.DisplayObject.synthesizedProperties = [
   '$this',
   'l',
@@ -694,7 +705,7 @@ SPITFIRE.tasks.Task.prototype = {
   
   complete: function() {
     this.progress(1);
-    this.dispatchEvent(new SPITFIRE.events.Event(SPITFIRE.events.Event.COMPLETE));
+    this.trigger(new SPITFIRE.events.Event(SPITFIRE.events.Event.COMPLETE));
   },
   
   toString: function() {
@@ -1137,7 +1148,7 @@ SPITFIRE.model.Model.prototype = {
   
   setData: function(value) {
     this._data = value;
-    this.dispatchEvent(new SPITFIRE.events.ModelEvent(SPITFIRE.events.ModelEvent.DATA_UPDATE));
+    this.trigger(new SPITFIRE.events.ModelEvent(SPITFIRE.events.ModelEvent.DATA_UPDATE));
   },
 
   //--------------------------------------
@@ -1279,7 +1290,7 @@ SPITFIRE.state.State.prototype = {
   setSelected: function(value) {
     if (value != this.selected()) {
       this._selected = value;
-      this.dispatchEvent(new SPITFIRE.events.StateEvent(SPITFIRE.events.StateEvent.STATE_CHANGE));
+      this.trigger(new SPITFIRE.events.StateEvent(SPITFIRE.events.StateEvent.STATE_CHANGE));
     }
   },
   
@@ -1324,7 +1335,7 @@ SPITFIRE.state.State.prototype = {
       this._selectedChild = undefined;
     }
     
-    this.dispatchEvent(new SPITFIRE.events.StateEvent(SPITFIRE.events.StateEvent.CHILD_STATE_CHANGE));
+    this.trigger(new SPITFIRE.events.StateEvent(SPITFIRE.events.StateEvent.CHILD_STATE_CHANGE));
   },
   
   //--------------------------------------
@@ -1336,7 +1347,7 @@ SPITFIRE.state.State.prototype = {
     child.stateManager(this.stateManager());
     child.root(this.root());
     this.children().push(child);
-    child.addEventListener(SPITFIRE.events.StateEvent.STATE_CHANGE, this.childChangeHandler.context(this));
+    child.bind(SPITFIRE.events.StateEvent.STATE_CHANGE, this.childChangeHandler.context(this));
   },
   
   addChildAt: function(child, index) {
@@ -1344,7 +1355,7 @@ SPITFIRE.state.State.prototype = {
     child.stateManager(this.stateManager());
     child.root(this.root());
     this.children().splice(index, 0, child);
-    child.addEventListener(SPITFIRE.events.StateEvent.STATE_CHANGE, this.childChangeHandler.context(this));
+    child.bind(SPITFIRE.events.StateEvent.STATE_CHANGE, this.childChangeHandler.context(this));
     return child;
   },
   
@@ -1394,7 +1405,7 @@ SPITFIRE.state.State.prototype = {
   
   removeChildAt: function(index) {
     var child = this.getChildAt(index);
-    child.removeEventListener(SPITFIRE.events.StateEvent.STATE_CHANGE, this.childChangeHandler.context(this));
+    child.unbind(SPITFIRE.events.StateEvent.STATE_CHANGE, this.childChangeHandler.context(this));
     this.children().splice(index, 1);
     return child;
   },
@@ -1519,7 +1530,7 @@ SPITFIRE.state.StateManager = function(name, root) {
   this.name(name || this.qualifiedClassName() + Math.round(Math.random() * 100000));
   this.pageViewType(SPITFIRE.state.StateManager.PAGE_VIEW_LOCATION);
   this._progressTimer = new SPITFIRE.utils.Timer(33);
-  this._progressTimer.addEventListener(SPITFIRE.events.TimerEvent.TIMER, this.taskManagerProgressHandler.context(this));
+  this._progressTimer.bind(SPITFIRE.events.TimerEvent.TIMER, this.taskManagerProgressHandler.context(this));
   this._transitionInPath;
   this._transitionWasInterrupted;
   this._isInTransition;
@@ -1663,13 +1674,13 @@ SPITFIRE.state.StateManager.prototype = {
   },
   
   taskManagerCompleteHandler: function(event) {
-    this.taskManager().removeEventListener(SPITFIRE.events.Event.COMPLETE, this.taskManagerCompleteHandler.context(this));
+    this.taskManager().unbind(SPITFIRE.events.Event.COMPLETE, this.taskManagerCompleteHandler.context(this));
 		if (this.taskManager().progressive()) {
 			this.taskManagerProgressHandler();
 			this._progressTimer.stop();
 		}
 		
-		this.dispatchEvent(new SPITFIRE.events.Event(this._currentTransition.transitionName() + "Complete"));
+		this.trigger(new SPITFIRE.events.Event(this._currentTransition.transitionName() + "Complete"));
 		this._currentTransition = null;
 		if (this._transitions.length > 0) {
 			this.startTransition();
@@ -1854,7 +1865,7 @@ SPITFIRE.state.StateManager.prototype = {
   
   startTransition: function() {
     this._currentTransition = this._transitions.shift();
-		this.dispatchEvent(new SPITFIRE.events.Event(this._currentTransition.transitionName() + "Start"));
+		this.trigger(new SPITFIRE.events.Event(this._currentTransition.transitionName() + "Start"));
 		
 		this.taskManager(new SPITFIRE.tasks.SequentialTask());
 		
@@ -1863,7 +1874,7 @@ SPITFIRE.state.StateManager.prototype = {
 			this.taskManager().debug(this.debug());
 		}
 		
-		this.taskManager().addEventListener(SPITFIRE.events.Event.COMPLETE, this.taskManagerCompleteHandler.context(this));
+		this.taskManager().bind(SPITFIRE.events.Event.COMPLETE, this.taskManagerCompleteHandler.context(this));
 		
 		var i, len;
 		
@@ -2276,7 +2287,7 @@ SPITFIRE.tasks.ParallelTask.prototype = {
 		if (this.debug()) {
 			log("taskComplete " + task);
 		}
-		task.removeEventListener(SPITFIRE.events.Event.COMPLETE, this.taskCompleteHandler.context(this));
+		task.unbind(SPITFIRE.events.Event.COMPLETE, this.taskCompleteHandler.context(this));
 		this._createdTasks.push(task);
 		if (this._createdTasks.length == this.tasks().length) {
 		  if (this.debug()) {
@@ -2296,7 +2307,7 @@ SPITFIRE.tasks.ParallelTask.prototype = {
       var i, len;
       for (i = 0, len = this.tasks().length; i < len; i += 1) {
         	var task = this.tasks()[i];
-        	task.addEventListener(SPITFIRE.events.Event.COMPLETE, this.taskCompleteHandler.context(this));
+        	task.bind(SPITFIRE.events.Event.COMPLETE, this.taskCompleteHandler.context(this));
         	if (this.debug()) {
         	 log('taskStart ' + task);
         	}
@@ -2375,7 +2386,7 @@ SPITFIRE.tasks.SequentialTask.prototype = {
 		if (this.debug()) {
 			log("taskComplete " + task);
 		}
-		task.removeEventListener(SPITFIRE.events.Event.COMPLETE, this.taskCompleteHandler.context(this));
+		task.unbind(SPITFIRE.events.Event.COMPLETE, this.taskCompleteHandler.context(this));
 		this._createdTasks.push(task);
 		if (this._createdTasks.length == this.tasks().length) {
 			this.complete();
@@ -2400,7 +2411,7 @@ SPITFIRE.tasks.SequentialTask.prototype = {
   createTask: function() {
     var index = this._createdTasks.length;
 		var task = this.tasks()[index];
-		task.addEventListener(SPITFIRE.events.Event.COMPLETE, this.taskCompleteHandler.context(this));
+		task.bind(SPITFIRE.events.Event.COMPLETE, this.taskCompleteHandler.context(this));
 		if (this.debug()) {
 			log("taskStart " + task);
 		}
@@ -2582,7 +2593,9 @@ SPITFIRE.ui.UICarousel.prototype = {
       });
     }
     
-    this._positionIndex = value; 
+    this._positionIndex = value;
+    
+    this.trigger(new SPITFIRE.events.Event(SPITFIRE.events.Event.CHANGE));
   },
 
   //--------------------------------------
@@ -2743,6 +2756,7 @@ SPITFIRE.ui.UICarouselItem.prototype = {
   //--------------------------------------
   
   imageLoadedHandler: function() {
+    SPITFIRE.removeListener(this.img(), 'load', this.imageLoadedHandler);
     this.initImage();
     this.resizeImage();
     this.scaleAndPositionImage();
@@ -2758,7 +2772,7 @@ SPITFIRE.ui.UICarouselItem.prototype = {
     this.img(this.getElementsByTagName('img')[0]);
     
     if (!this.img().complete) {
-      SPITFIRE.addListener(this.img(), 'load', 'imageLoadedHandler', this);
+      SPITFIRE.addListener(this.img(), 'load', this.imageLoadedHandler, this);
     } else {
       this.imageLoadedHandler();
     }
@@ -3071,13 +3085,13 @@ SPITFIRE.utils.Timer.prototype = {
   tick: function() {
     this._currentCount += 1;
     if (this.repeatCount() && this._currentCount >= this.repeatCount()) {
-      this.dispatchEvent(new SPITFIRE.utils.TimerEvent(SPITFIRE.events.TimerEvent.TIMER_COMPLETE));
+      this.trigger(new SPITFIRE.utils.TimerEvent(SPITFIRE.events.TimerEvent.TIMER_COMPLETE));
       this.reset();
       return;
     }
     
     this._interval = setTimeout(this.tick.context(this), this.delay());
-    this.dispatchEvent(new SPITFIRE.utils.TimerEvent(SPITFIRE.events.TimerEvent.TIMER));
+    this.trigger(new SPITFIRE.utils.TimerEvent(SPITFIRE.events.TimerEvent.TIMER));
   }
 }
 

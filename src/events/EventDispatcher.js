@@ -13,14 +13,14 @@ SPITFIRE.events.EventDispatcher = function() {
 SPITFIRE.events.EventDispatcher.superclass = SPITFIRE.Object;
 
 SPITFIRE.events.EventDispatcher.prototype = {
-  addEventListener: function(type, handler) {
+  bind: function(type, handler) {
     if (!this._eventListeners[type]) {
       this._eventListeners[type] = [];
     }
     this._eventListeners[type].push(handler);
   },
   
-  removeEventListener: function(type, handler) {
+  unbind: function(type, handler) {
     for (var i = 0, len = this._eventListeners[type].length; i < len; i++) {
       if (this._eventListeners[type][i] == handler) {
         this._eventListeners[type].splice(i, 1);
@@ -28,7 +28,7 @@ SPITFIRE.events.EventDispatcher.prototype = {
     }
   },
   
-  dispatchEvent: function(event) {
+  trigger: function(event) {
     event.target(this);
     var args = [event];
     

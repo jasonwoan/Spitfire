@@ -110,7 +110,7 @@ SPITFIRE.state.State.prototype = {
   setSelected: function(value) {
     if (value != this.selected()) {
       this._selected = value;
-      this.dispatchEvent(new SPITFIRE.events.StateEvent(SPITFIRE.events.StateEvent.STATE_CHANGE));
+      this.trigger(new SPITFIRE.events.StateEvent(SPITFIRE.events.StateEvent.STATE_CHANGE));
     }
   },
   
@@ -155,7 +155,7 @@ SPITFIRE.state.State.prototype = {
       this._selectedChild = undefined;
     }
     
-    this.dispatchEvent(new SPITFIRE.events.StateEvent(SPITFIRE.events.StateEvent.CHILD_STATE_CHANGE));
+    this.trigger(new SPITFIRE.events.StateEvent(SPITFIRE.events.StateEvent.CHILD_STATE_CHANGE));
   },
   
   //--------------------------------------
@@ -167,7 +167,7 @@ SPITFIRE.state.State.prototype = {
     child.stateManager(this.stateManager());
     child.root(this.root());
     this.children().push(child);
-    child.addEventListener(SPITFIRE.events.StateEvent.STATE_CHANGE, this.childChangeHandler.context(this));
+    child.bind(SPITFIRE.events.StateEvent.STATE_CHANGE, this.childChangeHandler.context(this));
   },
   
   addChildAt: function(child, index) {
@@ -175,7 +175,7 @@ SPITFIRE.state.State.prototype = {
     child.stateManager(this.stateManager());
     child.root(this.root());
     this.children().splice(index, 0, child);
-    child.addEventListener(SPITFIRE.events.StateEvent.STATE_CHANGE, this.childChangeHandler.context(this));
+    child.bind(SPITFIRE.events.StateEvent.STATE_CHANGE, this.childChangeHandler.context(this));
     return child;
   },
   
@@ -225,7 +225,7 @@ SPITFIRE.state.State.prototype = {
   
   removeChildAt: function(index) {
     var child = this.getChildAt(index);
-    child.removeEventListener(SPITFIRE.events.StateEvent.STATE_CHANGE, this.childChangeHandler.context(this));
+    child.unbind(SPITFIRE.events.StateEvent.STATE_CHANGE, this.childChangeHandler.context(this));
     this.children().splice(index, 1);
     return child;
   },
