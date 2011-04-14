@@ -74,7 +74,8 @@ SPITFIRE.ui.UICarousel.prototype = {
     var oldPositionIndex = this._positionIndex;
     
     var delta = this.items()[oldPositionIndex].carouselIndex() - this.items()[value].carouselIndex();
-    var i, len, item, newIndex, newPos, indexFromCenter, opacity, scale;
+    var i, len, item, newIndex, newPos, indexFromCenter, opacity, scale, z,
+        half = (this.items().length * 0.5 >> 0) + 1; 
     
     for (i = 0, len = this.items().length; i < len; i += 1) {
       item = this.items()[i];
@@ -84,11 +85,12 @@ SPITFIRE.ui.UICarousel.prototype = {
       newIndex = (newIndex < 0 || newIndex >= len) ? (newIndex < 0) ? newIndex + len : newIndex - len : newIndex;
       item.carouselIndex(newIndex);
       item.carousel(this);
-      newPos = item.carouselIndex() * this.itemDistance() + startX;
+      newPos = item.carouselIndex() * this.itemDistance() + this.startX();
       
       // adjust z-index 
       indexFromCenter = Math.abs(this.centerIndex() - newIndex);
-      item.$this().css('z-index', len - indexFromCenter);
+      z = (half - indexFromCenter) * 25;
+      //item.$this().css('z-index', len - indexFromCenter);
       
       // opacity
       opacity = (indexFromCenter <= this.neighbors()) ? 1 : 0;
@@ -101,7 +103,8 @@ SPITFIRE.ui.UICarousel.prototype = {
         l: newPos,
         t: this.center().y,
         opacity: opacity,
-        scale: scale
+        scale: scale,
+        z: z
       }, {
         duration: this._speed * Math.abs(delta)
       });
@@ -195,7 +198,7 @@ SPITFIRE.ui.UICarousel.prototype = {
       }
     }
     
-    startX = leftItem.l();
+    this.startX(leftItem.l());
   },
   
   previous: function() {

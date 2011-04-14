@@ -510,6 +510,7 @@ SPITFIRE.display.DisplayObject = function() {
   this._scaleY = 1;
   this._scale = 1;
   this._placeholderProperties = [];
+  this._z = 1;
 };
 
 SPITFIRE.display.DisplayObject.superclass = SPITFIRE.events.EventDispatcher;
@@ -522,7 +523,8 @@ SPITFIRE.display.DisplayObject.synthesizedProperties = [
   'scaleX',
   'scaleY',
   'scale',
-  'rect'
+  'rect',
+  'z'
 ];
 
 SPITFIRE.display.DisplayObject.prototype = {
@@ -536,8 +538,8 @@ SPITFIRE.display.DisplayObject.prototype = {
   },
   
   getL: function() {
-    var flt = parseFloat(this.$this().css('left'));
-    return (flt) ? flt : 0;
+    var flt = (this.style.left) ? parseFloat(this.style.left) : parseFloat(this.$this().css('left'));
+    return flt || 0;
   },
   
   setT: function(value) {
@@ -545,8 +547,8 @@ SPITFIRE.display.DisplayObject.prototype = {
   },
   
   getT: function() {
-    var flt = parseFloat(this.$this().css('top'));
-    return (flt) ? flt : 0;
+    var flt = (this.style.top) ? parseFloat(this.style.top) : parseFloat(this.$this().css('top'));
+    return flt || 0;
   },
   
   getW: function() {
@@ -597,7 +599,12 @@ SPITFIRE.display.DisplayObject.prototype = {
     this.w(value.width());
     this.h(value.height());
   },
-
+  
+  setZ: function(value) {
+    this._z = value >> 0;
+    this.$this().css('z-index', this._z);
+  },
+  
   //--------------------------------------
   // Methods
   //--------------------------------------
@@ -2560,7 +2567,8 @@ SPITFIRE.ui.UICarousel.prototype = {
     var oldPositionIndex = this._positionIndex;
     
     var delta = this.items()[oldPositionIndex].carouselIndex() - this.items()[value].carouselIndex();
-    var i, len, item, newIndex, newPos, indexFromCenter, opacity, scale;
+    var i, len, item, newIndex, newPos, indexFromCenter, opacity, scale, z,
+        half = (this.items().length * 0.5 >> 0) + 1; 
     
     for (i = 0, len = this.items().length; i < len; i += 1) {
       item = this.items()[i];
@@ -2570,11 +2578,12 @@ SPITFIRE.ui.UICarousel.prototype = {
       newIndex = (newIndex < 0 || newIndex >= len) ? (newIndex < 0) ? newIndex + len : newIndex - len : newIndex;
       item.carouselIndex(newIndex);
       item.carousel(this);
-      newPos = item.carouselIndex() * this.itemDistance() + startX;
+      newPos = item.carouselIndex() * this.itemDistance() + this.startX();
       
       // adjust z-index 
       indexFromCenter = Math.abs(this.centerIndex() - newIndex);
-      item.$this().css('z-index', len - indexFromCenter);
+      z = (half - indexFromCenter) * 25;
+      //item.$this().css('z-index', len - indexFromCenter);
       
       // opacity
       opacity = (indexFromCenter <= this.neighbors()) ? 1 : 0;
@@ -2587,7 +2596,8 @@ SPITFIRE.ui.UICarousel.prototype = {
         l: newPos,
         t: this.center().y,
         opacity: opacity,
-        scale: scale
+        scale: scale,
+        z: z
       }, {
         duration: this._speed * Math.abs(delta)
       });
@@ -2681,7 +2691,7 @@ SPITFIRE.ui.UICarousel.prototype = {
       }
     }
     
-    startX = leftItem.l();
+    this.startX(leftItem.l());
   },
   
   previous: function() {

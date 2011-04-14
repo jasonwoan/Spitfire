@@ -111,8 +111,8 @@
     var carousel = document.getElementById('carousel');
     
     carousel.bind('change', changeHandler);
-    previous.addEventListener('click', previousClickHandler.context(this));
-    next.addEventListener('click', nextClickHandler);
+    previous.addEventListener('click', previousClickHandler.context(this), false);
+    next.addEventListener('click', nextClickHandler, false);
     
     function previousClickHandler() {
       carousel.previous();
