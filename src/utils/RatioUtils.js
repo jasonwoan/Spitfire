@@ -62,8 +62,8 @@ SPITFIRE.utils.RatioUtils = SPITFIRE.utils.RatioUtils || {
   
   _defineRect: function(size, width, height, snapToPixel) {
     var scaled = size.clone();
-    scaled.width(snapToPixel ? Math.round(width) : width);
-    scaled.height(snapToPixel ? Math.round(height) : height);
+    scaled.width(snapToPixel ? ~~(width) : width);
+    scaled.height(snapToPixel ? ~~(height) : height);
     
     return scaled;
   }

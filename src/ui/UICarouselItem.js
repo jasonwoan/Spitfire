@@ -96,8 +96,8 @@ SPITFIRE.ui.UICarouselItem.prototype = {
     this.img().scale(this._scale);
     
     // position
-    this.img().l(Math.round(-this.img().w() * 0.5));
-    this.img().t(Math.round(-this.img().h() * 0.5));
+    this.img().l(~~(-this.img().w() * 0.5));
+    this.img().t(~~(-this.img().h() * 0.5));
   },
 
   toString: function() {

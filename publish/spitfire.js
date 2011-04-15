@@ -1534,7 +1534,7 @@ SPITFIRE.state.StateManager = function(name, root) {
   this.callSuper();
   this.root(root);
   this.qualifiedClassName('SPITFIRE.state.StateManager');
-  this.name(name || this.qualifiedClassName() + Math.round(Math.random() * 100000));
+  this.name(name || this.qualifiedClassName() + ~~(Math.random() * 100000));
   this.pageViewType(SPITFIRE.state.StateManager.PAGE_VIEW_LOCATION);
   this._progressTimer = new SPITFIRE.utils.Timer(33);
   this._progressTimer.bind(SPITFIRE.events.TimerEvent.TIMER, this.taskManagerProgressHandler.context(this));
@@ -2616,7 +2616,7 @@ SPITFIRE.ui.UICarousel.prototype = {
     this.callSuper();
     
     // set center point
-    this.center(new SPITFIRE.geom.Point(Math.round(this.w() * 0.5), Math.round(this.h() * 0.5)));
+    this.center(new SPITFIRE.geom.Point(~~(this.w() * 0.5), ~~(this.h() * 0.5)));
     
     // add class to element
     this.$this().addClass('sf-carousel');
@@ -2810,8 +2810,8 @@ SPITFIRE.ui.UICarouselItem.prototype = {
     this.img().scale(this._scale);
     
     // position
-    this.img().l(Math.round(-this.img().w() * 0.5));
-    this.img().t(Math.round(-this.img().h() * 0.5));
+    this.img().l(~~(-this.img().w() * 0.5));
+    this.img().t(~~(-this.img().h() * 0.5));
   },
 
   toString: function() {
@@ -3032,8 +3032,8 @@ SPITFIRE.utils.RatioUtils = SPITFIRE.utils.RatioUtils || {
   
   _defineRect: function(size, width, height, snapToPixel) {
     var scaled = size.clone();
-    scaled.width(snapToPixel ? Math.round(width) : width);
-    scaled.height(snapToPixel ? Math.round(height) : height);
+    scaled.width(snapToPixel ? ~~(width) : width);
+    scaled.height(snapToPixel ? ~~(height) : height);
     
     return scaled;
   }

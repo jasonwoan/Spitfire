@@ -8,7 +8,7 @@ SPITFIRE.state.StateManager = function(name, root) {
   this.callSuper();
   this.root(root);
   this.qualifiedClassName('SPITFIRE.state.StateManager');
-  this.name(name || this.qualifiedClassName() + Math.round(Math.random() * 100000));
+  this.name(name || this.qualifiedClassName() + ~~(Math.random() * 100000));
   this.pageViewType(SPITFIRE.state.StateManager.PAGE_VIEW_LOCATION);
   this._progressTimer = new SPITFIRE.utils.Timer(33);
   this._progressTimer.bind(SPITFIRE.events.TimerEvent.TIMER, this.taskManagerProgressHandler.context(this));

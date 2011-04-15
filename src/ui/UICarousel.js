@@ -123,7 +123,7 @@ SPITFIRE.ui.UICarousel.prototype = {
     this.callSuper();
     
     // set center point
-    this.center(new SPITFIRE.geom.Point(Math.round(this.w() * 0.5), Math.round(this.h() * 0.5)));
+    this.center(new SPITFIRE.geom.Point(~~(this.w() * 0.5), ~~(this.h() * 0.5)));
     
     // add class to element
     this.$this().addClass('sf-carousel');
