@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Class</title>
+	</head>
+	<body>
+  	<script type="text/javascript" src="Warthog.js"></script>
+    <script type="text/javascript">
+    
+      var Person = function(name) {
+        this._name = name;
+      };
+      
+      Person.prototype = {
+        walk: function() {
+          console.log('walking');
+        },
+        
+        toString: function() {
+          return '[Person]';
+        }
+      };
+      
+      Warthog.Class(Person);
+      
+      var SuperHero = function(name) {
+        this.callSuper(name);
+      };
+      
+      SuperHero.superclass = Person;
+      
+      SuperHero.prototype = {
+        walk: function() {
+          this.fly();
+          this.callSuper();
+        },
+        
+        fly: function() {
+          console.log('flying');
+        }
+      };
+      
+      Warthog.Class(SuperHero);
+      
+      var Villain = function(name) {
+        this.callSuper(name);
+      };
+      
+      Villain.superclass = SuperHero;
+      Villain.synthesizedProperties = ['hideout'];
+      
+      Villain.prototype = {
+        walk: function() {
+          this.kill();
+          this.callSuper();
+        },
+        
+        kill: function() {
+          console.log('killing');
+        }
+      };
+      
+      Warthog.Class(Villain);
+      
+/*       var person = new Person('bob'); */
+      var batman = new SuperHero('batman');
+      var joker = new Villain('joker');
+      var riddler = new Villain('riddler');
+      
+/*       console.log(person); */
+      console.log(batman);
+      console.log(joker);
+      console.log(riddler);
+      
+/*
+      joker.walk();
+      joker.hideout('docks');
+      console.log(joker._hideout);
+      console.log(joker.hideout());
+      
+      riddler.hideout('basement');
+      console.log(riddler._hideout);
+      console.log(riddler.hideout());
+*/
+    </script>
+	</body>
+</html>
