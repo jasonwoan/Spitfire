@@ -3,30 +3,46 @@ var Warthog = {};
 Warthog.Class = function(classDefinition) {
   // create synthesized properties
   if (typeof classDefinition.synthesizedProperties !== 'undefined') {
+    
+    // helper function to bind the accessor method to the correct property name
+    var getterHelper = function(propertyName) {
+      return function() {
+        return this['_' + propertyName];
+      };
+    }
+    
+    var setterHelper = function(propertyName) {
+      return function(value) {
+        this['_' + propertyName] = value;
+        return this;
+      };
+    }
+    
+    var accessorMethodHelper = function(propName) {
+      return function() {
+        if (arguments.length > 0) {
+          // setter
+          return this['set' + propName].apply(this, arguments);
+        } else {
+          // getter
+          return this['get' + propName]();
+        }
+      };
+    };
+    
     var i, len;
     for (i = 0, len = classDefinition.synthesizedProperties.length; i < len; i += 1) {
       var synProp = classDefinition.synthesizedProperties[i];
       var synPropMethodName = synProp.charAt(0).toUpperCase() + synProp.slice(1);
       
       // create getter / setter methods
-      classDefinition.prototype['get' + synPropMethodName] = function() {
-        return this['_' + synProp];
-      };
+      if (!('get' + synPropMethodName in classDefinition.prototype))
+        classDefinition.prototype['get' + synPropMethodName] = getterHelper(synProp);
       
-      classDefinition.prototype['set' + synPropMethodName] = function(value) {
-        this['_' + synProp] = value;
-      };
-      
-      // create singular getter/setter method
-      classDefinition.prototype[synProp] = function() {
-        if (arguments.length) {
-          // setter
-          this['set' + synPropMethodName].apply(this, arguments);
-        } else {
-          // getter
-          return this['get' + synPropMethodName].apply(this, arguments);
-        }
-      };
+      if (!('set' + synPropMethodName in classDefinition.prototype))  
+        classDefinition.prototype['set' + synPropMethodName] = setterHelper(synProp);
+        
+      classDefinition.prototype[synProp] = accessorMethodHelper(synPropMethodName);
     }
   }
   

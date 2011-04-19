@@ -47,7 +47,7 @@
       };
       
       Villain.superclass = SuperHero;
-      Villain.synthesizedProperties = ['hideout'];
+      Villain.synthesizedProperties = ['hideout', 'weapon'];
       
       Villain.prototype = {
         walk: function() {
@@ -72,7 +72,6 @@
       console.log(joker);
       console.log(riddler);
       
-/*
       joker.walk();
       joker.hideout('docks');
       console.log(joker._hideout);
@@ -81,7 +80,7 @@
       riddler.hideout('basement');
       console.log(riddler._hideout);
       console.log(riddler.hideout());
-*/
+      
     </script>
 	</body>
 </html>

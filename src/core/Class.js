@@ -5,98 +5,128 @@
 // http://www.bennadel.com/blog/2040-Implementing-Javascript-Inheritance-And-Synthesized-Accessors-With-Annotation.htm
 
 SPITFIRE.Class = function(classDefinition) {
-  var classMethods = {},
-      i = 0,
-      len,
-      baseClass,
-      getterName,
-      setterName,
-      propertyName,
-      name,
-      proto;
+  // create synthesized properties
+  if (typeof classDefinition.synthesizedProperties !== 'undefined') {
+    
+    // helper function to bind the accessor method to the correct property name
+    var getterHelper = function(propertyName) {
+      return function() {
+        return this['_' + propertyName];
+      };
+    }
+    
+    var setterHelper = function(propertyName) {
+      return function(value) {
+        this['_' + propertyName] = value;
+        return this;
+      };
+    }
+    
+    var accessorMethodHelper = function(propName) {
+      return function() {
+        if (arguments.length > 0) {
+          // setter
+          return this['set' + propName].apply(this, arguments);
+        } else {
+          // getter
+          return this['get' + propName]();
+        }
+      };
+    };
+    
+    var i, len;
+    for (i = 0, len = classDefinition.synthesizedProperties.length; i < len; i += 1) {
+      var synProp = classDefinition.synthesizedProperties[i];
+      var synPropMethodName = synProp.charAt(0).toUpperCase() + synProp.slice(1);
       
-  // add meta to relate each prototype method to the classDefinition and the method's name
-  // this is used for the super retrieval in the callSuper method defined in SPITFIRE.Object
-  proto = classDefinition.prototype;
-  for (name in proto) {
-    if (SPITFIRE.isFunction(proto[name])) {
-      proto[name]._class = classDefinition;
-      proto[name]._name = name;
+      // create getter / setter methods
+      if (!('get' + synPropMethodName in classDefinition.prototype))
+        classDefinition.prototype['get' + synPropMethodName] = getterHelper(synProp);
+      
+      if (!('set' + synPropMethodName in classDefinition.prototype))
+        classDefinition.prototype['set' + synPropMethodName] = setterHelper(synProp);
+        
+      classDefinition.prototype[synProp] = accessorMethodHelper(synPropMethodName);
     }
   }
   
-  // check to see if class definition has a superclass
-  if ('superclass' in classDefinition) {    
-    baseClass = classDefinition.superclass;
-    
-    if (!baseClass.isInitialized) {
-      SPITFIRE.Class(baseClass);
-    }
-    
-    classMethods = SPITFIRE.extend(classMethods, baseClass.prototype);
-  }
+  // traverse inheritance chain, begin with first
+  // parent and apply prototypes and properties to
+  // a singular object, inserting function statements
+  // when callSuper is called
   
-  // add the class's base methods to its prototype
-  classMethods = SPITFIRE.extend(classMethods, classDefinition.prototype);
+  var obj = {};
   
-  var prepareAccessorName = function(accessor, propertyName) {
-    return accessor + propertyName.charAt(0).toUpperCase() + propertyName.slice(1);
-  }
-  
-  // add synthesized property methods
-  classDefinition.synthesizedProperties = classDefinition.synthesizedProperties || [];
-  
-  // helper function to bind the accessor method to the correct property name
-  var getterHelper = function(propertyName) {
-    return function() {
-      return this['_' + propertyName];
-    };
-  }
-  
-  var setterHelper = function(propertyName) {
-    return function(value) {
-      this['_' + propertyName] = value;
-      return this;
-    };
-  }
-  
-  var accessorMethodHelper = function(getterName, setterName) {
-    return function() {
-      if (arguments.length > 0) {
-        // setter
-        return this[setterName].apply(this, arguments);
-      } else {
-        // getter
-        return this[getterName]();
+  (function (classDef) {
+    var parent = classDef.superclass;
+    if (parent) {
+      // check for superclass
+      if (parent.superclass) {
+        arguments.callee(parent.superclass);  // recursively call the annonymous function
       }
-    };
+      
+      obj = extend(parent, obj);
+    }
+  })(classDefinition);
+  
+  classDefinition = extend(obj, classDefinition);
+  
+  // add super powers
+  classDefinition.prototype.callSuper = function() {
+    var caller = arguments.callee.caller,
+        methodName = caller._name,
+        superMethod = caller._super;
+    
+    // check to see if caller is a constructor
+    // if so call it's superclass    
+    if (typeof caller.superclass !== 'undefined') {
+      caller.superclass.apply(this, arguments);
+    } else 
+    
+    // check to see if a super method is available
+    if (typeof superMethod !== 'undefined') {
+      superMethod.apply(this, arguments)
+    }
   };
   
-  for (i = 0, len = classDefinition.synthesizedProperties.length; i < len; i+=1) {
-    propertyName = classDefinition.synthesizedProperties[i];
+  function extend(supr, classDef) {
+    classDef.prototype = merge(classDef.prototype, supr.prototype);
     
-    // check for properties that have already been synthesized
-    // in the class's parent class
-    if (propertyName in classMethods) {
-      throw('property: ' + propertyName + ' has already been synthesized in ' + classDefinition);
-      continue;
-    }
-    
-    getterName = prepareAccessorName('get', propertyName);
-    setterName = prepareAccessorName('set', propertyName);
-    
-    if (!(getterName in classMethods)) {
-      classMethods[getterName] = getterHelper(propertyName);
-    }
-    
-    if (!(setterName in classMethods)) {
-      classMethods[setterName] = setterHelper(propertyName);
-    }
-    
-    classMethods[propertyName] = accessorMethodHelper(getterName, setterName);
+    return classDef;
   }
   
-  classDefinition.prototype = classMethods;
+  function merge(obj1, obj2) {
+    var temp;
+    if (typeof obj1 !== 'undefined') {
+      temp = clone(obj1);
+      
+      for (var key in obj2) {
+        // check to see if method exists
+        // if so save super method as a _super property
+        // of the current method
+        if (typeof temp[key] !== 'undefined') {
+          temp[key]._super = obj2[key];
+        } else {
+          temp[key] = obj2[key];
+        }
+      }
+    } else {
+      temp = clone(obj2);
+    }
+    
+    return temp;
+  }
   
-  classDefinition.isInitialized = true;
+  function clone(obj) {
+    if (typeof obj !== 'object') return obj;
+    
+    var temp = {};
+    
+    for (var key in obj) {
+      temp[key] = clone(obj[key]);
+      temp[key]._name = key;
+    }
+    
+    return temp;
+  }
 };

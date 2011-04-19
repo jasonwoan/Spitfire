@@ -170,6 +170,7 @@ test("State works", function() {
   state.selectedChild(childState2);
   
   equals(QUnit.equiv(state.selectedChild(), childState2), true, 'changing selectedChild works');
+  
   equals(state.selectedChildIndex(), 1, 'selectedChildIndex works');
   equals(childState2.index(), 1, 'index works');
   equals(childState2.stateLocation(), 'testState/testChildState2', 'stateLocation works');
