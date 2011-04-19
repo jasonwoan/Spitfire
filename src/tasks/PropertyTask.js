@@ -1,21 +1,19 @@
-SPITFIRE.tasks = SPITFIRE.tasks || {};
-
 //--------------------------------------
-// SPITFIRE.tasks.PropertyTask
+// SPITFIRE.PropertyTask
 //--------------------------------------
 
-SPITFIRE.tasks.PropertyTask = function(target, property, value) {
+SPITFIRE.PropertyTask = function(target, property, value) {
   this.callSuper();
-  this.qualifiedClassName('SPITFIRE.tasks.PropertyTask');
+  this.qualifiedClassName('SPITFIRE.PropertyTask');
   this.target(target);
   this.property(property);
   this.value(value);
 };
 
-SPITFIRE.tasks.PropertyTask.superclass = SPITFIRE.tasks.Task;
-SPITFIRE.tasks.PropertyTask.synthesizedProperties = ['target', 'property', 'value'];
+SPITFIRE.PropertyTask.superclass = SPITFIRE.Task;
+SPITFIRE.PropertyTask.synthesizedProperties = ['target', 'property', 'value'];
 
-SPITFIRE.tasks.PropertyTask.prototype = {
+SPITFIRE.PropertyTask.prototype = {
   //--------------------------------------
   // Methods
   //--------------------------------------
@@ -30,4 +28,4 @@ SPITFIRE.tasks.PropertyTask.prototype = {
   }
 };
 
-SPITFIRE.Class(SPITFIRE.tasks.PropertyTask);
+SPITFIRE.Class(SPITFIRE.PropertyTask);

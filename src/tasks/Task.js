@@ -1,24 +1,22 @@
-SPITFIRE.tasks = SPITFIRE.tasks || {};
-
 //--------------------------------------
-// SPITFIRE.tasks.Task
+// SPITFIRE.Task
 //--------------------------------------
 
-SPITFIRE.tasks.Task = function() {
+SPITFIRE.Task = function() {
   this.callSuper();
-  this.qualifiedClassName('SPITFIRE.tasks.Task');
+  this.qualifiedClassName('SPITFIRE.Task');
   this.progress(0);
 };
 
-SPITFIRE.tasks.Task.superclass = SPITFIRE.events.EventDispatcher;
-SPITFIRE.tasks.Task.synthesizedProperties = [
+SPITFIRE.Task.superclass = SPITFIRE.EventDispatcher;
+SPITFIRE.Task.synthesizedProperties = [
   'progress',
   'progressive',
   'name',
   'debug'
 ];
 
-SPITFIRE.tasks.Task.prototype = {
+SPITFIRE.Task.prototype = {
   //--------------------------------------
   // Methods
   //--------------------------------------
@@ -29,7 +27,7 @@ SPITFIRE.tasks.Task.prototype = {
   
   complete: function() {
     this.progress(1);
-    this.trigger(new SPITFIRE.events.Event(SPITFIRE.events.Event.COMPLETE));
+    this.trigger(new SPITFIRE.Event(SPITFIRE.Event.COMPLETE));
   },
   
   toString: function() {
@@ -37,4 +35,4 @@ SPITFIRE.tasks.Task.prototype = {
   }
 };
 
-SPITFIRE.Class(SPITFIRE.tasks.Task);
+SPITFIRE.Class(SPITFIRE.Task);

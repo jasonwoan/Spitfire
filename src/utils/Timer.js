@@ -1,27 +1,25 @@
-SPITFIRE.utils = SPITFIRE.utils || {};
-
 //--------------------------------------
 // Timer
 //--------------------------------------
 
-SPITFIRE.utils.Timer = function(delay, repeatCount) {
+SPITFIRE.Timer = function(delay, repeatCount) {
   this.callSuper();
   this.delay(delay);
   this.repeatCount(repeatCount || 0);
-  this.qualifiedClassName('SPITFIRE.utils.Timer');
+  this.qualifiedClassName('SPITFIRE.Timer');
   this._interval;
   this._currentCount = 0;
 };
 
-SPITFIRE.utils.Timer.superclass = SPITFIRE.events.EventDispatcher;
-SPITFIRE.utils.Timer.synthesizedProperties = [
+SPITFIRE.Timer.superclass = SPITFIRE.EventDispatcher;
+SPITFIRE.Timer.synthesizedProperties = [
   'currentCount',
   'delay',
   'repeatCount',
   'running'
 ];
 
-SPITFIRE.utils.Timer.prototype = {
+SPITFIRE.Timer.prototype = {
   setRunning: function(value) {
     throw new SPITFIRE.Error('running is read-only');
   },
@@ -55,14 +53,14 @@ SPITFIRE.utils.Timer.prototype = {
   tick: function() {
     this._currentCount += 1;
     if (this.repeatCount() && this._currentCount >= this.repeatCount()) {
-      this.trigger(new SPITFIRE.utils.TimerEvent(SPITFIRE.events.TimerEvent.TIMER_COMPLETE));
+      this.trigger(new SPITFIRE.TimerEvent(SPITFIRE.TimerEvent.TIMER_COMPLETE));
       this.reset();
       return;
     }
     
     this._interval = setTimeout(this.tick.context(this), this.delay());
-    this.trigger(new SPITFIRE.utils.TimerEvent(SPITFIRE.events.TimerEvent.TIMER));
+    this.trigger(new SPITFIRE.TimerEvent(SPITFIRE.TimerEvent.TIMER));
   }
 }
 
-SPITFIRE.Class(SPITFIRE.utils.Timer);
+SPITFIRE.Class(SPITFIRE.Timer);

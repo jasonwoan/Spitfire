@@ -1,12 +1,10 @@
-SPITFIRE.tasks = SPITFIRE.tasks || {};
-
 //--------------------------------------
-// SPITFIRE.tasks.JQueryEffectTask
+// SPITFIRE.JQueryEffectTask
 //--------------------------------------
 
-SPITFIRE.tasks.JQueryEffectTask = function(target, effect) {
+SPITFIRE.JQueryEffectTask = function(target, effect) {
   this.callSuper();
-  this.qualifiedClassName('SPITFIRE.tasks.JQueryEffectTask');
+  this.qualifiedClassName('SPITFIRE.JQueryEffectTask');
   
   var args = SPITFIRE.slice(arguments, 2, arguments.length - 1);
   
@@ -19,10 +17,10 @@ SPITFIRE.tasks.JQueryEffectTask = function(target, effect) {
   this.args(args);
 };
 
-SPITFIRE.tasks.JQueryEffectTask.superclass = SPITFIRE.tasks.Task;
-SPITFIRE.tasks.JQueryEffectTask.synthesizedProperties = ['target', 'effect', 'args'];
+SPITFIRE.JQueryEffectTask.superclass = SPITFIRE.Task;
+SPITFIRE.JQueryEffectTask.synthesizedProperties = ['target', 'effect', 'args'];
 
-SPITFIRE.tasks.JQueryEffectTask.prototype = {
+SPITFIRE.JQueryEffectTask.prototype = {
 
   //--------------------------------------
   // Event Handlers
@@ -46,4 +44,4 @@ SPITFIRE.tasks.JQueryEffectTask.prototype = {
   }
 };
 
-SPITFIRE.Class(SPITFIRE.tasks.JQueryEffectTask);
+SPITFIRE.Class(SPITFIRE.JQueryEffectTask);

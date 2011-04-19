@@ -1,21 +1,19 @@
-SPITFIRE.tasks = SPITFIRE.tasks || {};
-
 //--------------------------------------
-// SPITFIRE.tasks.ParallelTask
+// SPITFIRE.ParallelTask
 //--------------------------------------
 
-SPITFIRE.tasks.ParallelTask = function() {
+SPITFIRE.ParallelTask = function() {
   this.callSuper();
-  this.qualifiedClassName('SPITFIRE.tasks.ParallelTask');
+  this.qualifiedClassName('SPITFIRE.ParallelTask');
   
   if (arguments.length > 0) {
     this.tasks(arguments);
   }
 };
 
-SPITFIRE.tasks.ParallelTask.superclass = SPITFIRE.tasks.TaskManager;
+SPITFIRE.ParallelTask.superclass = SPITFIRE.TaskManager;
 
-SPITFIRE.tasks.ParallelTask.prototype = {
+SPITFIRE.ParallelTask.prototype = {
   //--------------------------------------
   // Event Handlers
   //--------------------------------------
@@ -25,7 +23,7 @@ SPITFIRE.tasks.ParallelTask.prototype = {
 		if (this.debug()) {
 			log("taskComplete " + task);
 		}
-		task.unbind(SPITFIRE.events.Event.COMPLETE, this.taskCompleteHandler.context(this));
+		task.unbind(SPITFIRE.Event.COMPLETE, this.taskCompleteHandler.context(this));
 		this._createdTasks.push(task);
 		if (this._createdTasks.length == this.tasks().length) {
 		  if (this.debug()) {
@@ -45,7 +43,7 @@ SPITFIRE.tasks.ParallelTask.prototype = {
       var i, len;
       for (i = 0, len = this.tasks().length; i < len; i += 1) {
         	var task = this.tasks()[i];
-        	task.bind(SPITFIRE.events.Event.COMPLETE, this.taskCompleteHandler.context(this));
+        	task.bind(SPITFIRE.Event.COMPLETE, this.taskCompleteHandler.context(this));
         	if (this.debug()) {
         	 log('taskStart ' + task);
         	}
@@ -61,4 +59,4 @@ SPITFIRE.tasks.ParallelTask.prototype = {
   }
 };
 
-SPITFIRE.Class(SPITFIRE.tasks.ParallelTask);
+SPITFIRE.Class(SPITFIRE.ParallelTask);

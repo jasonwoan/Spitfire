@@ -1,12 +1,10 @@
-SPITFIRE.display = SPITFIRE.display || {};
-
 //--------------------------------------
-// SPITFIRE.display.DisplayObject
+// SPITFIRE.DisplayObject
 //--------------------------------------
 
-SPITFIRE.display.DisplayObject = function() {
+SPITFIRE.DisplayObject = function() {
   this.callSuper();
-  this.qualifiedClassName('SPITFIRE.display.DisplayObject');
+  this.qualifiedClassName('SPITFIRE.DisplayObject');
   this._scaleX = 1;
   this._scaleY = 1;
   this._scale = 1;
@@ -14,8 +12,8 @@ SPITFIRE.display.DisplayObject = function() {
   this._z = 1;
 };
 
-SPITFIRE.display.DisplayObject.superclass = SPITFIRE.events.EventDispatcher;
-SPITFIRE.display.DisplayObject.synthesizedProperties = [
+SPITFIRE.DisplayObject.superclass = SPITFIRE.EventDispatcher;
+SPITFIRE.DisplayObject.synthesizedProperties = [
   '$this',
   'l',
   't',
@@ -28,7 +26,7 @@ SPITFIRE.display.DisplayObject.synthesizedProperties = [
   'z'
 ];
 
-SPITFIRE.display.DisplayObject.prototype = {
+SPITFIRE.DisplayObject.prototype = {
 
   //--------------------------------------
   // Getters / Setters
@@ -118,7 +116,7 @@ SPITFIRE.display.DisplayObject.prototype = {
     
     // handle custom properties
     for (var prop in properties) {
-      if (SPITFIRE.isSynthesizedProperty(prop, SPITFIRE.display.DisplayObject)) {
+      if (SPITFIRE.isSynthesizedProperty(prop, SPITFIRE.DisplayObject)) {
         // create a placeholder property to tween
         var placeHolderName = prop + 'AnimationValue';
         properties[placeHolderName] = properties[prop];
@@ -181,4 +179,4 @@ SPITFIRE.display.DisplayObject.prototype = {
   }
 };
 
-SPITFIRE.Class(SPITFIRE.display.DisplayObject);
+SPITFIRE.Class(SPITFIRE.DisplayObject);

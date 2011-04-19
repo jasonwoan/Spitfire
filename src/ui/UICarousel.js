@@ -1,12 +1,10 @@
-SPITFIRE.ui = SPITFIRE.ui || {};
-
 //--------------------------------------
-// SPITFIRE.ui.UICarousel
+// SPITFIRE.UICarousel
 //--------------------------------------
 
-SPITFIRE.ui.UICarousel = function() {
+SPITFIRE.UICarousel = function() {
   this.callSuper();
-  this.qualifiedClassName('SPITFIRE.ui.UICarousel');
+  this.qualifiedClassName('SPITFIRE.UICarousel');
   this._items = [];
   this._itemHeight = 200;
   this._neighbors = 2;
@@ -16,8 +14,8 @@ SPITFIRE.ui.UICarousel = function() {
   this._positionIndex = 0;
 };
 
-SPITFIRE.ui.UICarousel.superclass = SPITFIRE.display.DisplayObject;
-SPITFIRE.ui.UICarousel.synthesizedProperties = [
+SPITFIRE.UICarousel.superclass = SPITFIRE.DisplayObject;
+SPITFIRE.UICarousel.synthesizedProperties = [
   'items',
   'center',
   'itemHeight',
@@ -30,7 +28,7 @@ SPITFIRE.ui.UICarousel.synthesizedProperties = [
   'scaleRatio'
 ];
 
-SPITFIRE.ui.UICarousel.prototype = {
+SPITFIRE.UICarousel.prototype = {
 
   //--------------------------------------
   // Getters / Setters
@@ -112,7 +110,7 @@ SPITFIRE.ui.UICarousel.prototype = {
     
     this._positionIndex = value;
     
-    this.trigger(new SPITFIRE.events.Event(SPITFIRE.events.Event.CHANGE));
+    this.trigger(new SPITFIRE.Event(SPITFIRE.Event.CHANGE));
   },
 
   //--------------------------------------
@@ -123,7 +121,7 @@ SPITFIRE.ui.UICarousel.prototype = {
     this.callSuper();
     
     // set center point
-    this.center(new SPITFIRE.geom.Point(~~(this.w() * 0.5), ~~(this.h() * 0.5)));
+    this.center(new SPITFIRE.Point(~~(this.w() * 0.5), ~~(this.h() * 0.5)));
     
     // add class to element
     this.$this().addClass('sf-carousel');
@@ -218,4 +216,4 @@ SPITFIRE.ui.UICarousel.prototype = {
   }
 };
 
-SPITFIRE.Class(SPITFIRE.ui.UICarousel);
+SPITFIRE.Class(SPITFIRE.UICarousel);

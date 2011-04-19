@@ -1,18 +1,16 @@
-SPITFIRE.ui = SPITFIRE.ui || {};
-
 //--------------------------------------
-// SPITFIRE.ui.UICarouselItem
+// SPITFIRE.UICarouselItem
 //--------------------------------------
 
-SPITFIRE.ui.UICarouselItem = function() {
+SPITFIRE.UICarouselItem = function() {
   this.callSuper();
-  this.qualifiedClassName('SPITFIRE.ui.UICarouselItem');
+  this.qualifiedClassName('SPITFIRE.UICarouselItem');
   this._itemHeight = 100;
   this._isImgInitialized = false;
 };
 
-SPITFIRE.ui.UICarouselItem.superclass = SPITFIRE.display.DisplayObject;
-SPITFIRE.ui.UICarouselItem.synthesizedProperties = [
+SPITFIRE.UICarouselItem.superclass = SPITFIRE.DisplayObject;
+SPITFIRE.UICarouselItem.synthesizedProperties = [
   'index',
   'carouselIndex',
   'carousel',
@@ -22,7 +20,7 @@ SPITFIRE.ui.UICarouselItem.synthesizedProperties = [
   'isImgInitialized'
 ];
 
-SPITFIRE.ui.UICarouselItem.prototype = {
+SPITFIRE.UICarouselItem.prototype = {
 
   //--------------------------------------
   // Getters / Setters
@@ -85,8 +83,8 @@ SPITFIRE.ui.UICarouselItem.prototype = {
   },
   
   resizeImage: function() {
-    var rect = new SPITFIRE.geom.Rectangle(0, 0, this.img().w(), this.img().h());
-    var newRect = SPITFIRE.utils.RatioUtils.scaleWidth(rect, this._itemHeight, true);
+    var rect = new SPITFIRE.Rectangle(0, 0, this.img().w(), this.img().h());
+    var newRect = SPITFIRE.RatioUtils.scaleWidth(rect, this._itemHeight, true);
     this.img().w(newRect.width());
     this.img().h(newRect.height());
   },
@@ -105,4 +103,4 @@ SPITFIRE.ui.UICarouselItem.prototype = {
   }
 };
 
-SPITFIRE.Class(SPITFIRE.ui.UICarouselItem);
+SPITFIRE.Class(SPITFIRE.UICarouselItem);

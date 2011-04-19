@@ -453,40 +453,36 @@ SPITFIRE.Error.prototype = {
 }
 
 SPITFIRE.Class(SPITFIRE.Error);
-SPITFIRE.events = SPITFIRE.events || {};
-
 //--------------------------------------
 // Event
 //--------------------------------------
 
-SPITFIRE.events.Event = function(type, data, bubbles, cancelable) {
+SPITFIRE.Event = function(type, data, bubbles, cancelable) {
   this.bubbles(bubbles || false);
   this.cancelable(cancelable || false);
   this.data(data || {});
   this.type(type);
 };
 
-SPITFIRE.events.Event.COMPLETE = 'complete';
-SPITFIRE.events.Event.CHANGE = 'change';
+SPITFIRE.Event.COMPLETE = 'complete';
+SPITFIRE.Event.CHANGE = 'change';
 
-SPITFIRE.events.Event.synthesizedProperties = ['bubbles', 'cancelable', 'data', 'target', 'type'];
-SPITFIRE.events.Event.superclass = SPITFIRE.Object;
-SPITFIRE.Class(SPITFIRE.events.Event);
-SPITFIRE.events = SPITFIRE.events || {};
-
+SPITFIRE.Event.synthesizedProperties = ['bubbles', 'cancelable', 'data', 'target', 'type'];
+SPITFIRE.Event.superclass = SPITFIRE.Object;
+SPITFIRE.Class(SPITFIRE.Event);
 //--------------------------------------
 // EventDispatcher
 //--------------------------------------
 
-SPITFIRE.events.EventDispatcher = function() {
+SPITFIRE.EventDispatcher = function() {
   this.callSuper();
-  this.qualifiedClassName('SPITFIRE.events.EventDispatcher');
+  this.qualifiedClassName('SPITFIRE.EventDispatcher');
   this._eventListeners = {};
 };
 
-SPITFIRE.events.EventDispatcher.superclass = SPITFIRE.Object;
+SPITFIRE.EventDispatcher.superclass = SPITFIRE.Object;
 
-SPITFIRE.events.EventDispatcher.prototype = {
+SPITFIRE.EventDispatcher.prototype = {
   bind: function(type, handler) {
     if (!this._eventListeners[type]) {
       this._eventListeners[type] = [];
@@ -514,16 +510,14 @@ SPITFIRE.events.EventDispatcher.prototype = {
   }
 };
 
-SPITFIRE.Class(SPITFIRE.events.EventDispatcher);
-SPITFIRE.display = SPITFIRE.display || {};
-
+SPITFIRE.Class(SPITFIRE.EventDispatcher);
 //--------------------------------------
-// SPITFIRE.display.DisplayObject
+// SPITFIRE.DisplayObject
 //--------------------------------------
 
-SPITFIRE.display.DisplayObject = function() {
+SPITFIRE.DisplayObject = function() {
   this.callSuper();
-  this.qualifiedClassName('SPITFIRE.display.DisplayObject');
+  this.qualifiedClassName('SPITFIRE.DisplayObject');
   this._scaleX = 1;
   this._scaleY = 1;
   this._scale = 1;
@@ -531,8 +525,8 @@ SPITFIRE.display.DisplayObject = function() {
   this._z = 1;
 };
 
-SPITFIRE.display.DisplayObject.superclass = SPITFIRE.events.EventDispatcher;
-SPITFIRE.display.DisplayObject.synthesizedProperties = [
+SPITFIRE.DisplayObject.superclass = SPITFIRE.EventDispatcher;
+SPITFIRE.DisplayObject.synthesizedProperties = [
   '$this',
   'l',
   't',
@@ -545,7 +539,7 @@ SPITFIRE.display.DisplayObject.synthesizedProperties = [
   'z'
 ];
 
-SPITFIRE.display.DisplayObject.prototype = {
+SPITFIRE.DisplayObject.prototype = {
 
   //--------------------------------------
   // Getters / Setters
@@ -635,7 +629,7 @@ SPITFIRE.display.DisplayObject.prototype = {
     
     // handle custom properties
     for (var prop in properties) {
-      if (SPITFIRE.isSynthesizedProperty(prop, SPITFIRE.display.DisplayObject)) {
+      if (SPITFIRE.isSynthesizedProperty(prop, SPITFIRE.DisplayObject)) {
         // create a placeholder property to tween
         var placeHolderName = prop + 'AnimationValue';
         properties[placeHolderName] = properties[prop];
@@ -698,28 +692,26 @@ SPITFIRE.display.DisplayObject.prototype = {
   }
 };
 
-SPITFIRE.Class(SPITFIRE.display.DisplayObject);
-SPITFIRE.tasks = SPITFIRE.tasks || {};
-
+SPITFIRE.Class(SPITFIRE.DisplayObject);
 //--------------------------------------
-// SPITFIRE.tasks.Task
+// SPITFIRE.Task
 //--------------------------------------
 
-SPITFIRE.tasks.Task = function() {
+SPITFIRE.Task = function() {
   this.callSuper();
-  this.qualifiedClassName('SPITFIRE.tasks.Task');
+  this.qualifiedClassName('SPITFIRE.Task');
   this.progress(0);
 };
 
-SPITFIRE.tasks.Task.superclass = SPITFIRE.events.EventDispatcher;
-SPITFIRE.tasks.Task.synthesizedProperties = [
+SPITFIRE.Task.superclass = SPITFIRE.EventDispatcher;
+SPITFIRE.Task.synthesizedProperties = [
   'progress',
   'progressive',
   'name',
   'debug'
 ];
 
-SPITFIRE.tasks.Task.prototype = {
+SPITFIRE.Task.prototype = {
   //--------------------------------------
   // Methods
   //--------------------------------------
@@ -730,7 +722,7 @@ SPITFIRE.tasks.Task.prototype = {
   
   complete: function() {
     this.progress(1);
-    this.trigger(new SPITFIRE.events.Event(SPITFIRE.events.Event.COMPLETE));
+    this.trigger(new SPITFIRE.Event(SPITFIRE.Event.COMPLETE));
   },
   
   toString: function() {
@@ -738,26 +730,24 @@ SPITFIRE.tasks.Task.prototype = {
   }
 };
 
-SPITFIRE.Class(SPITFIRE.tasks.Task);
-SPITFIRE.tasks = SPITFIRE.tasks || {};
-
+SPITFIRE.Class(SPITFIRE.Task);
 //--------------------------------------
-// SPITFIRE.tasks.TaskManager
+// SPITFIRE.TaskManager
 //--------------------------------------
 
-SPITFIRE.tasks.TaskManager = function() {
+SPITFIRE.TaskManager = function() {
   this._progressiveTasks = [];
   this._createdTasks = [];
   this._tasks = [];
   
   this.callSuper();
-  this.qualifiedClassName('SPITFIRE.tasks.TaskManager');
+  this.qualifiedClassName('SPITFIRE.TaskManager');
 };
 
-SPITFIRE.tasks.TaskManager.superclass = SPITFIRE.tasks.Task;
-SPITFIRE.tasks.TaskManager.synthesizedProperties = ['tasks'];
+SPITFIRE.TaskManager.superclass = SPITFIRE.Task;
+SPITFIRE.TaskManager.synthesizedProperties = ['tasks'];
 
-SPITFIRE.tasks.TaskManager.prototype = {
+SPITFIRE.TaskManager.prototype = {
   //--------------------------------------
   // Getters / Setters
   //--------------------------------------
@@ -912,98 +902,88 @@ SPITFIRE.tasks.TaskManager.prototype = {
   }
 };
 
-SPITFIRE.Class(SPITFIRE.tasks.TaskManager);
-SPITFIRE.events = SPITFIRE.events || {};
-
+SPITFIRE.Class(SPITFIRE.TaskManager);
 //--------------------------------------
-// SPITFIRE.events.ModelEvent
+// SPITFIRE.ModelEvent
 //--------------------------------------
 
-SPITFIRE.events.ModelEvent = function(type, data, bubbles, cancelable) {
+SPITFIRE.ModelEvent = function(type, data, bubbles, cancelable) {
   this.callSuper(type, data, bubbles, cancelable);
 };
 
-SPITFIRE.events.ModelEvent.DATA_UPDATE = 'dataUpdate';
+SPITFIRE.ModelEvent.DATA_UPDATE = 'dataUpdate';
 
-SPITFIRE.events.ModelEvent.superclass = SPITFIRE.events.Event;
-SPITFIRE.Class(SPITFIRE.events.ModelEvent);
-SPITFIRE.events = SPITFIRE.events || {};
-
+SPITFIRE.ModelEvent.superclass = SPITFIRE.Event;
+SPITFIRE.Class(SPITFIRE.ModelEvent);
 //--------------------------------------
-// SPITFIRE.events.StateEvent
+// SPITFIRE.StateEvent
 //--------------------------------------
 
-SPITFIRE.events.StateEvent = function(type, data, bubbles, cancelable) {
+SPITFIRE.StateEvent = function(type, data, bubbles, cancelable) {
   this.callSuper(type, data, bubbles, cancelable);
 };
 
-SPITFIRE.events.StateEvent.CHILD_STATE_CHANGE = 'childStateChange';
-SPITFIRE.events.StateEvent.STATE_CHANGE = 'stateChange';
-SPITFIRE.events.StateEvent.STATE_ACTIVATED = 'stateActivated';
+SPITFIRE.StateEvent.CHILD_STATE_CHANGE = 'childStateChange';
+SPITFIRE.StateEvent.STATE_CHANGE = 'stateChange';
+SPITFIRE.StateEvent.STATE_ACTIVATED = 'stateActivated';
 
-SPITFIRE.events.StateEvent.superclass = SPITFIRE.events.Event;
-SPITFIRE.Class(SPITFIRE.events.StateEvent);
-SPITFIRE.events = SPITFIRE.events || {};
-
+SPITFIRE.StateEvent.superclass = SPITFIRE.Event;
+SPITFIRE.Class(SPITFIRE.StateEvent);
 //--------------------------------------
 // StateManagerEvent
 //--------------------------------------
 
-SPITFIRE.events.StateManagerEvent = function(type, data, bubbles, cancelable, state) {
+SPITFIRE.StateManagerEvent = function(type, data, bubbles, cancelable, state) {
   this.callSuper(type, data, bubbles, cancelable);
   this.state(state);
-  this.qualifiedClassName('SPITFIRE.events.StateManagerEvent');
+  this.qualifiedClassName('SPITFIRE.StateManagerEvent');
 };
 
-SPITFIRE.events.StateManagerEvent.LOAD_IN_START = 'loadInStart';
-SPITFIRE.events.StateManagerEvent.LOAD_IN_COMPLETE = 'loadInComplete';
-SPITFIRE.events.StateManagerEvent.TRANSITION_IN_START = 'transitionInStart';
-SPITFIRE.events.StateManagerEvent.TRANSITION_IN_COMPLETE = 'transitionInComplete';
-SPITFIRE.events.StateManagerEvent.LOAD_OUT_START = 'loadOutStart';
-SPITFIRE.events.StateManagerEvent.LOAD_OUT_COMPLETE = 'loadOutComplete';
-SPITFIRE.events.StateManagerEvent.TRANSITION_OUT_START = 'transitionOutStart';
-SPITFIRE.events.StateManagerEvent.TRANSITION_OUT_COMPLETE = 'transitionOutComplete';
-SPITFIRE.events.StateManagerEvent.TRANSITION_IN_STATE_COMPLETE = 'transitionInStateComplete';
-SPITFIRE.events.StateManagerEvent.TRANSITION_OUT_STATE_COMPLETE = 'transitionOutStateComplete';
-SPITFIRE.events.StateManagerEvent.LOAD_IN_STATE_COMPLETE = 'loadInStateComplete';
-SPITFIRE.events.StateManagerEvent.LOAD_OUT_STATE_COMPLETE = 'loadOutStateComplete';
-SPITFIRE.events.StateManagerEvent.DEEPLINK = 'deeplink';
+SPITFIRE.StateManagerEvent.LOAD_IN_START = 'loadInStart';
+SPITFIRE.StateManagerEvent.LOAD_IN_COMPLETE = 'loadInComplete';
+SPITFIRE.StateManagerEvent.TRANSITION_IN_START = 'transitionInStart';
+SPITFIRE.StateManagerEvent.TRANSITION_IN_COMPLETE = 'transitionInComplete';
+SPITFIRE.StateManagerEvent.LOAD_OUT_START = 'loadOutStart';
+SPITFIRE.StateManagerEvent.LOAD_OUT_COMPLETE = 'loadOutComplete';
+SPITFIRE.StateManagerEvent.TRANSITION_OUT_START = 'transitionOutStart';
+SPITFIRE.StateManagerEvent.TRANSITION_OUT_COMPLETE = 'transitionOutComplete';
+SPITFIRE.StateManagerEvent.TRANSITION_IN_STATE_COMPLETE = 'transitionInStateComplete';
+SPITFIRE.StateManagerEvent.TRANSITION_OUT_STATE_COMPLETE = 'transitionOutStateComplete';
+SPITFIRE.StateManagerEvent.LOAD_IN_STATE_COMPLETE = 'loadInStateComplete';
+SPITFIRE.StateManagerEvent.LOAD_OUT_STATE_COMPLETE = 'loadOutStateComplete';
+SPITFIRE.StateManagerEvent.DEEPLINK = 'deeplink';
 
-SPITFIRE.events.StateManagerEvent.superclass = SPITFIRE.events.Event;
-SPITFIRE.events.StateManagerEvent.synthesizedProperties = ['state'];
-SPITFIRE.Class(SPITFIRE.events.StateManagerEvent);
-SPITFIRE.events = SPITFIRE.events || {};
-
+SPITFIRE.StateManagerEvent.superclass = SPITFIRE.Event;
+SPITFIRE.StateManagerEvent.synthesizedProperties = ['state'];
+SPITFIRE.Class(SPITFIRE.StateManagerEvent);
 //--------------------------------------
 // TimerEvent
 //--------------------------------------
 
-SPITFIRE.events.TimerEvent = function(type, data, bubbles, cancelable) {  
+SPITFIRE.TimerEvent = function(type, data, bubbles, cancelable) {  
   this.callSuper(type, data, bubbles, cancelable);
-  this.qualifiedClassName('SPITFIRE.events.TimerEvent');
+  this.qualifiedClassName('SPITFIRE.TimerEvent');
 };
 
-SPITFIRE.events.TimerEvent.TIMER = 'timer';
-SPITFIRE.events.TimerEvent.TIMER_COMPLETE = 'timerComplete';
+SPITFIRE.TimerEvent.TIMER = 'timer';
+SPITFIRE.TimerEvent.TIMER_COMPLETE = 'timerComplete';
 
-SPITFIRE.events.TimerEvent.superclass = SPITFIRE.events.Event;
-SPITFIRE.Class(SPITFIRE.events.TimerEvent);
-SPITFIRE.geom = SPITFIRE.geom || {};
-
+SPITFIRE.TimerEvent.superclass = SPITFIRE.Event;
+SPITFIRE.Class(SPITFIRE.TimerEvent);
 //--------------------------------------
-// SPITFIRE.geom.Point
+// SPITFIRE.Point
 //--------------------------------------
 
-SPITFIRE.geom.Point = function(x, y) {
+SPITFIRE.Point = function(x, y) {
   this.callSuper();
-  this.qualifiedClassName('SPITFIRE.geom.Point');
+  this.qualifiedClassName('SPITFIRE.Point');
   this.x = x;
   this.y = y;
 };
 
-SPITFIRE.geom.Point.superclass = SPITFIRE.Object;
+SPITFIRE.Point.superclass = SPITFIRE.Object;
 
-SPITFIRE.geom.Point.prototype = {  
+SPITFIRE.Point.prototype = {  
   //--------------------------------------
   // Methods
   //--------------------------------------
@@ -1013,16 +993,14 @@ SPITFIRE.geom.Point.prototype = {
   }
 };
 
-SPITFIRE.Class(SPITFIRE.geom.Point);
-SPITFIRE.geom = SPITFIRE.geom || {};
-
+SPITFIRE.Class(SPITFIRE.Point);
 //--------------------------------------
-// SPITFIRE.geom.Rectangle
+// SPITFIRE.Rectangle
 //--------------------------------------
 
-SPITFIRE.geom.Rectangle = function(x, y, width, height) {
+SPITFIRE.Rectangle = function(x, y, width, height) {
   this.callSuper();
-  this.qualifiedClassName('SPITFIRE.geom.Rectangle');
+  this.qualifiedClassName('SPITFIRE.Rectangle');
   
   this.x(x);
   this.y(y);
@@ -1030,8 +1008,8 @@ SPITFIRE.geom.Rectangle = function(x, y, width, height) {
   this.height(height);
 };
 
-SPITFIRE.geom.Rectangle.superclass = SPITFIRE.Object;
-SPITFIRE.geom.Rectangle.synthesizedProperties = [
+SPITFIRE.Rectangle.superclass = SPITFIRE.Object;
+SPITFIRE.Rectangle.synthesizedProperties = [
   'x',
   'y',
   'width',
@@ -1045,7 +1023,7 @@ SPITFIRE.geom.Rectangle.synthesizedProperties = [
   'topLeft'
 ];
 
-SPITFIRE.geom.Rectangle.prototype = {
+SPITFIRE.Rectangle.prototype = {
   //--------------------------------------
   // Getters / Setters
   //--------------------------------------
@@ -1067,15 +1045,15 @@ SPITFIRE.geom.Rectangle.prototype = {
   },
   
   getSize: function() {
-    return new SPITFIRE.geom.Point(this.width(), this.height());
+    return new SPITFIRE.Point(this.width(), this.height());
   },
   
   getTopLeft: function() {
-    return new SPITFIRE.geom.Point(this.top(), this.left());
+    return new SPITFIRE.Point(this.top(), this.left());
   },
   
   getBottomRight: function() {
-    return new SPITFIRE.geom.Point(this.bottom(), this.right());
+    return new SPITFIRE.Point(this.bottom(), this.right());
   },
   
   //--------------------------------------
@@ -1083,7 +1061,7 @@ SPITFIRE.geom.Rectangle.prototype = {
   //--------------------------------------
   
   clone: function() {
-    return new SPITFIRE.geom.Rectangle(this.x(), this.y(), this.width(), this.height());
+    return new SPITFIRE.Rectangle(this.x(), this.y(), this.width(), this.height());
   },
   
   toString: function() {
@@ -1091,16 +1069,14 @@ SPITFIRE.geom.Rectangle.prototype = {
   }
 };
 
-SPITFIRE.Class(SPITFIRE.geom.Rectangle);
-SPITFIRE.math = SPITFIRE.math || {};
-
+SPITFIRE.Class(SPITFIRE.Rectangle);
 //--------------------------------------
 // Percent
 //--------------------------------------
 // Port of org.casalib.math.Percent from CASA lib for ActionScript 3.0
 // http://casalib.org/
 
-SPITFIRE.math.Percent = function(percentage, isDecimalPercentage) {
+SPITFIRE.Percent = function(percentage, isDecimalPercentage) {
   this.callSuper();
   
   percentage = isDecimalPercentage || 0;
@@ -1113,7 +1089,7 @@ SPITFIRE.math.Percent = function(percentage, isDecimalPercentage) {
   }
 };
 
-SPITFIRE.math.Percent.superclass = SPITFIRE.Object;
+SPITFIRE.Percent.superclass = SPITFIRE.Object;
 SPITFIRE.synthesizedProperties = ['percentage', 'decimalPercentage'];
 
 SPITFIRE.prototype = {
@@ -1138,7 +1114,7 @@ SPITFIRE.prototype = {
   },
   
   clone: function() {
-    return new SPITFIRE.math.Percent(this.decimalPercentage());
+    return new SPITFIRE.Percent(this.decimalPercentage());
   },
   
   valueOf: function() {
@@ -1150,22 +1126,20 @@ SPITFIRE.prototype = {
   }
 };
 
-SPITFIRE.Class(SPITFIRE.math.Percent);
-SPITFIRE.model = SPITFIRE.model || {};
-
+SPITFIRE.Class(SPITFIRE.Percent);
 //--------------------------------------
-// SPITFIRE.model.Model
+// SPITFIRE.Model
 //--------------------------------------
 
-SPITFIRE.model.Model = function() {
+SPITFIRE.Model = function() {
   this.callSuper();
-  this.qualifiedClassName('SPITFIRE.model.Model');
+  this.qualifiedClassName('SPITFIRE.Model');
 };
 
-SPITFIRE.model.Model.superclass = SPITFIRE.events.EventDispatcher;
-SPITFIRE.model.Model.synthesizedProperties = ['data'];
+SPITFIRE.Model.superclass = SPITFIRE.EventDispatcher;
+SPITFIRE.Model.synthesizedProperties = ['data'];
 
-SPITFIRE.model.Model.prototype = {
+SPITFIRE.Model.prototype = {
 
   //--------------------------------------
   // Getters / Setters
@@ -1173,7 +1147,7 @@ SPITFIRE.model.Model.prototype = {
   
   setData: function(value) {
     this._data = value;
-    this.trigger(new SPITFIRE.events.ModelEvent(SPITFIRE.events.ModelEvent.DATA_UPDATE));
+    this.trigger(new SPITFIRE.ModelEvent(SPITFIRE.ModelEvent.DATA_UPDATE));
   },
 
   //--------------------------------------
@@ -1185,39 +1159,35 @@ SPITFIRE.model.Model.prototype = {
   }
 };
 
-SPITFIRE.Class(SPITFIRE.model.Model);
-SPITFIRE.state = SPITFIRE.state || {};
-
+SPITFIRE.Class(SPITFIRE.Model);
 //--------------------------------------
 // Redirect
 //--------------------------------------
 
-SPITFIRE.state.Redirect = function(location, newLocation) {
+SPITFIRE.Redirect = function(location, newLocation) {
   this.callSuper();
-  this.qualifiedClassName('SPITFIRE.state.Redirect');
+  this.qualifiedClassName('SPITFIRE.Redirect');
   this.location(location);
   this.newLocation(newLocation);
 }
 
-SPITFIRE.state.Redirect.superclass = SPITFIRE.Object;
-SPITFIRE.state.Redirect.synthesizedProperties = ['location', 'newLocation'];
+SPITFIRE.Redirect.superclass = SPITFIRE.Object;
+SPITFIRE.Redirect.synthesizedProperties = ['location', 'newLocation'];
 
-SPITFIRE.Class(SPITFIRE.state.Redirect);
-SPITFIRE.state = SPITFIRE.state || {};
-
+SPITFIRE.Class(SPITFIRE.Redirect);
 //--------------------------------------
-// SPITFIRE.state.State
+// SPITFIRE.State
 //--------------------------------------
 
-SPITFIRE.state.State = function(name) {
+SPITFIRE.State = function(name) {
   this.callSuper();
   this.name(name);
   this._children = [];
-  this.qualifiedClassName('SPITFIRE.state.State');
+  this.qualifiedClassName('SPITFIRE.State');
 };
 
-SPITFIRE.state.State.superclass = SPITFIRE.events.EventDispatcher;
-SPITFIRE.state.State.synthesizedProperties = [
+SPITFIRE.State.superclass = SPITFIRE.EventDispatcher;
+SPITFIRE.State.synthesizedProperties = [
   'root',
   'children',
   'stateManager',
@@ -1243,7 +1213,7 @@ SPITFIRE.state.State.synthesizedProperties = [
   'childClass'
 ];
 
-SPITFIRE.state.State.prototype = {
+SPITFIRE.State.prototype = {
   //--------------------------------------
   // Getters / Setters
   //--------------------------------------
@@ -1315,7 +1285,7 @@ SPITFIRE.state.State.prototype = {
   setSelected: function(value) {
     if (value != this.selected()) {
       this._selected = value;
-      this.trigger(new SPITFIRE.events.StateEvent(SPITFIRE.events.StateEvent.STATE_CHANGE));
+      this.trigger(new SPITFIRE.StateEvent(SPITFIRE.StateEvent.STATE_CHANGE));
     }
   },
   
@@ -1360,7 +1330,7 @@ SPITFIRE.state.State.prototype = {
       this._selectedChild = undefined;
     }
     
-    this.trigger(new SPITFIRE.events.StateEvent(SPITFIRE.events.StateEvent.CHILD_STATE_CHANGE));
+    this.trigger(new SPITFIRE.StateEvent(SPITFIRE.StateEvent.CHILD_STATE_CHANGE));
   },
   
   //--------------------------------------
@@ -1372,7 +1342,7 @@ SPITFIRE.state.State.prototype = {
     child.stateManager(this.stateManager());
     child.root(this.root());
     this.children().push(child);
-    child.bind(SPITFIRE.events.StateEvent.STATE_CHANGE, this.childChangeHandler.context(this));
+    child.bind(SPITFIRE.StateEvent.STATE_CHANGE, this.childChangeHandler.context(this));
   },
   
   addChildAt: function(child, index) {
@@ -1380,7 +1350,7 @@ SPITFIRE.state.State.prototype = {
     child.stateManager(this.stateManager());
     child.root(this.root());
     this.children().splice(index, 0, child);
-    child.bind(SPITFIRE.events.StateEvent.STATE_CHANGE, this.childChangeHandler.context(this));
+    child.bind(SPITFIRE.StateEvent.STATE_CHANGE, this.childChangeHandler.context(this));
     return child;
   },
   
@@ -1430,7 +1400,7 @@ SPITFIRE.state.State.prototype = {
   
   removeChildAt: function(index) {
     var child = this.getChildAt(index);
-    child.unbind(SPITFIRE.events.StateEvent.STATE_CHANGE, this.childChangeHandler.context(this));
+    child.unbind(SPITFIRE.StateEvent.STATE_CHANGE, this.childChangeHandler.context(this));
     this.children().splice(index, 1);
     return child;
   },
@@ -1541,21 +1511,19 @@ SPITFIRE.state.State.prototype = {
   }
 };
 
-SPITFIRE.Class(SPITFIRE.state.State);
-SPITFIRE.state = SPITFIRE.state || {};
-
+SPITFIRE.Class(SPITFIRE.State);
 //--------------------------------------
-// SPITFIRE.state.StateManager
+// SPITFIRE.StateManager
 //--------------------------------------
 
-SPITFIRE.state.StateManager = function(name, root) {
+SPITFIRE.StateManager = function(name, root) {
   this.callSuper();
   this.root(root);
-  this.qualifiedClassName('SPITFIRE.state.StateManager');
+  this.qualifiedClassName('SPITFIRE.StateManager');
   this.name(name || this.qualifiedClassName() + ~~(Math.random() * 100000));
-  this.pageViewType(SPITFIRE.state.StateManager.PAGE_VIEW_LOCATION);
-  this._progressTimer = new SPITFIRE.utils.Timer(33);
-  this._progressTimer.bind(SPITFIRE.events.TimerEvent.TIMER, this.taskManagerProgressHandler.context(this));
+  this.pageViewType(SPITFIRE.StateManager.PAGE_VIEW_LOCATION);
+  this._progressTimer = new SPITFIRE.Timer(33);
+  this._progressTimer.bind(SPITFIRE.TimerEvent.TIMER, this.taskManagerProgressHandler.context(this));
   this._transitionInPath;
   this._transitionWasInterrupted;
   this._isInTransition;
@@ -1564,11 +1532,11 @@ SPITFIRE.state.StateManager = function(name, root) {
   this._redirects = [];
 };
 
-SPITFIRE.state.StateManager.PAGE_VIEW_LOCATION = 'pageViewLocation';
-SPITFIRE.state.StateManager.PAGE_VIEW_NAME = 'pageViewName';
+SPITFIRE.StateManager.PAGE_VIEW_LOCATION = 'pageViewLocation';
+SPITFIRE.StateManager.PAGE_VIEW_NAME = 'pageViewName';
 
-SPITFIRE.state.StateManager.superclass = SPITFIRE.events.EventDispatcher;
-SPITFIRE.state.StateManager.synthesizedProperties = [
+SPITFIRE.StateManager.superclass = SPITFIRE.EventDispatcher;
+SPITFIRE.StateManager.synthesizedProperties = [
   'root',
   'deepLinking',
   'tree',
@@ -1585,7 +1553,7 @@ SPITFIRE.state.StateManager.synthesizedProperties = [
   'name'
 ];
 
-SPITFIRE.state.StateManager.prototype = {
+SPITFIRE.StateManager.prototype = {
   //--------------------------------------
   // Getters / Setters
   //--------------------------------------
@@ -1688,10 +1656,10 @@ SPITFIRE.state.StateManager.prototype = {
     if (this.trackPageViews()) {
   		var param;
   		switch(this.pageViewType()) {
-  			case SPITFIRE.state.StateManager.PAGE_VIEW_LOCATION:
+  			case SPITFIRE.StateManager.PAGE_VIEW_LOCATION:
   				param = this.location();
   			break;
-  			case SPITFIRE.state.StateManager.PAGE_VIEW_NAME:
+  			case SPITFIRE.StateManager.PAGE_VIEW_NAME:
   				param = this.location();
   			break;
   		}
@@ -1699,13 +1667,13 @@ SPITFIRE.state.StateManager.prototype = {
   },
   
   taskManagerCompleteHandler: function(event) {
-    this.taskManager().unbind(SPITFIRE.events.Event.COMPLETE, this.taskManagerCompleteHandler.context(this));
+    this.taskManager().unbind(SPITFIRE.Event.COMPLETE, this.taskManagerCompleteHandler.context(this));
 		if (this.taskManager().progressive()) {
 			this.taskManagerProgressHandler();
 			this._progressTimer.stop();
 		}
 		
-		this.trigger(new SPITFIRE.events.Event(this._currentTransition.transitionName() + "Complete"));
+		this.trigger(new SPITFIRE.Event(this._currentTransition.transitionName() + "Complete"));
 		this._currentTransition = null;
 		if (this._transitions.length > 0) {
 			this.startTransition();
@@ -1786,8 +1754,8 @@ SPITFIRE.state.StateManager.prototype = {
     
     this.deactivateStates(transitionOutPaths);
     
-    this._transitions.push(new SPITFIRE.state.TransitionProperties(transitionOutPaths.slice(), 'loadOut', false));
-    this._transitions.push(new SPITFIRE.state.TransitionProperties(transitionOutPaths.slice(), 'transitionOut', false));
+    this._transitions.push(new SPITFIRE.TransitionProperties(transitionOutPaths.slice(), 'loadOut', false));
+    this._transitions.push(new SPITFIRE.TransitionProperties(transitionOutPaths.slice(), 'transitionOut', false));
     
     var transitionInPaths = [];
     for (i = breakIndex, len = nextLocationArray.length; i < len; i+=1) {
@@ -1801,8 +1769,8 @@ SPITFIRE.state.StateManager.prototype = {
       transitionInPaths = this.checkForDefaultStates(this._transitionInPath);
     }
     
-    this._transitions.push(new SPITFIRE.state.TransitionProperties(transitionInPaths.slice(), 'loadIn', false));
-    this._transitions.push(new SPITFIRE.state.TransitionProperties(transitionInPaths.slice(), 'transitionIn', false));
+    this._transitions.push(new SPITFIRE.TransitionProperties(transitionInPaths.slice(), 'loadIn', false));
+    this._transitions.push(new SPITFIRE.TransitionProperties(transitionInPaths.slice(), 'transitionIn', false));
     
     this.startTransition();
   },
@@ -1890,16 +1858,16 @@ SPITFIRE.state.StateManager.prototype = {
   
   startTransition: function() {
     this._currentTransition = this._transitions.shift();
-		this.trigger(new SPITFIRE.events.Event(this._currentTransition.transitionName() + "Start"));
+		this.trigger(new SPITFIRE.Event(this._currentTransition.transitionName() + "Start"));
 		
-		this.taskManager(new SPITFIRE.tasks.SequentialTask());
+		this.taskManager(new SPITFIRE.SequentialTask());
 		
 		this.taskManager().name(this._currentTransition.transitionName());
 		if (this.debug()) {
 			this.taskManager().debug(this.debug());
 		}
 		
-		this.taskManager().bind(SPITFIRE.events.Event.COMPLETE, this.taskManagerCompleteHandler.context(this));
+		this.taskManager().bind(SPITFIRE.Event.COMPLETE, this.taskManagerCompleteHandler.context(this));
 		
 		var i, len;
 		
@@ -1923,14 +1891,14 @@ SPITFIRE.state.StateManager.prototype = {
 			if (this._currentTransition.transitionName() == "transitionOut") {
 				stateSelected = false;
 			}
-			this.taskManager().addTask(new SPITFIRE.tasks.PropertyTask(state, "selected", stateSelected));
+			this.taskManager().addTask(new SPITFIRE.PropertyTask(state, "selected", stateSelected));
 		}
 		if (this.taskManager().progress() == 1) {
 			this.taskManager().progressive(false);
 		}
 		if (this.taskManager().progressive()) {
 			if (this.preloader()) {
-				this.taskManager().addTaskAt(new SPITFIRE.tasks.PropertyTask(this.preloader(), "progress", 0), 0);
+				this.taskManager().addTaskAt(new SPITFIRE.PropertyTask(this.preloader(), "progress", 0), 0);
 				this.taskManager().addTaskAt(this.preloader().transitionIn(), 1);
 				this.taskManager().addTask(this.preloader().transitionOut());
 			}
@@ -1942,7 +1910,7 @@ SPITFIRE.state.StateManager.prototype = {
   
   addRedirect: function(location, newLocation) {
     this.removeRedirect(location);
-		this.redirects.push(new SPITFIRE.state.Redirect(location, newLocation));
+		this.redirects.push(new SPITFIRE.Redirect(location, newLocation));
   },
   
   removeRedirect: function(location) {
@@ -1974,39 +1942,35 @@ SPITFIRE.state.StateManager.prototype = {
   }
 };
 
-SPITFIRE.Class(SPITFIRE.state.StateManager);
-SPITFIRE.state = SPITFIRE.state || {};
-
+SPITFIRE.Class(SPITFIRE.StateManager);
 //--------------------------------------
-// SPITFIRE.state.TransitionProperties
+// SPITFIRE.TransitionProperties
 //--------------------------------------
 
-SPITFIRE.state.TransitionProperties = function(locations, transitionName, showPreloader) {
+SPITFIRE.TransitionProperties = function(locations, transitionName, showPreloader) {
   this.callSuper();
   this.locations(locations);
   this.transitionName(transitionName);
   this.showPreloader(showPreloader);
 }
 
-SPITFIRE.state.TransitionProperties.superclass = SPITFIRE.Object;
-SPITFIRE.state.TransitionProperties.synthesizedProperties = ['locations', 'transitionName', 'showPreloader', 'currentState'];
+SPITFIRE.TransitionProperties.superclass = SPITFIRE.Object;
+SPITFIRE.TransitionProperties.synthesizedProperties = ['locations', 'transitionName', 'showPreloader', 'currentState'];
 
-SPITFIRE.state.TransitionProperties.prototype = {
+SPITFIRE.TransitionProperties.prototype = {
   toString: function() {
     return this.transitionName();
   }
 }
 
-SPITFIRE.Class(SPITFIRE.state.TransitionProperties);
-SPITFIRE.tasks = SPITFIRE.tasks || {};
-
+SPITFIRE.Class(SPITFIRE.TransitionProperties);
 //--------------------------------------
-// SPITFIRE.tasks.FunctionTask
+// SPITFIRE.FunctionTask
 //--------------------------------------
 
-SPITFIRE.tasks.FunctionTask = function(context, method) {
+SPITFIRE.FunctionTask = function(context, method) {
   this.callSuper();
-  this.qualifiedClassName('SPITFIRE.tasks.FunctionTask');
+  this.qualifiedClassName('SPITFIRE.FunctionTask');
   this.method(method);
   this.context(context);
   this.args([]);
@@ -2016,10 +1980,10 @@ SPITFIRE.tasks.FunctionTask = function(context, method) {
   }
 };
 
-SPITFIRE.tasks.FunctionTask.superclass = SPITFIRE.tasks.Task;
-SPITFIRE.tasks.FunctionTask.synthesizedProperties = ['context', 'method', 'args'];
+SPITFIRE.FunctionTask.superclass = SPITFIRE.Task;
+SPITFIRE.FunctionTask.synthesizedProperties = ['context', 'method', 'args'];
 
-SPITFIRE.tasks.FunctionTask.prototype = {
+SPITFIRE.FunctionTask.prototype = {
   //--------------------------------------
   // Methods
   //--------------------------------------
@@ -2034,24 +1998,22 @@ SPITFIRE.tasks.FunctionTask.prototype = {
   }
 };
 
-SPITFIRE.Class(SPITFIRE.tasks.FunctionTask);
-SPITFIRE.tasks = SPITFIRE.tasks || {};
-
+SPITFIRE.Class(SPITFIRE.FunctionTask);
 //--------------------------------------
-// SPITFIRE.tasks.JQueryAjaxTask
+// SPITFIRE.JQueryAjaxTask
 //--------------------------------------
 
-SPITFIRE.tasks.JQueryAjaxTask = function(url, settings) {
+SPITFIRE.JQueryAjaxTask = function(url, settings) {
   this.callSuper();
-  this.qualifiedClassName('SPITFIRE.tasks.JQueryAjaxTask');
+  this.qualifiedClassName('SPITFIRE.JQueryAjaxTask');
   this.url(url);
   this.settings(settings);
 };
 
-SPITFIRE.tasks.JQueryAjaxTask.superclass = SPITFIRE.tasks.Task;
-SPITFIRE.tasks.JQueryAjaxTask.synthesizedProperties = ['url', 'settings', 'content'];
+SPITFIRE.JQueryAjaxTask.superclass = SPITFIRE.Task;
+SPITFIRE.JQueryAjaxTask.synthesizedProperties = ['url', 'settings', 'content'];
 
-SPITFIRE.tasks.JQueryAjaxTask.prototype = {  
+SPITFIRE.JQueryAjaxTask.prototype = {  
   //--------------------------------------
   // Event Handlers
   //--------------------------------------
@@ -2090,16 +2052,14 @@ SPITFIRE.tasks.JQueryAjaxTask.prototype = {
   }
 };
 
-SPITFIRE.Class(SPITFIRE.tasks.JQueryAjaxTask);
-SPITFIRE.tasks = SPITFIRE.tasks || {};
-
+SPITFIRE.Class(SPITFIRE.JQueryAjaxTask);
 //--------------------------------------
-// SPITFIRE.tasks.JQueryEffectTask
+// SPITFIRE.JQueryEffectTask
 //--------------------------------------
 
-SPITFIRE.tasks.JQueryEffectTask = function(target, effect) {
+SPITFIRE.JQueryEffectTask = function(target, effect) {
   this.callSuper();
-  this.qualifiedClassName('SPITFIRE.tasks.JQueryEffectTask');
+  this.qualifiedClassName('SPITFIRE.JQueryEffectTask');
   
   var args = SPITFIRE.slice(arguments, 2, arguments.length - 1);
   
@@ -2112,10 +2072,10 @@ SPITFIRE.tasks.JQueryEffectTask = function(target, effect) {
   this.args(args);
 };
 
-SPITFIRE.tasks.JQueryEffectTask.superclass = SPITFIRE.tasks.Task;
-SPITFIRE.tasks.JQueryEffectTask.synthesizedProperties = ['target', 'effect', 'args'];
+SPITFIRE.JQueryEffectTask.superclass = SPITFIRE.Task;
+SPITFIRE.JQueryEffectTask.synthesizedProperties = ['target', 'effect', 'args'];
 
-SPITFIRE.tasks.JQueryEffectTask.prototype = {
+SPITFIRE.JQueryEffectTask.prototype = {
 
   //--------------------------------------
   // Event Handlers
@@ -2139,24 +2099,22 @@ SPITFIRE.tasks.JQueryEffectTask.prototype = {
   }
 };
 
-SPITFIRE.Class(SPITFIRE.tasks.JQueryEffectTask);
-SPITFIRE.tasks = SPITFIRE.tasks || {};
-
+SPITFIRE.Class(SPITFIRE.JQueryEffectTask);
 //--------------------------------------
-// SPITFIRE.tasks.JQueryGetJSONTask
+// SPITFIRE.JQueryGetJSONTask
 //--------------------------------------
 
-SPITFIRE.tasks.JQueryGetJSONTask = function(url, data) {
+SPITFIRE.JQueryGetJSONTask = function(url, data) {
   this.callSuper();
-  this.qualifiedClassName('SPITFIRE.tasks.JQueryGetJSONTask');    
+  this.qualifiedClassName('SPITFIRE.JQueryGetJSONTask');    
   this.url(url);
   this.data(data);
 };
 
-SPITFIRE.tasks.JQueryGetJSONTask.superclass = SPITFIRE.tasks.Task;
-SPITFIRE.tasks.JQueryGetJSONTask.synthesizedProperties = ['url', 'data', 'content'];
+SPITFIRE.JQueryGetJSONTask.superclass = SPITFIRE.Task;
+SPITFIRE.JQueryGetJSONTask.synthesizedProperties = ['url', 'data', 'content'];
 
-SPITFIRE.tasks.JQueryGetJSONTask.prototype = {
+SPITFIRE.JQueryGetJSONTask.prototype = {
   
   //--------------------------------------
   // Event Handlers
@@ -2185,16 +2143,14 @@ SPITFIRE.tasks.JQueryGetJSONTask.prototype = {
   }
 };
 
-SPITFIRE.Class(SPITFIRE.tasks.JQueryGetJSONTask);
-SPITFIRE.tasks = SPITFIRE.tasks || {};
-
+SPITFIRE.Class(SPITFIRE.JQueryGetJSONTask);
 //--------------------------------------
-// SPITFIRE.tasks.JQueryImageLoaderTask
+// SPITFIRE.JQueryImageLoaderTask
 //--------------------------------------
 
-SPITFIRE.tasks.JQueryImageLoaderTask = function(url) {
+SPITFIRE.JQueryImageLoaderTask = function(url) {
   this.callSuper();
-  this.qualifiedClassName('SPITFIRE.tasks.JQueryImageLoaderTask');
+  this.qualifiedClassName('SPITFIRE.JQueryImageLoaderTask');
   
   this.url(url);
   this.content(new Image());
@@ -2205,10 +2161,10 @@ SPITFIRE.tasks.JQueryImageLoaderTask = function(url) {
     .error(this.errorHandler.context(this));
 };
 
-SPITFIRE.tasks.JQueryImageLoaderTask.superclass = SPITFIRE.tasks.Task;
-SPITFIRE.tasks.JQueryImageLoaderTask.synthesizedProperties = ['url', 'content', '$content'];
+SPITFIRE.JQueryImageLoaderTask.superclass = SPITFIRE.Task;
+SPITFIRE.JQueryImageLoaderTask.synthesizedProperties = ['url', 'content', '$content'];
 
-SPITFIRE.tasks.JQueryImageLoaderTask.prototype = {
+SPITFIRE.JQueryImageLoaderTask.prototype = {
 
   //--------------------------------------
   // Event Handlers
@@ -2238,16 +2194,14 @@ SPITFIRE.tasks.JQueryImageLoaderTask.prototype = {
   }
 };
 
-SPITFIRE.Class(SPITFIRE.tasks.JQueryImageLoaderTask);
-SPITFIRE.tasks = SPITFIRE.tasks || {};
-
+SPITFIRE.Class(SPITFIRE.JQueryImageLoaderTask);
 //--------------------------------------
-// SPITFIRE.tasks.JQueryLoadTask
+// SPITFIRE.JQueryLoadTask
 //--------------------------------------
 
-SPITFIRE.tasks.JQueryLoadTask = function(url, $target) {
+SPITFIRE.JQueryLoadTask = function(url, $target) {
   this.callSuper();
-  this.qualifiedClassName('SPITFIRE.tasks.JQueryLoadTask');
+  this.qualifiedClassName('SPITFIRE.JQueryLoadTask');
   
   if (!url) throw new SPITFIRE.Error('a valid url must be specified');
   
@@ -2255,10 +2209,10 @@ SPITFIRE.tasks.JQueryLoadTask = function(url, $target) {
   this.$target($target || $('body'));
 };
 
-SPITFIRE.tasks.JQueryLoadTask.superclass = SPITFIRE.tasks.Task;
-SPITFIRE.tasks.JQueryLoadTask.synthesizedProperties = ['url', '$target'];
+SPITFIRE.JQueryLoadTask.superclass = SPITFIRE.Task;
+SPITFIRE.JQueryLoadTask.synthesizedProperties = ['url', '$target'];
 
-SPITFIRE.tasks.JQueryLoadTask.prototype = {
+SPITFIRE.JQueryLoadTask.prototype = {
   //--------------------------------------
   // Event Handlers
   //--------------------------------------
@@ -2284,25 +2238,23 @@ SPITFIRE.tasks.JQueryLoadTask.prototype = {
   }
 };
 
-SPITFIRE.Class(SPITFIRE.tasks.JQueryLoadTask);
-SPITFIRE.tasks = SPITFIRE.tasks || {};
-
+SPITFIRE.Class(SPITFIRE.JQueryLoadTask);
 //--------------------------------------
-// SPITFIRE.tasks.ParallelTask
+// SPITFIRE.ParallelTask
 //--------------------------------------
 
-SPITFIRE.tasks.ParallelTask = function() {
+SPITFIRE.ParallelTask = function() {
   this.callSuper();
-  this.qualifiedClassName('SPITFIRE.tasks.ParallelTask');
+  this.qualifiedClassName('SPITFIRE.ParallelTask');
   
   if (arguments.length > 0) {
     this.tasks(arguments);
   }
 };
 
-SPITFIRE.tasks.ParallelTask.superclass = SPITFIRE.tasks.TaskManager;
+SPITFIRE.ParallelTask.superclass = SPITFIRE.TaskManager;
 
-SPITFIRE.tasks.ParallelTask.prototype = {
+SPITFIRE.ParallelTask.prototype = {
   //--------------------------------------
   // Event Handlers
   //--------------------------------------
@@ -2312,7 +2264,7 @@ SPITFIRE.tasks.ParallelTask.prototype = {
 		if (this.debug()) {
 			log("taskComplete " + task);
 		}
-		task.unbind(SPITFIRE.events.Event.COMPLETE, this.taskCompleteHandler.context(this));
+		task.unbind(SPITFIRE.Event.COMPLETE, this.taskCompleteHandler.context(this));
 		this._createdTasks.push(task);
 		if (this._createdTasks.length == this.tasks().length) {
 		  if (this.debug()) {
@@ -2332,7 +2284,7 @@ SPITFIRE.tasks.ParallelTask.prototype = {
       var i, len;
       for (i = 0, len = this.tasks().length; i < len; i += 1) {
         	var task = this.tasks()[i];
-        	task.bind(SPITFIRE.events.Event.COMPLETE, this.taskCompleteHandler.context(this));
+        	task.bind(SPITFIRE.Event.COMPLETE, this.taskCompleteHandler.context(this));
         	if (this.debug()) {
         	 log('taskStart ' + task);
         	}
@@ -2348,25 +2300,23 @@ SPITFIRE.tasks.ParallelTask.prototype = {
   }
 };
 
-SPITFIRE.Class(SPITFIRE.tasks.ParallelTask);
-SPITFIRE.tasks = SPITFIRE.tasks || {};
-
+SPITFIRE.Class(SPITFIRE.ParallelTask);
 //--------------------------------------
-// SPITFIRE.tasks.PropertyTask
+// SPITFIRE.PropertyTask
 //--------------------------------------
 
-SPITFIRE.tasks.PropertyTask = function(target, property, value) {
+SPITFIRE.PropertyTask = function(target, property, value) {
   this.callSuper();
-  this.qualifiedClassName('SPITFIRE.tasks.PropertyTask');
+  this.qualifiedClassName('SPITFIRE.PropertyTask');
   this.target(target);
   this.property(property);
   this.value(value);
 };
 
-SPITFIRE.tasks.PropertyTask.superclass = SPITFIRE.tasks.Task;
-SPITFIRE.tasks.PropertyTask.synthesizedProperties = ['target', 'property', 'value'];
+SPITFIRE.PropertyTask.superclass = SPITFIRE.Task;
+SPITFIRE.PropertyTask.synthesizedProperties = ['target', 'property', 'value'];
 
-SPITFIRE.tasks.PropertyTask.prototype = {
+SPITFIRE.PropertyTask.prototype = {
   //--------------------------------------
   // Methods
   //--------------------------------------
@@ -2381,26 +2331,24 @@ SPITFIRE.tasks.PropertyTask.prototype = {
   }
 };
 
-SPITFIRE.Class(SPITFIRE.tasks.PropertyTask);
-SPITFIRE.tasks = SPITFIRE.tasks || {};
-
+SPITFIRE.Class(SPITFIRE.PropertyTask);
 //--------------------------------------
-// SPITFIRE.tasks.SequentialTask
+// SPITFIRE.SequentialTask
 //--------------------------------------
 
-SPITFIRE.tasks.SequentialTask = function() {
+SPITFIRE.SequentialTask = function() {
   this.callSuper();
-  this.qualifiedClassName('SPITFIRE.tasks.SequentialTask');
+  this.qualifiedClassName('SPITFIRE.SequentialTask');
   
   if (arguments.length > 0) {
     this.tasks(arguments);
   }
 };
 
-SPITFIRE.tasks.SequentialTask.superclass = SPITFIRE.tasks.TaskManager;
-SPITFIRE.tasks.SequentialTask.synthesizedProperties = [];
+SPITFIRE.SequentialTask.superclass = SPITFIRE.TaskManager;
+SPITFIRE.SequentialTask.synthesizedProperties = [];
 
-SPITFIRE.tasks.SequentialTask.prototype = {
+SPITFIRE.SequentialTask.prototype = {
 
   //--------------------------------------
   // Event Handlers
@@ -2411,7 +2359,7 @@ SPITFIRE.tasks.SequentialTask.prototype = {
 		if (this.debug()) {
 			log("taskComplete " + task);
 		}
-		task.unbind(SPITFIRE.events.Event.COMPLETE, this.taskCompleteHandler.context(this));
+		task.unbind(SPITFIRE.Event.COMPLETE, this.taskCompleteHandler.context(this));
 		this._createdTasks.push(task);
 		if (this._createdTasks.length == this.tasks().length) {
 			this.complete();
@@ -2436,7 +2384,7 @@ SPITFIRE.tasks.SequentialTask.prototype = {
   createTask: function() {
     var index = this._createdTasks.length;
 		var task = this.tasks()[index];
-		task.bind(SPITFIRE.events.Event.COMPLETE, this.taskCompleteHandler.context(this));
+		task.bind(SPITFIRE.Event.COMPLETE, this.taskCompleteHandler.context(this));
 		if (this.debug()) {
 			log("taskStart " + task);
 		}
@@ -2448,22 +2396,20 @@ SPITFIRE.tasks.SequentialTask.prototype = {
   }
 };
 
-SPITFIRE.Class(SPITFIRE.tasks.SequentialTask);
-SPITFIRE.ui = SPITFIRE.ui || {};
-
+SPITFIRE.Class(SPITFIRE.SequentialTask);
 //--------------------------------------
-// SPITFIRE.ui.UIButton
+// SPITFIRE.UIButton
 //--------------------------------------
 
-SPITFIRE.ui.UIButton = function() {
+SPITFIRE.UIButton = function() {
   this.callSuper();
-  this.qualifiedClassName('SPITFIRE.ui.UIButton');
+  this.qualifiedClassName('SPITFIRE.UIButton');
 };
 
-SPITFIRE.ui.UIButton.superclass = SPITFIRE.display.DisplayObject;
-SPITFIRE.ui.UIButton.synthesizedProperties = [];
+SPITFIRE.UIButton.superclass = SPITFIRE.DisplayObject;
+SPITFIRE.UIButton.synthesizedProperties = [];
 
-SPITFIRE.ui.UIButton.prototype = {
+SPITFIRE.UIButton.prototype = {
   
   //--------------------------------------
   // Event Handlers
@@ -2508,16 +2454,14 @@ SPITFIRE.ui.UIButton.prototype = {
   }
 };
 
-SPITFIRE.Class(SPITFIRE.ui.UIButton);
-SPITFIRE.ui = SPITFIRE.ui || {};
-
+SPITFIRE.Class(SPITFIRE.UIButton);
 //--------------------------------------
-// SPITFIRE.ui.UICarousel
+// SPITFIRE.UICarousel
 //--------------------------------------
 
-SPITFIRE.ui.UICarousel = function() {
+SPITFIRE.UICarousel = function() {
   this.callSuper();
-  this.qualifiedClassName('SPITFIRE.ui.UICarousel');
+  this.qualifiedClassName('SPITFIRE.UICarousel');
   this._items = [];
   this._itemHeight = 200;
   this._neighbors = 2;
@@ -2527,8 +2471,8 @@ SPITFIRE.ui.UICarousel = function() {
   this._positionIndex = 0;
 };
 
-SPITFIRE.ui.UICarousel.superclass = SPITFIRE.display.DisplayObject;
-SPITFIRE.ui.UICarousel.synthesizedProperties = [
+SPITFIRE.UICarousel.superclass = SPITFIRE.DisplayObject;
+SPITFIRE.UICarousel.synthesizedProperties = [
   'items',
   'center',
   'itemHeight',
@@ -2541,7 +2485,7 @@ SPITFIRE.ui.UICarousel.synthesizedProperties = [
   'scaleRatio'
 ];
 
-SPITFIRE.ui.UICarousel.prototype = {
+SPITFIRE.UICarousel.prototype = {
 
   //--------------------------------------
   // Getters / Setters
@@ -2623,7 +2567,7 @@ SPITFIRE.ui.UICarousel.prototype = {
     
     this._positionIndex = value;
     
-    this.trigger(new SPITFIRE.events.Event(SPITFIRE.events.Event.CHANGE));
+    this.trigger(new SPITFIRE.Event(SPITFIRE.Event.CHANGE));
   },
 
   //--------------------------------------
@@ -2634,7 +2578,7 @@ SPITFIRE.ui.UICarousel.prototype = {
     this.callSuper();
     
     // set center point
-    this.center(new SPITFIRE.geom.Point(~~(this.w() * 0.5), ~~(this.h() * 0.5)));
+    this.center(new SPITFIRE.Point(~~(this.w() * 0.5), ~~(this.h() * 0.5)));
     
     // add class to element
     this.$this().addClass('sf-carousel');
@@ -2729,22 +2673,20 @@ SPITFIRE.ui.UICarousel.prototype = {
   }
 };
 
-SPITFIRE.Class(SPITFIRE.ui.UICarousel);
-SPITFIRE.ui = SPITFIRE.ui || {};
-
+SPITFIRE.Class(SPITFIRE.UICarousel);
 //--------------------------------------
-// SPITFIRE.ui.UICarouselItem
+// SPITFIRE.UICarouselItem
 //--------------------------------------
 
-SPITFIRE.ui.UICarouselItem = function() {
+SPITFIRE.UICarouselItem = function() {
   this.callSuper();
-  this.qualifiedClassName('SPITFIRE.ui.UICarouselItem');
+  this.qualifiedClassName('SPITFIRE.UICarouselItem');
   this._itemHeight = 100;
   this._isImgInitialized = false;
 };
 
-SPITFIRE.ui.UICarouselItem.superclass = SPITFIRE.display.DisplayObject;
-SPITFIRE.ui.UICarouselItem.synthesizedProperties = [
+SPITFIRE.UICarouselItem.superclass = SPITFIRE.DisplayObject;
+SPITFIRE.UICarouselItem.synthesizedProperties = [
   'index',
   'carouselIndex',
   'carousel',
@@ -2754,7 +2696,7 @@ SPITFIRE.ui.UICarouselItem.synthesizedProperties = [
   'isImgInitialized'
 ];
 
-SPITFIRE.ui.UICarouselItem.prototype = {
+SPITFIRE.UICarouselItem.prototype = {
 
   //--------------------------------------
   // Getters / Setters
@@ -2817,8 +2759,8 @@ SPITFIRE.ui.UICarouselItem.prototype = {
   },
   
   resizeImage: function() {
-    var rect = new SPITFIRE.geom.Rectangle(0, 0, this.img().w(), this.img().h());
-    var newRect = SPITFIRE.utils.RatioUtils.scaleWidth(rect, this._itemHeight, true);
+    var rect = new SPITFIRE.Rectangle(0, 0, this.img().w(), this.img().h());
+    var newRect = SPITFIRE.RatioUtils.scaleWidth(rect, this._itemHeight, true);
     this.img().w(newRect.width());
     this.img().h(newRect.height());
   },
@@ -2837,9 +2779,8 @@ SPITFIRE.ui.UICarouselItem.prototype = {
   }
 };
 
-SPITFIRE.Class(SPITFIRE.ui.UICarouselItem);
-SPITFIRE.utils = SPITFIRE.utils || {};
-SPITFIRE.utils.ArrayUtils = SPITFIRE.utils.ArrayUtils || {};
+SPITFIRE.Class(SPITFIRE.UICarouselItem);
+SPITFIRE.ArrayUtils = {};
 
 //--------------------------------------
 // getItemByKeys()
@@ -2847,7 +2788,7 @@ SPITFIRE.utils.ArrayUtils = SPITFIRE.utils.ArrayUtils || {};
 // Port of org.casalib.util.ArrayUtil.getItemByKeys() from CASA lib for ActionScript 3.0
 // http://casalib.org/
 
-SPITFIRE.utils.ArrayUtils.getItemByKeys = function(inArray, keyValues) {
+SPITFIRE.ArrayUtils.getItemByKeys = function(inArray, keyValues) {
   var i = -1,
       item,
       hasKeys;
@@ -2874,7 +2815,7 @@ SPITFIRE.utils.ArrayUtils.getItemByKeys = function(inArray, keyValues) {
 // Port of org.casalib.util.ArrayUtil.getItemsByKeys() from CASA lib for ActionScript 3.0
 // http://casalib.org/
 
-SPITFIRE.utils.ArrayUtils.getItemsByKeys = function(inArray, keyValues) {
+SPITFIRE.ArrayUtils.getItemsByKeys = function(inArray, keyValues) {
   var t = [],
       i = -1,
       item,
@@ -2902,7 +2843,7 @@ SPITFIRE.utils.ArrayUtils.getItemsByKeys = function(inArray, keyValues) {
 // Port of org.casalib.util.ArrayUtil.getItemByAnyKey() from CASA lib for ActionScript 3.0
 // http://casalib.org/
 
-SPITFIRE.utils.ArrayUtils.getItemByAnyKey = function(inArray, keyValues) {
+SPITFIRE.ArrayUtils.getItemByAnyKey = function(inArray, keyValues) {
   var i = -1,
       item;
   
@@ -2924,7 +2865,7 @@ SPITFIRE.utils.ArrayUtils.getItemByAnyKey = function(inArray, keyValues) {
 // Port of org.casalib.util.ArrayUtil.getItemsByAnyKey() from CASA lib for ActionScript 3.0
 // http://casalib.org/
 
-SPITFIRE.utils.ArrayUtils.getItemsByAnyKey = function(inArray, keyValues) {
+SPITFIRE.ArrayUtils.getItemsByAnyKey = function(inArray, keyValues) {
   var t = [],
       i = -1,
       item,
@@ -2952,7 +2893,7 @@ SPITFIRE.utils.ArrayUtils.getItemsByAnyKey = function(inArray, keyValues) {
 // Port of org.casalib.util.ArrayUtil.getItemByKey() from CASA lib for ActionScript 3.0
 // http://casalib.org/
 
-SPITFIRE.utils.ArrayUtils.getItemByKey = function(inArray, key, match) {
+SPITFIRE.ArrayUtils.getItemByKey = function(inArray, key, match) {
   var i, len, item;
   for (var i = 0, len = inArray.length; i < len; i += 1) {
     item = inArray[i];
@@ -2972,7 +2913,7 @@ SPITFIRE.utils.ArrayUtils.getItemByKey = function(inArray, key, match) {
 // Port of org.casalib.util.ArrayUtil.getItemsByKey() from CASA lib for ActionScript 3.0
 // http://casalib.org/
 
-SPITFIRE.utils.ArrayUtils.getItemsByKey = function(inArray, key, match) {
+SPITFIRE.ArrayUtils.getItemsByKey = function(inArray, key, match) {
   var i, len, item,
       t = [];
   for (var i = 0, len = inArray.length; i < len; i += 1) {
@@ -2986,11 +2927,9 @@ SPITFIRE.utils.ArrayUtils.getItemsByKey = function(inArray, key, match) {
   
   return t;
 };
-SPITFIRE.utils = SPITFIRE.utils || {};
-
 // Ported to JS from CasaLib AS3
 // http://casalib.org/
-SPITFIRE.utils.RatioUtils = SPITFIRE.utils.RatioUtils || {
+SPITFIRE.RatioUtils = SPITFIRE.RatioUtils || {
   widthToHeight: function(size) {
     return size.width() / size.height();
   },
@@ -3001,7 +2940,7 @@ SPITFIRE.utils.RatioUtils = SPITFIRE.utils.RatioUtils || {
   
   scale: function(size, amount, snapToPixel) {
     snapToPixel = snapToPixel || true;
-    return SPITFIRE.utils.RatioUtils._defineRect(size, size.width() * amount.decimalPercentage(), size.height() * amount.decimalPercentage(), snapToPixel);
+    return SPITFIRE.RatioUtils._defineRect(size, size.width() * amount.decimalPercentage(), size.height() * amount.decimalPercentage(), snapToPixel);
   },
   
   /**
@@ -3013,7 +2952,7 @@ SPITFIRE.utils.RatioUtils = SPITFIRE.utils.RatioUtils || {
 	 */
   scaleWidth: function(size, height, snapToPixel) {
     snapToPixel = snapToPixel || true;
-    return SPITFIRE.utils.RatioUtils._defineRect(size, height * SPITFIRE.utils.RatioUtils.widthToHeight(size), height, snapToPixel);
+    return SPITFIRE.RatioUtils._defineRect(size, height * SPITFIRE.RatioUtils.widthToHeight(size), height, snapToPixel);
   },
   
   /**
@@ -3025,25 +2964,25 @@ SPITFIRE.utils.RatioUtils = SPITFIRE.utils.RatioUtils || {
    */
   scaleHeight: function(size, width, snapToPixel) {
     snapToPixel = snapToPixel || true;
-    return SPITFIRE.utils.RatioUtils._defineRect(size, width, width * SPITFIRE.utils.RatioUtils.heightToWidth(size), snapToPixel);
+    return SPITFIRE.RatioUtils._defineRect(size, width, width * SPITFIRE.RatioUtils.heightToWidth(size), snapToPixel);
   },
   
   scaleToFill: function(size, bounds, snapToPixel) {
     snapToPixel = snapToPixel || true;
-    var scaled = SPITFIRE.utils.RatioUtils.scaleHeight(size, bounds.width(), snapToPixel);
+    var scaled = SPITFIRE.RatioUtils.scaleHeight(size, bounds.width(), snapToPixel);
 		
 		if (scaled.height() < bounds.height())
-			scaled = SPITFIRE.utils.RatioUtils.scaleWidth(size, bounds.height(), snapToPixel);
+			scaled = SPITFIRE.RatioUtils.scaleWidth(size, bounds.height(), snapToPixel);
 		
 		return scaled;
   },
   
   scaleToFit: function(size, bounds, snapToPixel) {
     snapToPixel = snapToPixel || true;
-    var scaled = SPITFIRE.utils.RatioUtils.scaleHeight(size, bounds.width(), snapToPixel);
+    var scaled = SPITFIRE.RatioUtils.scaleHeight(size, bounds.width(), snapToPixel);
 		
 		if (scaled.height() > bounds.height())
-			scaled = SPITFIRE.utils.RatioUtils.scaleWidth(size, bounds.height(), snapToPixel);
+			scaled = SPITFIRE.RatioUtils.scaleWidth(size, bounds.height(), snapToPixel);
 		
 		return scaled;
   },
@@ -3056,30 +2995,28 @@ SPITFIRE.utils.RatioUtils = SPITFIRE.utils.RatioUtils || {
     return scaled;
   }
 };
-SPITFIRE.utils = SPITFIRE.utils || {};
-
 //--------------------------------------
 // Timer
 //--------------------------------------
 
-SPITFIRE.utils.Timer = function(delay, repeatCount) {
+SPITFIRE.Timer = function(delay, repeatCount) {
   this.callSuper();
   this.delay(delay);
   this.repeatCount(repeatCount || 0);
-  this.qualifiedClassName('SPITFIRE.utils.Timer');
+  this.qualifiedClassName('SPITFIRE.Timer');
   this._interval;
   this._currentCount = 0;
 };
 
-SPITFIRE.utils.Timer.superclass = SPITFIRE.events.EventDispatcher;
-SPITFIRE.utils.Timer.synthesizedProperties = [
+SPITFIRE.Timer.superclass = SPITFIRE.EventDispatcher;
+SPITFIRE.Timer.synthesizedProperties = [
   'currentCount',
   'delay',
   'repeatCount',
   'running'
 ];
 
-SPITFIRE.utils.Timer.prototype = {
+SPITFIRE.Timer.prototype = {
   setRunning: function(value) {
     throw new SPITFIRE.Error('running is read-only');
   },
@@ -3113,14 +3050,14 @@ SPITFIRE.utils.Timer.prototype = {
   tick: function() {
     this._currentCount += 1;
     if (this.repeatCount() && this._currentCount >= this.repeatCount()) {
-      this.trigger(new SPITFIRE.utils.TimerEvent(SPITFIRE.events.TimerEvent.TIMER_COMPLETE));
+      this.trigger(new SPITFIRE.TimerEvent(SPITFIRE.TimerEvent.TIMER_COMPLETE));
       this.reset();
       return;
     }
     
     this._interval = setTimeout(this.tick.context(this), this.delay());
-    this.trigger(new SPITFIRE.utils.TimerEvent(SPITFIRE.events.TimerEvent.TIMER));
+    this.trigger(new SPITFIRE.TimerEvent(SPITFIRE.TimerEvent.TIMER));
   }
 }
 
-SPITFIRE.Class(SPITFIRE.utils.Timer);
+SPITFIRE.Class(SPITFIRE.Timer);

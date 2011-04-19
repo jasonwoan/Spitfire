@@ -147,10 +147,10 @@ test("Error works", function() {
 //--------------------------------------
 
 test("State works", function() {
-  var state = new SPITFIRE.state.State('testState');
-  var childState = new SPITFIRE.state.State('testChildState');
-  var childState2 = new SPITFIRE.state.State('testChildState2');
-  var childState3 = new SPITFIRE.state.State('testChildState3');
+  var state = new SPITFIRE.State('testState');
+  var childState = new SPITFIRE.State('testChildState');
+  var childState2 = new SPITFIRE.State('testChildState2');
+  var childState3 = new SPITFIRE.State('testChildState3');
   
   state.addChild(childState);
   state.addChild(childState2);
@@ -159,7 +159,7 @@ test("State works", function() {
   equals(state.name(), 'testState', 'name property works');
   equals(QUnit.equiv(state.root(), this), true, 'root property works');
   equals(childState.name(), 'testChildState', 'child name property works');
-  equals(state.qualifiedClassName(), 'SPITFIRE.state.State', 'qualified class name works');
+  equals(state.qualifiedClassName(), 'SPITFIRE.State', 'qualified class name works');
   equals(QUnit.equiv(state.getChildAt(0), childState), true, 'addChild and getChildAt works');
   equals(QUnit.equiv(state.getChildByName('testChildState'), childState), true, 'getChildByName works');
   
@@ -195,11 +195,11 @@ test("State works", function() {
 //--------------------------------------
 
 test('Task works', function() {
-  var task = new SPITFIRE.tasks.Task();
+  var task = new SPITFIRE.Task();
   task.start();
   
   equals(task.progress(), 0, 'start works');
-  equals(task, '[SPITFIRE.tasks.Task name=undefined]', 'toString works');
+  equals(task, '[SPITFIRE.Task name=undefined]', 'toString works');
   
   task.complete();
   
@@ -211,10 +211,10 @@ test('Task works', function() {
 //--------------------------------------
 
 test('PropertyTask works', function() {
-  var state = new SPITFIRE.state.State('testState');
-  var propertyTask = new SPITFIRE.tasks.PropertyTask(state, 'selected', true);
+  var state = new SPITFIRE.State('testState');
+  var propertyTask = new SPITFIRE.PropertyTask(state, 'selected', true);
   
-  equals(propertyTask.toString(), '[SPITFIRE.tasks.PropertyTask target=[State name=testState title=undefined className=SPITFIRE.state.State defaultChild=undefined] property=selected value=true]', 'toString works');
+  equals(propertyTask.toString(), '[SPITFIRE.PropertyTask target=[State name=testState title=undefined className=SPITFIRE.State defaultChild=undefined] property=selected value=true]', 'toString works');
   
   propertyTask.start();
   
@@ -226,12 +226,12 @@ test('PropertyTask works', function() {
 //--------------------------------------
 
 test('TaskManager works', function() {
-  var taskManager = new SPITFIRE.tasks.TaskManager();
-  var state = new SPITFIRE.state.State('testState');
-  var propertyTask = new SPITFIRE.tasks.PropertyTask(state, 'selected', true);
+  var taskManager = new SPITFIRE.TaskManager();
+  var state = new SPITFIRE.State('testState');
+  var propertyTask = new SPITFIRE.PropertyTask(state, 'selected', true);
   propertyTask.name('propertyTask');
-  var propertyTask2 = new SPITFIRE.tasks.PropertyTask(state, 'selected', false);
-  var propertyTask3 = new SPITFIRE.tasks.PropertyTask(state, 'selected', true);
+  var propertyTask2 = new SPITFIRE.PropertyTask(state, 'selected', false);
+  var propertyTask3 = new SPITFIRE.PropertyTask(state, 'selected', true);
   
   taskManager.tasks([propertyTask, propertyTask2]);
   
@@ -260,13 +260,13 @@ test('TaskManager works', function() {
 //--------------------------------------
 
 asyncTest('ASYNC: SequentialTask works', function() {
-  var state = new SPITFIRE.state.State('testState');
-  var propertyTask = new SPITFIRE.tasks.PropertyTask(state, 'selected', true);
+  var state = new SPITFIRE.State('testState');
+  var propertyTask = new SPITFIRE.PropertyTask(state, 'selected', true);
   propertyTask.name('propertyTask');
-  var propertyTask2 = new SPITFIRE.tasks.PropertyTask(state, 'selected', false);
-  var propertyTask3 = new SPITFIRE.tasks.PropertyTask(state, 'selected', true);
+  var propertyTask2 = new SPITFIRE.PropertyTask(state, 'selected', false);
+  var propertyTask3 = new SPITFIRE.PropertyTask(state, 'selected', true);
   
-  var sequentialTask = new SPITFIRE.tasks.SequentialTask(propertyTask, propertyTask2);
+  var sequentialTask = new SPITFIRE.SequentialTask(propertyTask, propertyTask2);
   //sequentialTask.debug(true);
   sequentialTask.start();
   
@@ -281,17 +281,17 @@ asyncTest('ASYNC: SequentialTask works', function() {
 //--------------------------------------
 
 asyncTest('ASYNC: ParallelTask works', function() {
-  var state = new SPITFIRE.state.State('testState');
-  var propertyTask = new SPITFIRE.tasks.PropertyTask(state, 'selected', true);
+  var state = new SPITFIRE.State('testState');
+  var propertyTask = new SPITFIRE.PropertyTask(state, 'selected', true);
   propertyTask.name('propertyTask');
-  var propertyTask2 = new SPITFIRE.tasks.PropertyTask(state, 'selected', false);
-  var propertyTask3 = new SPITFIRE.tasks.PropertyTask(state, 'selected', true);
+  var propertyTask2 = new SPITFIRE.PropertyTask(state, 'selected', false);
+  var propertyTask3 = new SPITFIRE.PropertyTask(state, 'selected', true);
   var complete = false;
   
-  var parallelTask = new SPITFIRE.tasks.ParallelTask(propertyTask, propertyTask2, propertyTask3);
+  var parallelTask = new SPITFIRE.ParallelTask(propertyTask, propertyTask2, propertyTask3);
   //parallelTask.debug(true);
   
-  parallelTask.bind(SPITFIRE.events.Event.COMPLETE, function() {
+  parallelTask.bind(SPITFIRE.Event.COMPLETE, function() {
     complete = true;
   });
   
@@ -308,21 +308,21 @@ asyncTest('ASYNC: ParallelTask works', function() {
 //--------------------------------------
 
 test("StateManager works", function() {
-  var stateManager = new SPITFIRE.state.StateManager('testName', this);
+  var stateManager = new SPITFIRE.StateManager('testName', this);
   
   equals(stateManager.name(), 'testName', 'name property works');
-  equals(stateManager.qualifiedClassName(), 'SPITFIRE.state.StateManager', 'qualified class name works');
+  equals(stateManager.qualifiedClassName(), 'SPITFIRE.StateManager', 'qualified class name works');
 });
 
 asyncTest('ASYNC: StateManager works', function() {
-  var stateManager = new SPITFIRE.state.StateManager('testName', this);
+  var stateManager = new SPITFIRE.StateManager('testName', this);
   //stateManager.deepLinking($.address);
   
-  var treeState = new SPITFIRE.state.State('tree');
-  var homeState = new SPITFIRE.state.State('home');
-  var portfolioState = new SPITFIRE.state.State('portfolio');
-  var aboutState = new SPITFIRE.state.State('about');
-  var contactState = new SPITFIRE.state.State('contactState');
+  var treeState = new SPITFIRE.State('tree');
+  var homeState = new SPITFIRE.State('home');
+  var portfolioState = new SPITFIRE.State('portfolio');
+  var aboutState = new SPITFIRE.State('about');
+  var contactState = new SPITFIRE.State('contactState');
   
   treeState.addChild(homeState);
   treeState.addChild(portfolioState);
@@ -345,29 +345,29 @@ asyncTest('ASYNC: StateManager works', function() {
 //--------------------------------------
 
 asyncTest('ASYNC: JQueryAjaxTask works', function() {
-  var cssTask = new SPITFIRE.tasks.JQueryAjaxTask('test.css');
+  var cssTask = new SPITFIRE.JQueryAjaxTask('test.css');
   var cssData;
   var cssSuccess = false;
-  cssTask.bind(SPITFIRE.events.Event.COMPLETE, function() {
+  cssTask.bind(SPITFIRE.Event.COMPLETE, function() {
     cssData = this.content();
     cssSuccess = true;
   });
   cssTask.start();
   
-  var htmlTask = new SPITFIRE.tasks.JQueryAjaxTask('test.html');
+  var htmlTask = new SPITFIRE.JQueryAjaxTask('test.html');
   var htmlData;
   var htmlSuccess = false;
-  htmlTask.bind(SPITFIRE.events.Event.COMPLETE, function() {
+  htmlTask.bind(SPITFIRE.Event.COMPLETE, function() {
     htmlData = this.content();
     htmlSuccess = true;
   });
   htmlTask.start();
   
-  var failTask = new SPITFIRE.tasks.JQueryAjaxTask('fail.html');
+  var failTask = new SPITFIRE.JQueryAjaxTask('fail.html');
   //failTask.debug(true);
   var failSuccess = false;
   var failContent;
-  failTask.bind(SPITFIRE.events.Event.COMPLETE, function() {
+  failTask.bind(SPITFIRE.Event.COMPLETE, function() {
     failContent = this.content();
     failSuccess = true;
   });
@@ -386,9 +386,9 @@ asyncTest('ASYNC: JQueryAjaxTask works', function() {
 //--------------------------------------
 
 asyncTest('ASYNC: JQueryImageLoaderTask works', function() {
-  var task = new SPITFIRE.tasks.JQueryImageLoaderTask('test.png');
+  var task = new SPITFIRE.JQueryImageLoaderTask('test.png');
   var $img;
-  task.bind(SPITFIRE.events.Event.COMPLETE, function() {
+  task.bind(SPITFIRE.Event.COMPLETE, function() {
     $img = task.$content();
   });
   task.start();

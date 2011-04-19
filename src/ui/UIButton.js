@@ -1,18 +1,16 @@
-SPITFIRE.ui = SPITFIRE.ui || {};
-
 //--------------------------------------
-// SPITFIRE.ui.UIButton
+// SPITFIRE.UIButton
 //--------------------------------------
 
-SPITFIRE.ui.UIButton = function() {
+SPITFIRE.UIButton = function() {
   this.callSuper();
-  this.qualifiedClassName('SPITFIRE.ui.UIButton');
+  this.qualifiedClassName('SPITFIRE.UIButton');
 };
 
-SPITFIRE.ui.UIButton.superclass = SPITFIRE.display.DisplayObject;
-SPITFIRE.ui.UIButton.synthesizedProperties = [];
+SPITFIRE.UIButton.superclass = SPITFIRE.DisplayObject;
+SPITFIRE.UIButton.synthesizedProperties = [];
 
-SPITFIRE.ui.UIButton.prototype = {
+SPITFIRE.UIButton.prototype = {
   
   //--------------------------------------
   // Event Handlers
@@ -57,4 +55,4 @@ SPITFIRE.ui.UIButton.prototype = {
   }
 };
 
-SPITFIRE.Class(SPITFIRE.ui.UIButton);
+SPITFIRE.Class(SPITFIRE.UIButton);

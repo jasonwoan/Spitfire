@@ -1,12 +1,10 @@
-SPITFIRE.tasks = SPITFIRE.tasks || {};
-
 //--------------------------------------
-// SPITFIRE.tasks.JQueryImageLoaderTask
+// SPITFIRE.JQueryImageLoaderTask
 //--------------------------------------
 
-SPITFIRE.tasks.JQueryImageLoaderTask = function(url) {
+SPITFIRE.JQueryImageLoaderTask = function(url) {
   this.callSuper();
-  this.qualifiedClassName('SPITFIRE.tasks.JQueryImageLoaderTask');
+  this.qualifiedClassName('SPITFIRE.JQueryImageLoaderTask');
   
   this.url(url);
   this.content(new Image());
@@ -17,10 +15,10 @@ SPITFIRE.tasks.JQueryImageLoaderTask = function(url) {
     .error(this.errorHandler.context(this));
 };
 
-SPITFIRE.tasks.JQueryImageLoaderTask.superclass = SPITFIRE.tasks.Task;
-SPITFIRE.tasks.JQueryImageLoaderTask.synthesizedProperties = ['url', 'content', '$content'];
+SPITFIRE.JQueryImageLoaderTask.superclass = SPITFIRE.Task;
+SPITFIRE.JQueryImageLoaderTask.synthesizedProperties = ['url', 'content', '$content'];
 
-SPITFIRE.tasks.JQueryImageLoaderTask.prototype = {
+SPITFIRE.JQueryImageLoaderTask.prototype = {
 
   //--------------------------------------
   // Event Handlers
@@ -50,4 +48,4 @@ SPITFIRE.tasks.JQueryImageLoaderTask.prototype = {
   }
 };
 
-SPITFIRE.Class(SPITFIRE.tasks.JQueryImageLoaderTask);
+SPITFIRE.Class(SPITFIRE.JQueryImageLoaderTask);

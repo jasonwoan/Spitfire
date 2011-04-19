@@ -1,22 +1,20 @@
-SPITFIRE.tasks = SPITFIRE.tasks || {};
-
 //--------------------------------------
-// SPITFIRE.tasks.TaskManager
+// SPITFIRE.TaskManager
 //--------------------------------------
 
-SPITFIRE.tasks.TaskManager = function() {
+SPITFIRE.TaskManager = function() {
   this._progressiveTasks = [];
   this._createdTasks = [];
   this._tasks = [];
   
   this.callSuper();
-  this.qualifiedClassName('SPITFIRE.tasks.TaskManager');
+  this.qualifiedClassName('SPITFIRE.TaskManager');
 };
 
-SPITFIRE.tasks.TaskManager.superclass = SPITFIRE.tasks.Task;
-SPITFIRE.tasks.TaskManager.synthesizedProperties = ['tasks'];
+SPITFIRE.TaskManager.superclass = SPITFIRE.Task;
+SPITFIRE.TaskManager.synthesizedProperties = ['tasks'];
 
-SPITFIRE.tasks.TaskManager.prototype = {
+SPITFIRE.TaskManager.prototype = {
   //--------------------------------------
   // Getters / Setters
   //--------------------------------------
@@ -171,4 +169,4 @@ SPITFIRE.tasks.TaskManager.prototype = {
   }
 };
 
-SPITFIRE.Class(SPITFIRE.tasks.TaskManager);
+SPITFIRE.Class(SPITFIRE.TaskManager);

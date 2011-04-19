@@ -1,12 +1,10 @@
-SPITFIRE.tasks = SPITFIRE.tasks || {};
-
 //--------------------------------------
-// SPITFIRE.tasks.JQueryLoadTask
+// SPITFIRE.JQueryLoadTask
 //--------------------------------------
 
-SPITFIRE.tasks.JQueryLoadTask = function(url, $target) {
+SPITFIRE.JQueryLoadTask = function(url, $target) {
   this.callSuper();
-  this.qualifiedClassName('SPITFIRE.tasks.JQueryLoadTask');
+  this.qualifiedClassName('SPITFIRE.JQueryLoadTask');
   
   if (!url) throw new SPITFIRE.Error('a valid url must be specified');
   
@@ -14,10 +12,10 @@ SPITFIRE.tasks.JQueryLoadTask = function(url, $target) {
   this.$target($target || $('body'));
 };
 
-SPITFIRE.tasks.JQueryLoadTask.superclass = SPITFIRE.tasks.Task;
-SPITFIRE.tasks.JQueryLoadTask.synthesizedProperties = ['url', '$target'];
+SPITFIRE.JQueryLoadTask.superclass = SPITFIRE.Task;
+SPITFIRE.JQueryLoadTask.synthesizedProperties = ['url', '$target'];
 
-SPITFIRE.tasks.JQueryLoadTask.prototype = {
+SPITFIRE.JQueryLoadTask.prototype = {
   //--------------------------------------
   // Event Handlers
   //--------------------------------------
@@ -43,4 +41,4 @@ SPITFIRE.tasks.JQueryLoadTask.prototype = {
   }
 };
 
-SPITFIRE.Class(SPITFIRE.tasks.JQueryLoadTask);
+SPITFIRE.Class(SPITFIRE.JQueryLoadTask);

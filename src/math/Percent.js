@@ -1,12 +1,10 @@
-SPITFIRE.math = SPITFIRE.math || {};
-
 //--------------------------------------
 // Percent
 //--------------------------------------
 // Port of org.casalib.math.Percent from CASA lib for ActionScript 3.0
 // http://casalib.org/
 
-SPITFIRE.math.Percent = function(percentage, isDecimalPercentage) {
+SPITFIRE.Percent = function(percentage, isDecimalPercentage) {
   this.callSuper();
   
   percentage = isDecimalPercentage || 0;
@@ -19,7 +17,7 @@ SPITFIRE.math.Percent = function(percentage, isDecimalPercentage) {
   }
 };
 
-SPITFIRE.math.Percent.superclass = SPITFIRE.Object;
+SPITFIRE.Percent.superclass = SPITFIRE.Object;
 SPITFIRE.synthesizedProperties = ['percentage', 'decimalPercentage'];
 
 SPITFIRE.prototype = {
@@ -44,7 +42,7 @@ SPITFIRE.prototype = {
   },
   
   clone: function() {
-    return new SPITFIRE.math.Percent(this.decimalPercentage());
+    return new SPITFIRE.Percent(this.decimalPercentage());
   },
   
   valueOf: function() {
@@ -56,4 +54,4 @@ SPITFIRE.prototype = {
   }
 };
 
-SPITFIRE.Class(SPITFIRE.math.Percent);
+SPITFIRE.Class(SPITFIRE.Percent);

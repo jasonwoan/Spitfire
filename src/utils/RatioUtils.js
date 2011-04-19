@@ -1,8 +1,6 @@
-SPITFIRE.utils = SPITFIRE.utils || {};
-
 // Ported to JS from CasaLib AS3
 // http://casalib.org/
-SPITFIRE.utils.RatioUtils = SPITFIRE.utils.RatioUtils || {
+SPITFIRE.RatioUtils = SPITFIRE.RatioUtils || {
   widthToHeight: function(size) {
     return size.width() / size.height();
   },
@@ -13,7 +11,7 @@ SPITFIRE.utils.RatioUtils = SPITFIRE.utils.RatioUtils || {
   
   scale: function(size, amount, snapToPixel) {
     snapToPixel = snapToPixel || true;
-    return SPITFIRE.utils.RatioUtils._defineRect(size, size.width() * amount.decimalPercentage(), size.height() * amount.decimalPercentage(), snapToPixel);
+    return SPITFIRE.RatioUtils._defineRect(size, size.width() * amount.decimalPercentage(), size.height() * amount.decimalPercentage(), snapToPixel);
   },
   
   /**
@@ -25,7 +23,7 @@ SPITFIRE.utils.RatioUtils = SPITFIRE.utils.RatioUtils || {
 	 */
   scaleWidth: function(size, height, snapToPixel) {
     snapToPixel = snapToPixel || true;
-    return SPITFIRE.utils.RatioUtils._defineRect(size, height * SPITFIRE.utils.RatioUtils.widthToHeight(size), height, snapToPixel);
+    return SPITFIRE.RatioUtils._defineRect(size, height * SPITFIRE.RatioUtils.widthToHeight(size), height, snapToPixel);
   },
   
   /**
@@ -37,25 +35,25 @@ SPITFIRE.utils.RatioUtils = SPITFIRE.utils.RatioUtils || {
    */
   scaleHeight: function(size, width, snapToPixel) {
     snapToPixel = snapToPixel || true;
-    return SPITFIRE.utils.RatioUtils._defineRect(size, width, width * SPITFIRE.utils.RatioUtils.heightToWidth(size), snapToPixel);
+    return SPITFIRE.RatioUtils._defineRect(size, width, width * SPITFIRE.RatioUtils.heightToWidth(size), snapToPixel);
   },
   
   scaleToFill: function(size, bounds, snapToPixel) {
     snapToPixel = snapToPixel || true;
-    var scaled = SPITFIRE.utils.RatioUtils.scaleHeight(size, bounds.width(), snapToPixel);
+    var scaled = SPITFIRE.RatioUtils.scaleHeight(size, bounds.width(), snapToPixel);
 		
 		if (scaled.height() < bounds.height())
-			scaled = SPITFIRE.utils.RatioUtils.scaleWidth(size, bounds.height(), snapToPixel);
+			scaled = SPITFIRE.RatioUtils.scaleWidth(size, bounds.height(), snapToPixel);
 		
 		return scaled;
   },
   
   scaleToFit: function(size, bounds, snapToPixel) {
     snapToPixel = snapToPixel || true;
-    var scaled = SPITFIRE.utils.RatioUtils.scaleHeight(size, bounds.width(), snapToPixel);
+    var scaled = SPITFIRE.RatioUtils.scaleHeight(size, bounds.width(), snapToPixel);
 		
 		if (scaled.height() > bounds.height())
-			scaled = SPITFIRE.utils.RatioUtils.scaleWidth(size, bounds.height(), snapToPixel);
+			scaled = SPITFIRE.RatioUtils.scaleWidth(size, bounds.height(), snapToPixel);
 		
 		return scaled;
   },

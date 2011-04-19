@@ -1,17 +1,15 @@
-SPITFIRE.state = SPITFIRE.state || {};
-
 //--------------------------------------
-// SPITFIRE.state.StateManager
+// SPITFIRE.StateManager
 //--------------------------------------
 
-SPITFIRE.state.StateManager = function(name, root) {
+SPITFIRE.StateManager = function(name, root) {
   this.callSuper();
   this.root(root);
-  this.qualifiedClassName('SPITFIRE.state.StateManager');
+  this.qualifiedClassName('SPITFIRE.StateManager');
   this.name(name || this.qualifiedClassName() + ~~(Math.random() * 100000));
-  this.pageViewType(SPITFIRE.state.StateManager.PAGE_VIEW_LOCATION);
-  this._progressTimer = new SPITFIRE.utils.Timer(33);
-  this._progressTimer.bind(SPITFIRE.events.TimerEvent.TIMER, this.taskManagerProgressHandler.context(this));
+  this.pageViewType(SPITFIRE.StateManager.PAGE_VIEW_LOCATION);
+  this._progressTimer = new SPITFIRE.Timer(33);
+  this._progressTimer.bind(SPITFIRE.TimerEvent.TIMER, this.taskManagerProgressHandler.context(this));
   this._transitionInPath;
   this._transitionWasInterrupted;
   this._isInTransition;
@@ -20,11 +18,11 @@ SPITFIRE.state.StateManager = function(name, root) {
   this._redirects = [];
 };
 
-SPITFIRE.state.StateManager.PAGE_VIEW_LOCATION = 'pageViewLocation';
-SPITFIRE.state.StateManager.PAGE_VIEW_NAME = 'pageViewName';
+SPITFIRE.StateManager.PAGE_VIEW_LOCATION = 'pageViewLocation';
+SPITFIRE.StateManager.PAGE_VIEW_NAME = 'pageViewName';
 
-SPITFIRE.state.StateManager.superclass = SPITFIRE.events.EventDispatcher;
-SPITFIRE.state.StateManager.synthesizedProperties = [
+SPITFIRE.StateManager.superclass = SPITFIRE.EventDispatcher;
+SPITFIRE.StateManager.synthesizedProperties = [
   'root',
   'deepLinking',
   'tree',
@@ -41,7 +39,7 @@ SPITFIRE.state.StateManager.synthesizedProperties = [
   'name'
 ];
 
-SPITFIRE.state.StateManager.prototype = {
+SPITFIRE.StateManager.prototype = {
   //--------------------------------------
   // Getters / Setters
   //--------------------------------------
@@ -144,10 +142,10 @@ SPITFIRE.state.StateManager.prototype = {
     if (this.trackPageViews()) {
   		var param;
   		switch(this.pageViewType()) {
-  			case SPITFIRE.state.StateManager.PAGE_VIEW_LOCATION:
+  			case SPITFIRE.StateManager.PAGE_VIEW_LOCATION:
   				param = this.location();
   			break;
-  			case SPITFIRE.state.StateManager.PAGE_VIEW_NAME:
+  			case SPITFIRE.StateManager.PAGE_VIEW_NAME:
   				param = this.location();
   			break;
   		}
@@ -155,13 +153,13 @@ SPITFIRE.state.StateManager.prototype = {
   },
   
   taskManagerCompleteHandler: function(event) {
-    this.taskManager().unbind(SPITFIRE.events.Event.COMPLETE, this.taskManagerCompleteHandler.context(this));
+    this.taskManager().unbind(SPITFIRE.Event.COMPLETE, this.taskManagerCompleteHandler.context(this));
 		if (this.taskManager().progressive()) {
 			this.taskManagerProgressHandler();
 			this._progressTimer.stop();
 		}
 		
-		this.trigger(new SPITFIRE.events.Event(this._currentTransition.transitionName() + "Complete"));
+		this.trigger(new SPITFIRE.Event(this._currentTransition.transitionName() + "Complete"));
 		this._currentTransition = null;
 		if (this._transitions.length > 0) {
 			this.startTransition();
@@ -242,8 +240,8 @@ SPITFIRE.state.StateManager.prototype = {
     
     this.deactivateStates(transitionOutPaths);
     
-    this._transitions.push(new SPITFIRE.state.TransitionProperties(transitionOutPaths.slice(), 'loadOut', false));
-    this._transitions.push(new SPITFIRE.state.TransitionProperties(transitionOutPaths.slice(), 'transitionOut', false));
+    this._transitions.push(new SPITFIRE.TransitionProperties(transitionOutPaths.slice(), 'loadOut', false));
+    this._transitions.push(new SPITFIRE.TransitionProperties(transitionOutPaths.slice(), 'transitionOut', false));
     
     var transitionInPaths = [];
     for (i = breakIndex, len = nextLocationArray.length; i < len; i+=1) {
@@ -257,8 +255,8 @@ SPITFIRE.state.StateManager.prototype = {
       transitionInPaths = this.checkForDefaultStates(this._transitionInPath);
     }
     
-    this._transitions.push(new SPITFIRE.state.TransitionProperties(transitionInPaths.slice(), 'loadIn', false));
-    this._transitions.push(new SPITFIRE.state.TransitionProperties(transitionInPaths.slice(), 'transitionIn', false));
+    this._transitions.push(new SPITFIRE.TransitionProperties(transitionInPaths.slice(), 'loadIn', false));
+    this._transitions.push(new SPITFIRE.TransitionProperties(transitionInPaths.slice(), 'transitionIn', false));
     
     this.startTransition();
   },
@@ -346,16 +344,16 @@ SPITFIRE.state.StateManager.prototype = {
   
   startTransition: function() {
     this._currentTransition = this._transitions.shift();
-		this.trigger(new SPITFIRE.events.Event(this._currentTransition.transitionName() + "Start"));
+		this.trigger(new SPITFIRE.Event(this._currentTransition.transitionName() + "Start"));
 		
-		this.taskManager(new SPITFIRE.tasks.SequentialTask());
+		this.taskManager(new SPITFIRE.SequentialTask());
 		
 		this.taskManager().name(this._currentTransition.transitionName());
 		if (this.debug()) {
 			this.taskManager().debug(this.debug());
 		}
 		
-		this.taskManager().bind(SPITFIRE.events.Event.COMPLETE, this.taskManagerCompleteHandler.context(this));
+		this.taskManager().bind(SPITFIRE.Event.COMPLETE, this.taskManagerCompleteHandler.context(this));
 		
 		var i, len;
 		
@@ -379,14 +377,14 @@ SPITFIRE.state.StateManager.prototype = {
 			if (this._currentTransition.transitionName() == "transitionOut") {
 				stateSelected = false;
 			}
-			this.taskManager().addTask(new SPITFIRE.tasks.PropertyTask(state, "selected", stateSelected));
+			this.taskManager().addTask(new SPITFIRE.PropertyTask(state, "selected", stateSelected));
 		}
 		if (this.taskManager().progress() == 1) {
 			this.taskManager().progressive(false);
 		}
 		if (this.taskManager().progressive()) {
 			if (this.preloader()) {
-				this.taskManager().addTaskAt(new SPITFIRE.tasks.PropertyTask(this.preloader(), "progress", 0), 0);
+				this.taskManager().addTaskAt(new SPITFIRE.PropertyTask(this.preloader(), "progress", 0), 0);
 				this.taskManager().addTaskAt(this.preloader().transitionIn(), 1);
 				this.taskManager().addTask(this.preloader().transitionOut());
 			}
@@ -398,7 +396,7 @@ SPITFIRE.state.StateManager.prototype = {
   
   addRedirect: function(location, newLocation) {
     this.removeRedirect(location);
-		this.redirects.push(new SPITFIRE.state.Redirect(location, newLocation));
+		this.redirects.push(new SPITFIRE.Redirect(location, newLocation));
   },
   
   removeRedirect: function(location) {
@@ -430,4 +428,4 @@ SPITFIRE.state.StateManager.prototype = {
   }
 };
 
-SPITFIRE.Class(SPITFIRE.state.StateManager);
+SPITFIRE.Class(SPITFIRE.StateManager);

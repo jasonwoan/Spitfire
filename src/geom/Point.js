@@ -1,19 +1,17 @@
-SPITFIRE.geom = SPITFIRE.geom || {};
-
 //--------------------------------------
-// SPITFIRE.geom.Point
+// SPITFIRE.Point
 //--------------------------------------
 
-SPITFIRE.geom.Point = function(x, y) {
+SPITFIRE.Point = function(x, y) {
   this.callSuper();
-  this.qualifiedClassName('SPITFIRE.geom.Point');
+  this.qualifiedClassName('SPITFIRE.Point');
   this.x = x;
   this.y = y;
 };
 
-SPITFIRE.geom.Point.superclass = SPITFIRE.Object;
+SPITFIRE.Point.superclass = SPITFIRE.Object;
 
-SPITFIRE.geom.Point.prototype = {  
+SPITFIRE.Point.prototype = {  
   //--------------------------------------
   // Methods
   //--------------------------------------
@@ -23,4 +21,4 @@ SPITFIRE.geom.Point.prototype = {
   }
 };
 
-SPITFIRE.Class(SPITFIRE.geom.Point);
+SPITFIRE.Class(SPITFIRE.Point);

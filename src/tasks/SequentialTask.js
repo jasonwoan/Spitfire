@@ -1,22 +1,20 @@
-SPITFIRE.tasks = SPITFIRE.tasks || {};
-
 //--------------------------------------
-// SPITFIRE.tasks.SequentialTask
+// SPITFIRE.SequentialTask
 //--------------------------------------
 
-SPITFIRE.tasks.SequentialTask = function() {
+SPITFIRE.SequentialTask = function() {
   this.callSuper();
-  this.qualifiedClassName('SPITFIRE.tasks.SequentialTask');
+  this.qualifiedClassName('SPITFIRE.SequentialTask');
   
   if (arguments.length > 0) {
     this.tasks(arguments);
   }
 };
 
-SPITFIRE.tasks.SequentialTask.superclass = SPITFIRE.tasks.TaskManager;
-SPITFIRE.tasks.SequentialTask.synthesizedProperties = [];
+SPITFIRE.SequentialTask.superclass = SPITFIRE.TaskManager;
+SPITFIRE.SequentialTask.synthesizedProperties = [];
 
-SPITFIRE.tasks.SequentialTask.prototype = {
+SPITFIRE.SequentialTask.prototype = {
 
   //--------------------------------------
   // Event Handlers
@@ -27,7 +25,7 @@ SPITFIRE.tasks.SequentialTask.prototype = {
 		if (this.debug()) {
 			log("taskComplete " + task);
 		}
-		task.unbind(SPITFIRE.events.Event.COMPLETE, this.taskCompleteHandler.context(this));
+		task.unbind(SPITFIRE.Event.COMPLETE, this.taskCompleteHandler.context(this));
 		this._createdTasks.push(task);
 		if (this._createdTasks.length == this.tasks().length) {
 			this.complete();
@@ -52,7 +50,7 @@ SPITFIRE.tasks.SequentialTask.prototype = {
   createTask: function() {
     var index = this._createdTasks.length;
 		var task = this.tasks()[index];
-		task.bind(SPITFIRE.events.Event.COMPLETE, this.taskCompleteHandler.context(this));
+		task.bind(SPITFIRE.Event.COMPLETE, this.taskCompleteHandler.context(this));
 		if (this.debug()) {
 			log("taskStart " + task);
 		}
@@ -64,4 +62,4 @@ SPITFIRE.tasks.SequentialTask.prototype = {
   }
 };
 
-SPITFIRE.Class(SPITFIRE.tasks.SequentialTask);
+SPITFIRE.Class(SPITFIRE.SequentialTask);

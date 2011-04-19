@@ -1,20 +1,18 @@
-SPITFIRE.tasks = SPITFIRE.tasks || {};
-
 //--------------------------------------
-// SPITFIRE.tasks.JQueryGetJSONTask
+// SPITFIRE.JQueryGetJSONTask
 //--------------------------------------
 
-SPITFIRE.tasks.JQueryGetJSONTask = function(url, data) {
+SPITFIRE.JQueryGetJSONTask = function(url, data) {
   this.callSuper();
-  this.qualifiedClassName('SPITFIRE.tasks.JQueryGetJSONTask');    
+  this.qualifiedClassName('SPITFIRE.JQueryGetJSONTask');    
   this.url(url);
   this.data(data);
 };
 
-SPITFIRE.tasks.JQueryGetJSONTask.superclass = SPITFIRE.tasks.Task;
-SPITFIRE.tasks.JQueryGetJSONTask.synthesizedProperties = ['url', 'data', 'content'];
+SPITFIRE.JQueryGetJSONTask.superclass = SPITFIRE.Task;
+SPITFIRE.JQueryGetJSONTask.synthesizedProperties = ['url', 'data', 'content'];
 
-SPITFIRE.tasks.JQueryGetJSONTask.prototype = {
+SPITFIRE.JQueryGetJSONTask.prototype = {
   
   //--------------------------------------
   // Event Handlers
@@ -43,4 +41,4 @@ SPITFIRE.tasks.JQueryGetJSONTask.prototype = {
   }
 };
 
-SPITFIRE.Class(SPITFIRE.tasks.JQueryGetJSONTask);
+SPITFIRE.Class(SPITFIRE.JQueryGetJSONTask);

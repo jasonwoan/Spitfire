@@ -1,12 +1,10 @@
-SPITFIRE.tasks = SPITFIRE.tasks || {};
-
 //--------------------------------------
-// SPITFIRE.tasks.FunctionTask
+// SPITFIRE.FunctionTask
 //--------------------------------------
 
-SPITFIRE.tasks.FunctionTask = function(context, method) {
+SPITFIRE.FunctionTask = function(context, method) {
   this.callSuper();
-  this.qualifiedClassName('SPITFIRE.tasks.FunctionTask');
+  this.qualifiedClassName('SPITFIRE.FunctionTask');
   this.method(method);
   this.context(context);
   this.args([]);
@@ -16,10 +14,10 @@ SPITFIRE.tasks.FunctionTask = function(context, method) {
   }
 };
 
-SPITFIRE.tasks.FunctionTask.superclass = SPITFIRE.tasks.Task;
-SPITFIRE.tasks.FunctionTask.synthesizedProperties = ['context', 'method', 'args'];
+SPITFIRE.FunctionTask.superclass = SPITFIRE.Task;
+SPITFIRE.FunctionTask.synthesizedProperties = ['context', 'method', 'args'];
 
-SPITFIRE.tasks.FunctionTask.prototype = {
+SPITFIRE.FunctionTask.prototype = {
   //--------------------------------------
   // Methods
   //--------------------------------------
@@ -34,4 +32,4 @@ SPITFIRE.tasks.FunctionTask.prototype = {
   }
 };
 
-SPITFIRE.Class(SPITFIRE.tasks.FunctionTask);
+SPITFIRE.Class(SPITFIRE.FunctionTask);

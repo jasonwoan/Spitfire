@@ -1,12 +1,10 @@
-SPITFIRE.geom = SPITFIRE.geom || {};
-
 //--------------------------------------
-// SPITFIRE.geom.Rectangle
+// SPITFIRE.Rectangle
 //--------------------------------------
 
-SPITFIRE.geom.Rectangle = function(x, y, width, height) {
+SPITFIRE.Rectangle = function(x, y, width, height) {
   this.callSuper();
-  this.qualifiedClassName('SPITFIRE.geom.Rectangle');
+  this.qualifiedClassName('SPITFIRE.Rectangle');
   
   this.x(x);
   this.y(y);
@@ -14,8 +12,8 @@ SPITFIRE.geom.Rectangle = function(x, y, width, height) {
   this.height(height);
 };
 
-SPITFIRE.geom.Rectangle.superclass = SPITFIRE.Object;
-SPITFIRE.geom.Rectangle.synthesizedProperties = [
+SPITFIRE.Rectangle.superclass = SPITFIRE.Object;
+SPITFIRE.Rectangle.synthesizedProperties = [
   'x',
   'y',
   'width',
@@ -29,7 +27,7 @@ SPITFIRE.geom.Rectangle.synthesizedProperties = [
   'topLeft'
 ];
 
-SPITFIRE.geom.Rectangle.prototype = {
+SPITFIRE.Rectangle.prototype = {
   //--------------------------------------
   // Getters / Setters
   //--------------------------------------
@@ -51,15 +49,15 @@ SPITFIRE.geom.Rectangle.prototype = {
   },
   
   getSize: function() {
-    return new SPITFIRE.geom.Point(this.width(), this.height());
+    return new SPITFIRE.Point(this.width(), this.height());
   },
   
   getTopLeft: function() {
-    return new SPITFIRE.geom.Point(this.top(), this.left());
+    return new SPITFIRE.Point(this.top(), this.left());
   },
   
   getBottomRight: function() {
-    return new SPITFIRE.geom.Point(this.bottom(), this.right());
+    return new SPITFIRE.Point(this.bottom(), this.right());
   },
   
   //--------------------------------------
@@ -67,7 +65,7 @@ SPITFIRE.geom.Rectangle.prototype = {
   //--------------------------------------
   
   clone: function() {
-    return new SPITFIRE.geom.Rectangle(this.x(), this.y(), this.width(), this.height());
+    return new SPITFIRE.Rectangle(this.x(), this.y(), this.width(), this.height());
   },
   
   toString: function() {
@@ -75,4 +73,4 @@ SPITFIRE.geom.Rectangle.prototype = {
   }
 };
 
-SPITFIRE.Class(SPITFIRE.geom.Rectangle);
+SPITFIRE.Class(SPITFIRE.Rectangle);

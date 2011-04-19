@@ -1,18 +1,16 @@
-SPITFIRE.model = SPITFIRE.model || {};
-
 //--------------------------------------
-// SPITFIRE.model.Model
+// SPITFIRE.Model
 //--------------------------------------
 
-SPITFIRE.model.Model = function() {
+SPITFIRE.Model = function() {
   this.callSuper();
-  this.qualifiedClassName('SPITFIRE.model.Model');
+  this.qualifiedClassName('SPITFIRE.Model');
 };
 
-SPITFIRE.model.Model.superclass = SPITFIRE.events.EventDispatcher;
-SPITFIRE.model.Model.synthesizedProperties = ['data'];
+SPITFIRE.Model.superclass = SPITFIRE.EventDispatcher;
+SPITFIRE.Model.synthesizedProperties = ['data'];
 
-SPITFIRE.model.Model.prototype = {
+SPITFIRE.Model.prototype = {
 
   //--------------------------------------
   // Getters / Setters
@@ -20,7 +18,7 @@ SPITFIRE.model.Model.prototype = {
   
   setData: function(value) {
     this._data = value;
-    this.trigger(new SPITFIRE.events.ModelEvent(SPITFIRE.events.ModelEvent.DATA_UPDATE));
+    this.trigger(new SPITFIRE.ModelEvent(SPITFIRE.ModelEvent.DATA_UPDATE));
   },
 
   //--------------------------------------
@@ -32,4 +30,4 @@ SPITFIRE.model.Model.prototype = {
   }
 };
 
-SPITFIRE.Class(SPITFIRE.model.Model);
+SPITFIRE.Class(SPITFIRE.Model);

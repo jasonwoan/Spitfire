@@ -1,14 +1,12 @@
-SPITFIRE.events = SPITFIRE.events || {};
-
 //--------------------------------------
-// SPITFIRE.events.ModelEvent
+// SPITFIRE.ModelEvent
 //--------------------------------------
 
-SPITFIRE.events.ModelEvent = function(type, data, bubbles, cancelable) {
+SPITFIRE.ModelEvent = function(type, data, bubbles, cancelable) {
   this.callSuper(type, data, bubbles, cancelable);
 };
 
-SPITFIRE.events.ModelEvent.DATA_UPDATE = 'dataUpdate';
+SPITFIRE.ModelEvent.DATA_UPDATE = 'dataUpdate';
 
-SPITFIRE.events.ModelEvent.superclass = SPITFIRE.events.Event;
-SPITFIRE.Class(SPITFIRE.events.ModelEvent);
+SPITFIRE.ModelEvent.superclass = SPITFIRE.Event;
+SPITFIRE.Class(SPITFIRE.ModelEvent);

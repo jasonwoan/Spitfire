@@ -1,5 +1,4 @@
-SPITFIRE.utils = SPITFIRE.utils || {};
-SPITFIRE.utils.ArrayUtils = SPITFIRE.utils.ArrayUtils || {};
+SPITFIRE.ArrayUtils = {};
 
 //--------------------------------------
 // getItemByKeys()
@@ -7,7 +6,7 @@ SPITFIRE.utils.ArrayUtils = SPITFIRE.utils.ArrayUtils || {};
 // Port of org.casalib.util.ArrayUtil.getItemByKeys() from CASA lib for ActionScript 3.0
 // http://casalib.org/
 
-SPITFIRE.utils.ArrayUtils.getItemByKeys = function(inArray, keyValues) {
+SPITFIRE.ArrayUtils.getItemByKeys = function(inArray, keyValues) {
   var i = -1,
       item,
       hasKeys;
@@ -34,7 +33,7 @@ SPITFIRE.utils.ArrayUtils.getItemByKeys = function(inArray, keyValues) {
 // Port of org.casalib.util.ArrayUtil.getItemsByKeys() from CASA lib for ActionScript 3.0
 // http://casalib.org/
 
-SPITFIRE.utils.ArrayUtils.getItemsByKeys = function(inArray, keyValues) {
+SPITFIRE.ArrayUtils.getItemsByKeys = function(inArray, keyValues) {
   var t = [],
       i = -1,
       item,
@@ -62,7 +61,7 @@ SPITFIRE.utils.ArrayUtils.getItemsByKeys = function(inArray, keyValues) {
 // Port of org.casalib.util.ArrayUtil.getItemByAnyKey() from CASA lib for ActionScript 3.0
 // http://casalib.org/
 
-SPITFIRE.utils.ArrayUtils.getItemByAnyKey = function(inArray, keyValues) {
+SPITFIRE.ArrayUtils.getItemByAnyKey = function(inArray, keyValues) {
   var i = -1,
       item;
   
@@ -84,7 +83,7 @@ SPITFIRE.utils.ArrayUtils.getItemByAnyKey = function(inArray, keyValues) {
 // Port of org.casalib.util.ArrayUtil.getItemsByAnyKey() from CASA lib for ActionScript 3.0
 // http://casalib.org/
 
-SPITFIRE.utils.ArrayUtils.getItemsByAnyKey = function(inArray, keyValues) {
+SPITFIRE.ArrayUtils.getItemsByAnyKey = function(inArray, keyValues) {
   var t = [],
       i = -1,
       item,
@@ -112,7 +111,7 @@ SPITFIRE.utils.ArrayUtils.getItemsByAnyKey = function(inArray, keyValues) {
 // Port of org.casalib.util.ArrayUtil.getItemByKey() from CASA lib for ActionScript 3.0
 // http://casalib.org/
 
-SPITFIRE.utils.ArrayUtils.getItemByKey = function(inArray, key, match) {
+SPITFIRE.ArrayUtils.getItemByKey = function(inArray, key, match) {
   var i, len, item;
   for (var i = 0, len = inArray.length; i < len; i += 1) {
     item = inArray[i];
@@ -132,7 +131,7 @@ SPITFIRE.utils.ArrayUtils.getItemByKey = function(inArray, key, match) {
 // Port of org.casalib.util.ArrayUtil.getItemsByKey() from CASA lib for ActionScript 3.0
 // http://casalib.org/
 
-SPITFIRE.utils.ArrayUtils.getItemsByKey = function(inArray, key, match) {
+SPITFIRE.ArrayUtils.getItemsByKey = function(inArray, key, match) {
   var i, len, item,
       t = [];
   for (var i = 0, len = inArray.length; i < len; i += 1) {
