@@ -281,10 +281,10 @@ window.log = function(){
 //--------------------------------------
 // Class
 //--------------------------------------
-// Heavily inspired by Ben Nadel's "Implementing JavaScript Inheritance and Synthesized Properties"
-// http://www.bennadel.com/blog/2040-Implementing-Javascript-Inheritance-And-Synthesized-Accessors-With-Annotation.htm
 
 SPITFIRE.Class = function(classDefinition) {
+  if (classDefinition.isExtended) return;
+  
   // create synthesized properties
   if (typeof classDefinition.synthesizedProperties !== 'undefined') {
     
@@ -323,7 +323,7 @@ SPITFIRE.Class = function(classDefinition) {
       if (!('get' + synPropMethodName in classDefinition.prototype))
         classDefinition.prototype['get' + synPropMethodName] = getterHelper(synProp);
       
-      if (!('set' + synPropMethodName in classDefinition.prototype))
+      if (!('set' + synPropMethodName in classDefinition.prototype))  
         classDefinition.prototype['set' + synPropMethodName] = setterHelper(synProp);
         
       classDefinition.prototype[synProp] = accessorMethodHelper(synPropMethodName);
@@ -338,10 +338,10 @@ SPITFIRE.Class = function(classDefinition) {
   var obj = {};
   
   (function (classDef) {
-    var parent = classDef.superclass;
+    var parent = classDefinition.superclass;
     if (parent) {
       // check for superclass
-      if (parent.superclass) {
+      if (parent.superclass && !parent.isExtended) {
         arguments.callee(parent.superclass);  // recursively call the annonymous function
       }
       
@@ -354,7 +354,6 @@ SPITFIRE.Class = function(classDefinition) {
   // add super powers
   classDefinition.prototype.callSuper = function() {
     var caller = arguments.callee.caller,
-        methodName = caller._name,
         superMethod = caller._super;
     
     // check to see if caller is a constructor
@@ -365,9 +364,11 @@ SPITFIRE.Class = function(classDefinition) {
     
     // check to see if a super method is available
     if (typeof superMethod !== 'undefined') {
-      superMethod.apply(this, arguments)
+      return superMethod.apply(this, arguments);
     }
   };
+  
+  classDefinition.isExtended = true;
   
   function extend(supr, classDef) {
     classDef.prototype = merge(classDef.prototype, supr.prototype);
@@ -375,23 +376,27 @@ SPITFIRE.Class = function(classDefinition) {
     return classDef;
   }
   
-  function merge(obj1, obj2) {
-    var temp;
-    if (typeof obj1 !== 'undefined') {
-      temp = clone(obj1);
+  function merge(classDef, supr) {
+    var temp,
+        pattern = /callSuper/ig;
+    if (typeof classDef !== 'undefined') {
+      temp = clone(classDef);
       
-      for (var key in obj2) {
+      for (var key in supr) {
         // check to see if method exists
         // if so save super method as a _super property
         // of the current method
         if (typeof temp[key] !== 'undefined') {
-          temp[key]._super = obj2[key];
+          // check to see if there is a callSuper method
+          if (temp[key].toString().search(pattern) !== -1) {
+            temp[key]._super = supr[key];
+          }
         } else {
-          temp[key] = obj2[key];
+          temp[key] = supr[key];
         }
       }
     } else {
-      temp = clone(obj2);
+      temp = clone(supr);
     }
     
     return temp;
@@ -2025,7 +2030,7 @@ SPITFIRE.tasks.FunctionTask.prototype = {
   },
 
   toString: function() {
-    return '[' + this.qualifiedClassName() + ']';
+    return '[' + this.qualifiedClassName() + '] function:' + this.method()._name;
   }
 };
 
@@ -2081,7 +2086,7 @@ SPITFIRE.tasks.JQueryAjaxTask.prototype = {
   },
 
   toString: function() {
-    return '[' + this.qualifiedClassName() + ']';
+    return '[' + this.qualifiedClassName() + '] url:' + this.url();
   }
 };
 

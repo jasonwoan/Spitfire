@@ -30,7 +30,7 @@ SPITFIRE.tasks.FunctionTask.prototype = {
   },
 
   toString: function() {
-    return '[' + this.qualifiedClassName() + ']';
+    return '[' + this.qualifiedClassName() + '] function:' + this.method()._name;
   }
 };
 

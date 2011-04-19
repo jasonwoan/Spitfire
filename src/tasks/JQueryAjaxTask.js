@@ -49,7 +49,7 @@ SPITFIRE.tasks.JQueryAjaxTask.prototype = {
   },
 
   toString: function() {
-    return '[' + this.qualifiedClassName() + ']';
+    return '[' + this.qualifiedClassName() + '] url:' + this.url();
   }
 };
 

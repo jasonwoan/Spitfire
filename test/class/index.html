@@ -11,6 +11,10 @@
         this._name = name;
       };
       
+      Person.id = 'Person';
+      
+      Person.synthesizedProperties = ['weight'];
+      
       Person.prototype = {
         walk: function() {
           console.log('walking');
@@ -27,12 +31,20 @@
         this.callSuper(name);
       };
       
+      SuperHero.id = 'SuperHero';
+      
       SuperHero.superclass = Person;
       
       SuperHero.prototype = {
+/*
         walk: function() {
           this.fly();
           this.callSuper();
+        },
+*/
+        
+        getWeight: function() {
+          return 'superheros are heavy';
         },
         
         fly: function() {
@@ -46,13 +58,15 @@
         this.callSuper(name);
       };
       
+      Villain.id = 'Villain';
+      
       Villain.superclass = SuperHero;
       Villain.synthesizedProperties = ['hideout', 'weapon'];
       
       Villain.prototype = {
         walk: function() {
-          this.kill();
           this.callSuper();
+          this.kill();
         },
         
         kill: function() {
@@ -62,16 +76,57 @@
       
       Warthog.Class(Villain);
       
-/*       var person = new Person('bob'); */
+      var SuperVillain = function(name) {
+        this.callSuper(name);
+      };
+      
+      SuperVillain.id = 'SuperVillain';
+      
+      SuperVillain.superclass = Villain;
+      
+      SuperVillain.prototype = {
+        walk: function() {
+          this.kill();
+          this.callSuper();
+          this.eat();
+        },
+        
+        getWeight: function() {
+          return this.callSuper() + ' / super villains are heavier';
+        },
+        
+        eat: function() {
+          console.log('eating');
+        }
+      };
+      
+      Warthog.Class(SuperVillain);
+      
+      
+      
+      
+      
+      
+      
+      
+      
+/*
+      var person = new Person('bob');
       var batman = new SuperHero('batman');
       var joker = new Villain('joker');
       var riddler = new Villain('riddler');
+*/
+      var lex = new SuperVillain('lex');
       
-/*       console.log(person); */
+/*
+      console.log(person);
       console.log(batman);
       console.log(joker);
       console.log(riddler);
+*/
+      console.log(lex);
       
+/*
       joker.walk();
       joker.hideout('docks');
       console.log(joker._hideout);
@@ -80,6 +135,9 @@
       riddler.hideout('basement');
       console.log(riddler._hideout);
       console.log(riddler.hideout());
+*/
+      lex.walk();
+/*       console.log(lex.weight()); */
       
     </script>
 	</body>

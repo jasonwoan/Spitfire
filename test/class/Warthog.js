@@ -1,6 +1,8 @@
 var Warthog = {};
 
 Warthog.Class = function(classDefinition) {
+  if (classDefinition.isExtended) return;
+  
   // create synthesized properties
   if (typeof classDefinition.synthesizedProperties !== 'undefined') {
     
@@ -54,10 +56,10 @@ Warthog.Class = function(classDefinition) {
   var obj = {};
   
   (function (classDef) {
-    var parent = classDef.superclass;
+    var parent = classDefinition.superclass;
     if (parent) {
       // check for superclass
-      if (parent.superclass) {
+      if (parent.superclass && !parent.isExtended) {
         arguments.callee(parent.superclass);  // recursively call the annonymous function
       }
       
@@ -70,7 +72,6 @@ Warthog.Class = function(classDefinition) {
   // add super powers
   classDefinition.prototype.callSuper = function() {
     var caller = arguments.callee.caller,
-        methodName = caller._name,
         superMethod = caller._super;
     
     // check to see if caller is a constructor
@@ -81,9 +82,11 @@ Warthog.Class = function(classDefinition) {
     
     // check to see if a super method is available
     if (typeof superMethod !== 'undefined') {
-      superMethod.apply(this, arguments)
+      return superMethod.apply(this, arguments);
     }
   };
+  
+  classDefinition.isExtended = true;
   
   function extend(supr, classDef) {
     classDef.prototype = merge(classDef.prototype, supr.prototype);
@@ -91,23 +94,27 @@ Warthog.Class = function(classDefinition) {
     return classDef;
   }
   
-  function merge(obj1, obj2) {
-    var temp;
-    if (typeof obj1 !== 'undefined') {
-      temp = clone(obj1);
+  function merge(classDef, supr) {
+    var temp,
+        pattern = /callSuper/ig;
+    if (typeof classDef !== 'undefined') {
+      temp = clone(classDef);
       
-      for (var key in obj2) {
+      for (var key in supr) {
         // check to see if method exists
         // if so save super method as a _super property
         // of the current method
         if (typeof temp[key] !== 'undefined') {
-          temp[key]._super = obj2[key];
+          // check to see if there is a callSuper method
+          if (temp[key].toString().search(pattern) !== -1) {
+            temp[key]._super = supr[key];
+          }
         } else {
-          temp[key] = obj2[key];
+          temp[key] = supr[key];
         }
       }
     } else {
-      temp = clone(obj2);
+      temp = clone(supr);
     }
     
     return temp;
