@@ -4,7 +4,7 @@
 
 SPITFIRE.Model = function() {
   this.callSuper();
-  this.qualifiedClassName('SPITFIRE.Model');
+  this.setQualifiedClassName('SPITFIRE.Model');
 };
 
 SPITFIRE.Model.superclass = SPITFIRE.EventDispatcher;
@@ -26,7 +26,7 @@ SPITFIRE.Model.prototype = {
   //--------------------------------------
 
   toString: function() {
-    return '[' + this.qualifiedClassName() + ']';
+    return '[' + this.getQualifiedClassName() + ']';
   }
 };
 

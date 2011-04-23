@@ -4,8 +4,8 @@
 
 SPITFIRE.StateManagerEvent = function(type, data, bubbles, cancelable, state) {
   this.callSuper(type, data, bubbles, cancelable);
-  this.state(state);
-  this.qualifiedClassName('SPITFIRE.StateManagerEvent');
+  this.setState(state);
+  this.setQualifiedClassName('SPITFIRE.StateManagerEvent');
 };
 
 SPITFIRE.StateManagerEvent.LOAD_IN_START = 'loadInStart';

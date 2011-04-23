@@ -4,7 +4,7 @@
 
 SPITFIRE.DisplayObject = function() {
   this.callSuper();
-  this.qualifiedClassName('SPITFIRE.DisplayObject');
+  this.setQualifiedClassName('SPITFIRE.DisplayObject');
   this._scaleX = 1;
   this._scaleY = 1;
   this._scale = 1;
@@ -33,39 +33,39 @@ SPITFIRE.DisplayObject.prototype = {
   //--------------------------------------
   
   setL: function(value) {
-    this.$this().css('left', value);
+    this.get$this().css('left', value);
   },
   
   getL: function() {
-    var flt = (this.style.left) ? parseFloat(this.style.left) : parseFloat(this.$this().css('left'));
+    var flt = (this.style.left) ? parseFloat(this.style.left) : parseFloat(this.get$this().css('left'));
     return flt || 0;
   },
   
   setT: function(value) {
-    this.$this().css('top', value);
+    this.get$this().css('top', value);
   },
   
   getT: function() {
-    var flt = (this.style.top) ? parseFloat(this.style.top) : parseFloat(this.$this().css('top'));
+    var flt = (this.style.top) ? parseFloat(this.style.top) : parseFloat(this.get$this().css('top'));
     return flt || 0;
   },
   
   getW: function() {
-    return (this._w) ? this._w * this._scaleX : this.$this().width();
+    return (this._w) ? this._w * this._scaleX : this.get$this().width();
   },
   
   setW: function(value) {
     this._w = value;
-    this.$this().width(this._w * this._scaleX);
+    this.get$this().width(this._w * this._scaleX);
   },
 
   getH: function() {
-    return (this._h) ? this._h * this._scaleY : this.$this().height();
+    return (this._h) ? this._h * this._scaleY : this.get$this().height();
   },
   
   setH: function(value) {
     this._h = value;
-    this.$this().height(this._h * this._scaleY);
+    this.get$this().height(this._h * this._scaleY);
   },
   
   getScale: function() {
@@ -74,34 +74,34 @@ SPITFIRE.DisplayObject.prototype = {
   
   setScale: function(value) {
     this._scale = value;
-    this.scaleX(value);
-    this.scaleY(value);
+    this.setScaleX(value);
+    this.setScaleY(value);
   },
   
   setScaleX: function(value) {
     this._scaleX = value;
-    this.w(this._w);
+    this.setW(this._w);
   },
   
   setScaleY: function(value) {
     this._scaleY = value;
-    this.h(this._h);
+    this.setH(this._h);
   },
   
   getRect: function() {
-    return new SPITFIRE.geom.Rectangle(this.l(), this.t(), this.w(), this.h());
+    return new SPITFIRE.Rectangle(this.getL(), this.getT(), this.getW(), this.getH());
   },
   
   setRect: function(value) {
-    this.l(value.x());
-    this.t(value.y());
-    this.w(value.width());
-    this.h(value.height());
+    this.setL(value.getX());
+    this.setT(value.getY());
+    this.setW(value.getWidth());
+    this.setH(value.getHeight());
   },
   
   setZ: function(value) {
     this._z = value >> 0;
-    this.$this().css('z-index', this._z);
+    this.get$this().css('z-index', this._z);
   },
   
   //--------------------------------------
@@ -109,7 +109,7 @@ SPITFIRE.DisplayObject.prototype = {
   //--------------------------------------
   
   init: function() {
-    this.$this($(this));
+    this.set$this($(this));
   },
   
   animate: function(properties, options) {
@@ -143,7 +143,7 @@ SPITFIRE.DisplayObject.prototype = {
     }
     options.complete = this.animationComplete.context(this);
     
-    this.$this().animate(properties, options);
+    this.get$this().animate(properties, options);
   },
   
   animationStep: function(now, fx) {    

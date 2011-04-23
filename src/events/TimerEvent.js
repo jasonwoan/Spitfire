@@ -4,7 +4,7 @@
 
 SPITFIRE.TimerEvent = function(type, data, bubbles, cancelable) {  
   this.callSuper(type, data, bubbles, cancelable);
-  this.qualifiedClassName('SPITFIRE.TimerEvent');
+  this.setQualifiedClassName('SPITFIRE.TimerEvent');
 };
 
 SPITFIRE.TimerEvent.TIMER = 'timer';

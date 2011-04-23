@@ -3,7 +3,7 @@
 //--------------------------------------
 
 SPITFIRE.Object = function() {
-  this.qualifiedClassName('SPITFIRE.Object');
+  this.setQualifiedClassName('SPITFIRE.Object');
 };
 
 SPITFIRE.Object.synthesizedProperties = ['qualifiedClassName'];

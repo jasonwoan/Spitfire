@@ -4,7 +4,7 @@
 
 SPITFIRE.EventDispatcher = function() {
   this.callSuper();
-  this.qualifiedClassName('SPITFIRE.EventDispatcher');
+  this.setQualifiedClassName('SPITFIRE.EventDispatcher');
   this._eventListeners = {};
 };
 
@@ -27,12 +27,12 @@ SPITFIRE.EventDispatcher.prototype = {
   },
   
   trigger: function(event) {
-    event.target(this);
+    event.setTarget(this);
     var args = [event];
     
-    if (this._eventListeners[event.type()]) {
-      for (var j = 0, len = this._eventListeners[event.type()].length; j < len; j++) {
-        this._eventListeners[event.type()][j].apply(this, args);
+    if (this._eventListeners[event.getType()]) {
+      for (var j = 0, len = this._eventListeners[event.getType()].length; j < len; j++) {
+        this._eventListeners[event.getType()][j].apply(this, args);
       }
     }
   }

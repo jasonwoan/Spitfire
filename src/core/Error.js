@@ -4,9 +4,9 @@
 
 SPITFIRE.Error = function(message) {
   this.callSuper();
-  this.message(message);
-  this.name('Error');
-  this.qualifiedClassName('SPITFIRE.Error');
+  this.setMessage(message);
+  this.setName('Error');
+  this.setQualifiedClassName('SPITFIRE.Error');
 };
 
 SPITFIRE.Error.superclass = SPITFIRE.Object;
@@ -14,7 +14,7 @@ SPITFIRE.Error.synthesizedProperties = ['message', 'name'];
 
 SPITFIRE.Error.prototype = {
   toString: function() {
-    return this.name() + ': [' + this.qualifiedClassName() + '] "' + this.message() + '"';
+    return this.getName() + ': [' + this.getQualifiedClassName() + '] "' + this.getMessage() + '"';
   }
 }
 

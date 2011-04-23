@@ -4,7 +4,7 @@
 
 SPITFIRE.Point = function(x, y) {
   this.callSuper();
-  this.qualifiedClassName('SPITFIRE.Point');
+  this.setQualifiedClassName('SPITFIRE.Point');
   this.x = x;
   this.y = y;
 };
@@ -17,7 +17,7 @@ SPITFIRE.Point.prototype = {
   //--------------------------------------
 
   toString: function() {
-    return '[' + this.qualifiedClassName() + ']';
+    return '[' + this.getQualifiedClassName() + '] x:' + this.x + ' y:' + this.y;
   }
 };
 

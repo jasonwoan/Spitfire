@@ -40,6 +40,8 @@ SPITFIRE.isPlainObject = function(obj) {
 	if (!obj || typeof obj !== "object" || obj.nodeType || SPITFIRE.isWindow(obj)) {
 		return false;
 	}
+	
+	var hasOwn = Object.prototype.hasOwnProperty;
 
 	// Not own constructor property must be Object
 	if ( obj.constructor &&
@@ -128,38 +130,24 @@ SPITFIRE.extend = function() {
 				if ( target === copy ) {
 					continue;
 				}
-				
-				// Merge accessor methods
-				// getter = options.__lookupGetter__(name);
-				// setter = options.__lookupSetter__(name);
-				
-				// if (getter || setter) {
-				//   if (getter) {
-				//     target.__defineGetter__(name, getter);
-				//   }
-				//   
-				//   if (setter) {
-				//     target.__defineSetter__(name, setter);
-				//   }
-				// } else {
-				  // Recurse if we're merging plain objects or arrays
-  				if ( deep && copy && ( SPITFIRE.isPlainObject(copy) || (copyIsArray = SPITFIRE.isArray(copy)) ) ) {
-  					if ( copyIsArray ) {
-  						copyIsArray = false;
-  						clone = src && SPITFIRE.isArray(src) ? src : [];
-  
-  					} else {
-  						clone = src && SPITFIRE.isPlainObject(src) ? src : {};
-  					}
-  
-  					// Never move original objects, clone them
-  					target[ name ] = SPITFIRE.extend( deep, clone, copy );
-  
-  				// Don't bring in undefined values
-  				} else if ( copy !== undefined ) {
-  					target[ name ] = copy;
-  				}
-				// }
+
+			  // Recurse if we're merging plain objects or arrays
+				if ( deep && copy && ( SPITFIRE.isPlainObject(copy) || (copyIsArray = SPITFIRE.isArray(copy)) ) ) {
+					if ( copyIsArray ) {
+						copyIsArray = false;
+						clone = src && SPITFIRE.isArray(src) ? src : [];
+
+					} else {
+						clone = src && SPITFIRE.isPlainObject(src) ? src : {};
+					}
+
+					// Never move original objects, clone them
+					target[ name ] = SPITFIRE.extend( deep, clone, copy );
+
+				// Don't bring in undefined values
+				} else if ( copy !== undefined ) {
+					target[ name ] = copy;
+				}
 			}
 		}
 	}
@@ -187,6 +175,39 @@ SPITFIRE.removeListener = function(target, event, handler, context) {
     target.removeEventListener(event, handler.context(context), false);
   }
 };
+
+SPITFIRE.merge = function(obj1, obj2) {  
+  if (typeof obj1 === 'undefined') return SPITFIRE.clone(obj2);
+  if (typeof obj2 === 'undefined') return SPITFIRE.clone(obj1);
+  
+  var temp;
+  temp = SPITFIRE.clone(obj1);
+  
+  for (var key in obj2) {
+    // check to see if key already exists
+    if (typeof temp[key] !== 'undefined') {
+      // merge the two objects
+      temp[key] = SPITFIRE.merge(temp[key], obj2[key]);
+    } else {
+      temp[key] = SPITFIRE.clone(obj2[key]);
+    }
+  }
+  
+  return temp;
+}
+  
+SPITFIRE.clone = function(obj) {
+  if (typeof obj !== 'object') return obj;
+  
+  var temp = {};
+  
+  for (var key in obj) {
+    temp[key] = SPITFIRE.clone(obj[key]);
+    temp[key]._name = key;
+  }
+  
+  return temp;
+}
 
 //--------------------------------------
 // SPITFIRE.extendDOM(selector)

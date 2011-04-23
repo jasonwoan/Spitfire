@@ -4,10 +4,10 @@
 
 SPITFIRE.StateManager = function(name, root) {
   this.callSuper();
-  this.root(root);
-  this.qualifiedClassName('SPITFIRE.StateManager');
-  this.name(name || this.qualifiedClassName() + ~~(Math.random() * 100000));
-  this.pageViewType(SPITFIRE.StateManager.PAGE_VIEW_LOCATION);
+  this.setRoot(root);
+  this.setQualifiedClassName('SPITFIRE.StateManager');
+  this.setName(name || this.getQualifiedClassName() + ~~(Math.random() * 100000));
+  this.setPageViewType(SPITFIRE.StateManager.PAGE_VIEW_LOCATION);
   this._progressTimer = new SPITFIRE.Timer(33);
   this._progressTimer.bind(SPITFIRE.TimerEvent.TIMER, this.taskManagerProgressHandler.context(this));
   this._transitionInPath;
@@ -46,25 +46,25 @@ SPITFIRE.StateManager.prototype = {
   
   setDeepLinking: function(value) {
     this._deepLinking = value;
-    if (this.deepLinking()) {
-      this.deepLinking().change(this.deepLinkingChangeHandler.context(this));
+    if (this.getDeepLinking()) {
+      this.getDeepLinking().change(this.deepLinkingChangeHandler.context(this));
     }
   },
   
   setTree: function(value) {
     this._tree = value;
-    value.stateManager(this);
-    value.root(this.root());
+    value.setStateManager(this);
+    value.setRoot(this.root());
   },
   
   getLocation: function() {
-    var states = this.selectedStates(),
+    var states = this.getSelectedStates(),
         loc = '',
         i, len;
         
     for (i = 0, len = states.length; i < len; i+=1) {
       var inlineState = states[i];
-      loc += inlineState.name();
+      loc += inlineState.getName();
       if (inlineState != states[states.length - 1]) {
         loc += '/';
       }
@@ -74,20 +74,20 @@ SPITFIRE.StateManager.prototype = {
   },
   
   setLocation: function(value) {
-    if (this.deepLinking()) {
+    if (this.getDeepLinking()) {
       var array = value.split('/');
       array.shift();
       var loc = '/' + array.join('/');
-      this.deepLinking().value(loc);
+      this.getDeepLinking().value(loc);
     } else {
       var locationArray = value.split('/');
       locationArray.shift();
-      var state = this.tree();
+      var state = this.getTree();
       if (locationArray.length > 0) {
         state = state.getChildFromPath(locationArray.join('/'));
       }
       
-      this._transitionInPath = state.stateLocation();
+      this._transitionInPath = state.getStateLocation();
       this.checkIfInTransition();
     }
   },
@@ -96,13 +96,13 @@ SPITFIRE.StateManager.prototype = {
     var states = [],
         state;
         
-    if (this.tree().selected()) {
-      state = this.tree();
+    if (this.getTree().getSelected()) {
+      state = this.getTree();
     }
     
     while (state) {
       states.push(state);
-      state = state.selectedChild();
+      state = state.getSelectedChild();
     }
     
     return states;
@@ -113,48 +113,48 @@ SPITFIRE.StateManager.prototype = {
   //--------------------------------------
   
   deepLinkingChangeHandler: function(event) {
-    var path = this.deepLinking().value();
+    var path = this.getDeepLinking().value();
     if (path == '' || path == '/') {
-      this._transitionInPath = this.tree().stateLocation();
+      this._transitionInPath = this.getTree().getStateLocation();
     } else {
-      this._transitionInPath = this.tree().name() + path;
+      this._transitionInPath = this.getTree().getName() + path;
     }
     
     this.checkIfInTransition();
   },
   
   taskManagerProgressHandler: function(event) {
-    var totalProgress = this.taskManager().progress();
-    if (this.debug()) {
-      log(this.name() + ' totalProgress = ' + totalProgress);
+    var totalProgress = this.getTaskManager().getProgress();
+    if (this.getDebug()) {
+      log(this.getName() + ' totalProgress = ' + totalProgress);
     }
     
     if (isNaN(totalProgress)) {
       totalProgress = 0;
     }
     
-    if (this.preloader()) {
-      this.preloader().progress(totalProgress);
+    if (typeof this.getPreloader() !== 'undefined') {
+      this.getPreloader().setProgress(totalProgress);
     }
   },
     
   transitionInCompleteHandler: function(event) {
-    if (this.trackPageViews()) {
+    if (this.getTrackPageViews()) {
   		var param;
-  		switch(this.pageViewType()) {
+  		switch(this.getPageViewType()) {
   			case SPITFIRE.StateManager.PAGE_VIEW_LOCATION:
-  				param = this.location();
+  				param = this.getLocation();
   			break;
   			case SPITFIRE.StateManager.PAGE_VIEW_NAME:
-  				param = this.location();
+  				param = this.getLocation();
   			break;
   		}
   	}
   },
   
   taskManagerCompleteHandler: function(event) {
-    this.taskManager().unbind(SPITFIRE.Event.COMPLETE, this.taskManagerCompleteHandler.context(this));
-		if (this.taskManager().progressive()) {
+    this.getTaskManager().unbind(SPITFIRE.Event.COMPLETE, this.taskManagerCompleteHandler.context(this));
+		if (this.getTaskManager().getProgressive()) {
 			this.taskManagerProgressHandler();
 			this._progressTimer.stop();
 		}
@@ -177,21 +177,21 @@ SPITFIRE.StateManager.prototype = {
   //--------------------------------------
   
   init: function() {
-    if (this.deepLinking()) {
-      if (this.deepLinking().value() != '/') {
+    if (this.getDeepLinking()) {
+      if (this.getDeepLinking().value() != '/') {
         this.deepLinkingChangeHandler();
       } else
-      if (this.startLocation()) {
-        this.location(this.startLocation());
+      if (this.getStartLocation()) {
+        this.location(this.getStartLocation());
       } else {
-        this._transitionInPath = this.tree().stateLocation();
+        this._transitionInPath = this.getTree().getStateLocation();
         this.checkIfInTransition(); 
       }
     } else 
-    if (this.startLocation()) {
-      this.location(this.startLocation());
+    if (this.getStartLocation()) {
+      this.location(this.getStartLocation());
     } else {
-      this._transitionInPath = this.tree().stateLocation();
+      this._transitionInPath = this.getTree().getStateLocation();
       this.checkIfInTransition();
     }
   },
@@ -214,8 +214,8 @@ SPITFIRE.StateManager.prototype = {
     var nextLocationArray = this._transitionInPath.split('/');
     
     var locationPathArray = [];
-    if (this.location().length > 0) {
-      locationPathArray = this.location().split('/');
+    if (this.getLocation().length > 0) {
+      locationPathArray = this.getLocation().split('/');
     }
     
     var breakIndex = 0, i, len, currentArray, currentPath, nextArray, nextPath;
@@ -267,7 +267,7 @@ SPITFIRE.StateManager.prototype = {
       var path = transitionPaths[i];
       var pathArray = path.split('/');
       pathArray.shift();
-      var state = this.tree();
+      var state = this.getTree();
       if (pathArray.length > 0) {
         var j, len2;
         for (j = 0, len2 = pathArray.length; j < len2; j+=1) {
@@ -287,7 +287,7 @@ SPITFIRE.StateManager.prototype = {
 		  var path = transitionPaths[i];
 			var pathArray = path.split("/");
 			pathArray.shift();
-			var state = this.tree();
+			var state = this.getTree();
 			
       if (pathArray.length > 0) {
         var j, len2;
@@ -300,17 +300,17 @@ SPITFIRE.StateManager.prototype = {
 				}
 			}
 			
-			state.activated(true);
-			this.activeStates().push(state);
-			newPaths.push(state.stateLocation());
+			state.setActivated(true);
+			this.getActiveStates().push(state);
+			newPaths.push(state.getStateLocation());
 			
-			if (state.stateLocation() == transitionPaths[transitionPaths.length - 1]) {
+			if (state.getStateLocation() == transitionPaths[transitionPaths.length - 1]) {
 				var defaultState = state.getChildByName(state.defaultChild());
 				while (defaultState) {
-					defaultState.activated(true);
-					this.activeStates().push(defaultState);
-					newPaths.push(defaultState.stateLocation());
-					defaultState = defaultState.getChildByName(defaultState.defaultChild());
+					defaultState.setActivated(true);
+					this.getActiveStates().push(defaultState);
+					newPaths.push(defaultState.getStateLocation());
+					defaultState = defaultState.getChildByName(defaultState.getDefaultChild());
 				}
 			}
 			
@@ -323,7 +323,7 @@ SPITFIRE.StateManager.prototype = {
     var newPaths = [];
 		var pathArray = path.split("/");
 		pathArray.shift();
-		var state = this.tree();
+		var state = this.getTree();
 		if (pathArray.length > 0) {
 		  var i, len;
 			for (i = 0, len = pathArray.length; i < len; i += 1) {
@@ -333,10 +333,10 @@ SPITFIRE.StateManager.prototype = {
 		}
 		var defaultState = state.getChildByName(state.defaultChild);
 		while (defaultState) {
-			defaultState.activated(true);
-			this.activeStates().push(defaultState);
-			newPaths.push(defaultState.stateLocation());
-			defaultState = defaultState.getChildByName(defaultState.defaultChild());
+			defaultState.setActivated(true);
+			this.getActiveStates().push(defaultState);
+			newPaths.push(defaultState.getStateLocation());
+			defaultState = defaultState.getChildByName(defaultState.getDefaultChild());
 		}
 		
 		return newPaths;
@@ -344,54 +344,54 @@ SPITFIRE.StateManager.prototype = {
   
   startTransition: function() {
     this._currentTransition = this._transitions.shift();
-		this.trigger(new SPITFIRE.Event(this._currentTransition.transitionName() + "Start"));
+		this.trigger(new SPITFIRE.Event(this._currentTransition.getTransitionName() + "Start"));
 		
-		this.taskManager(new SPITFIRE.SequentialTask());
+		this.setTaskManager(new SPITFIRE.SequentialTask());
 		
-		this.taskManager().name(this._currentTransition.transitionName());
-		if (this.debug()) {
-			this.taskManager().debug(this.debug());
+		this.getTaskManager().setName(this._currentTransition.getTransitionName());
+		if (this.getDebug()) {
+			this.getTaskManager().setDebug(this.getDebug());
 		}
 		
-		this.taskManager().bind(SPITFIRE.Event.COMPLETE, this.taskManagerCompleteHandler.context(this));
+		this.getTaskManager().bind(SPITFIRE.Event.COMPLETE, this.taskManagerCompleteHandler.context(this));
 		
 		var i, len;
 		
-		for (i = 0, len = this._currentTransition.locations().length; i < len; i += 1) {
-		  var path = this._currentTransition.locations()[i];
+		for (i = 0, len = this._currentTransition.getLocations().length; i < len; i += 1) {
+		  var path = this._currentTransition.getLocations()[i];
 			var pathArray = path.split("/");
 			pathArray.shift();
-			var state = this.tree();
+			var state = this.getTree();
 			if (pathArray.length > 0) {
 				state = state.getChildFromPath(pathArray.join("/"));
 			}
-			var task = state[this._currentTransition.transitionName()]();
+			var task = state[this._currentTransition.getTransitionName()]();
 			
 			if (task) {
-				this.taskManager().addTask(task);
+				this.getTaskManager().addTask(task);
 			}
 			var stateSelected;
-			if (this._currentTransition.transitionName() == "transitionIn") {
+			if (this._currentTransition.getTransitionName() == "transitionIn") {
 				stateSelected = true;
 			}
-			if (this._currentTransition.transitionName() == "transitionOut") {
+			if (this._currentTransition.getTransitionName() == "transitionOut") {
 				stateSelected = false;
 			}
-			this.taskManager().addTask(new SPITFIRE.PropertyTask(state, "selected", stateSelected));
+			this.getTaskManager().addTask(new SPITFIRE.PropertyTask(state, "selected", stateSelected));
 		}
-		if (this.taskManager().progress() == 1) {
-			this.taskManager().progressive(false);
+		if (this.getTaskManager().getProgress() == 1) {
+			this.getTaskManager().getProgressive(false);
 		}
-		if (this.taskManager().progressive()) {
-			if (this.preloader()) {
-				this.taskManager().addTaskAt(new SPITFIRE.PropertyTask(this.preloader(), "progress", 0), 0);
-				this.taskManager().addTaskAt(this.preloader().transitionIn(), 1);
-				this.taskManager().addTask(this.preloader().transitionOut());
+		if (this.getTaskManager().getProgressive()) {
+			if (this.getPreloader()) {
+				this.getTaskManager().addTaskAt(new SPITFIRE.PropertyTask(this.getPreloader(), "progress", 0), 0);
+				this.getTaskManager().addTaskAt(this.getPreloader().getTransitionIn(), 1);
+				this.getTaskManager().addTask(this.getPreloader().getTransitionOut());
 			}
-			this.taskManager().progress(0);
+			this.getTaskManager().setProgress(0);
 			this._progressTimer.start();
 		}
-		this.taskManager().start();
+		this.getTaskManager().start();
   },
   
   addRedirect: function(location, newLocation) {
@@ -402,21 +402,21 @@ SPITFIRE.StateManager.prototype = {
   removeRedirect: function(location) {
     var newRedirects = [];
     var i, len;
-		for (i = 0, len = this.redirects().length; i < len; i += 1) {
-		  var redirect = this.redirects()[i];
-			if (redirect.location() != location) {
+		for (i = 0, len = this.getRedirects().length; i < len; i += 1) {
+		  var redirect = this.getRedirects()[i];
+			if (redirect.getLocation() != location) {
 				newRedirects.push(redirect);
 			}
 		}
-		this.redirects(newRedirects);
+		this.setRedirects(newRedirects);
   },
   
   checkRedirect: function(path) {
     var i, len;
-		for (i = 0, len = this.redirects().length; i < len; i += 1) {
-		  var redirect = redirects()[i];
-			if (path == redirect.location()) {
-				path = redirect.newLocation();
+		for (i = 0, len = this.getRedirects().length; i < len; i += 1) {
+		  var redirect = this.getRedirects()[i];
+			if (path == redirect.getLocation()) {
+				path = redirect.getNewLocation();
 			}
 		}
 		
@@ -424,7 +424,7 @@ SPITFIRE.StateManager.prototype = {
   },
   
   toString: function() {
-    return '[StateManager' + ' name=' + this.name() + ' className = ' + this.qualifiedClassName() + ']';
+    return '[StateManager' + ' name=' + this.getName() + ' className = ' + this.getQualifiedClassName() + ']';
   }
 };
 

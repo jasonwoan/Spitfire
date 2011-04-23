@@ -40,6 +40,8 @@ SPITFIRE.isPlainObject = function(obj) {
 	if (!obj || typeof obj !== "object" || obj.nodeType || SPITFIRE.isWindow(obj)) {
 		return false;
 	}
+	
+	var hasOwn = Object.prototype.hasOwnProperty;
 
 	// Not own constructor property must be Object
 	if ( obj.constructor &&
@@ -128,38 +130,24 @@ SPITFIRE.extend = function() {
 				if ( target === copy ) {
 					continue;
 				}
-				
-				// Merge accessor methods
-				// getter = options.__lookupGetter__(name);
-				// setter = options.__lookupSetter__(name);
-				
-				// if (getter || setter) {
-				//   if (getter) {
-				//     target.__defineGetter__(name, getter);
-				//   }
-				//   
-				//   if (setter) {
-				//     target.__defineSetter__(name, setter);
-				//   }
-				// } else {
-				  // Recurse if we're merging plain objects or arrays
-  				if ( deep && copy && ( SPITFIRE.isPlainObject(copy) || (copyIsArray = SPITFIRE.isArray(copy)) ) ) {
-  					if ( copyIsArray ) {
-  						copyIsArray = false;
-  						clone = src && SPITFIRE.isArray(src) ? src : [];
-  
-  					} else {
-  						clone = src && SPITFIRE.isPlainObject(src) ? src : {};
-  					}
-  
-  					// Never move original objects, clone them
-  					target[ name ] = SPITFIRE.extend( deep, clone, copy );
-  
-  				// Don't bring in undefined values
-  				} else if ( copy !== undefined ) {
-  					target[ name ] = copy;
-  				}
-				// }
+
+			  // Recurse if we're merging plain objects or arrays
+				if ( deep && copy && ( SPITFIRE.isPlainObject(copy) || (copyIsArray = SPITFIRE.isArray(copy)) ) ) {
+					if ( copyIsArray ) {
+						copyIsArray = false;
+						clone = src && SPITFIRE.isArray(src) ? src : [];
+
+					} else {
+						clone = src && SPITFIRE.isPlainObject(src) ? src : {};
+					}
+
+					// Never move original objects, clone them
+					target[ name ] = SPITFIRE.extend( deep, clone, copy );
+
+				// Don't bring in undefined values
+				} else if ( copy !== undefined ) {
+					target[ name ] = copy;
+				}
 			}
 		}
 	}
@@ -187,6 +175,39 @@ SPITFIRE.removeListener = function(target, event, handler, context) {
     target.removeEventListener(event, handler.context(context), false);
   }
 };
+
+SPITFIRE.merge = function(obj1, obj2) {  
+  if (typeof obj1 === 'undefined') return SPITFIRE.clone(obj2);
+  if (typeof obj2 === 'undefined') return SPITFIRE.clone(obj1);
+  
+  var temp;
+  temp = SPITFIRE.clone(obj1);
+  
+  for (var key in obj2) {
+    // check to see if key already exists
+    if (typeof temp[key] !== 'undefined') {
+      // merge the two objects
+      temp[key] = SPITFIRE.merge(temp[key], obj2[key]);
+    } else {
+      temp[key] = SPITFIRE.clone(obj2[key]);
+    }
+  }
+  
+  return temp;
+}
+  
+SPITFIRE.clone = function(obj) {
+  if (typeof obj !== 'object') return obj;
+  
+  var temp = {};
+  
+  for (var key in obj) {
+    temp[key] = SPITFIRE.clone(obj[key]);
+    temp[key]._name = key;
+  }
+  
+  return temp;
+}
 
 //--------------------------------------
 // SPITFIRE.extendDOM(selector)
@@ -380,7 +401,7 @@ SPITFIRE.Class = function(classDefinition) {
     var temp,
         pattern = /callSuper/ig;
     if (typeof classDef !== 'undefined') {
-      temp = clone(classDef);
+      temp = SPITFIRE.clone(classDef);
       
       for (var key in supr) {
         // check to see if method exists
@@ -396,20 +417,7 @@ SPITFIRE.Class = function(classDefinition) {
         }
       }
     } else {
-      temp = clone(supr);
-    }
-    
-    return temp;
-  }
-  
-  function clone(obj) {
-    if (typeof obj !== 'object') return obj;
-    
-    var temp = {};
-    
-    for (var key in obj) {
-      temp[key] = clone(obj[key]);
-      temp[key]._name = key;
+      temp = SPITFIRE.clone(supr);
     }
     
     return temp;
@@ -420,7 +428,7 @@ SPITFIRE.Class = function(classDefinition) {
 //--------------------------------------
 
 SPITFIRE.Object = function() {
-  this.qualifiedClassName('SPITFIRE.Object');
+  this.setQualifiedClassName('SPITFIRE.Object');
 };
 
 SPITFIRE.Object.synthesizedProperties = ['qualifiedClassName'];
@@ -438,9 +446,9 @@ SPITFIRE.Class(SPITFIRE.Object);
 
 SPITFIRE.Error = function(message) {
   this.callSuper();
-  this.message(message);
-  this.name('Error');
-  this.qualifiedClassName('SPITFIRE.Error');
+  this.setMessage(message);
+  this.setName('Error');
+  this.setQualifiedClassName('SPITFIRE.Error');
 };
 
 SPITFIRE.Error.superclass = SPITFIRE.Object;
@@ -448,7 +456,7 @@ SPITFIRE.Error.synthesizedProperties = ['message', 'name'];
 
 SPITFIRE.Error.prototype = {
   toString: function() {
-    return this.name() + ': [' + this.qualifiedClassName() + '] "' + this.message() + '"';
+    return this.getName() + ': [' + this.getQualifiedClassName() + '] "' + this.getMessage() + '"';
   }
 }
 
@@ -458,10 +466,10 @@ SPITFIRE.Class(SPITFIRE.Error);
 //--------------------------------------
 
 SPITFIRE.Event = function(type, data, bubbles, cancelable) {
-  this.bubbles(bubbles || false);
-  this.cancelable(cancelable || false);
-  this.data(data || {});
-  this.type(type);
+  this.setBubbles(bubbles || false);
+  this.setCancelable(cancelable || false);
+  this.setData(data || {});
+  this.setType(type);
 };
 
 SPITFIRE.Event.COMPLETE = 'complete';
@@ -476,7 +484,7 @@ SPITFIRE.Class(SPITFIRE.Event);
 
 SPITFIRE.EventDispatcher = function() {
   this.callSuper();
-  this.qualifiedClassName('SPITFIRE.EventDispatcher');
+  this.setQualifiedClassName('SPITFIRE.EventDispatcher');
   this._eventListeners = {};
 };
 
@@ -499,12 +507,12 @@ SPITFIRE.EventDispatcher.prototype = {
   },
   
   trigger: function(event) {
-    event.target(this);
+    event.setTarget(this);
     var args = [event];
     
-    if (this._eventListeners[event.type()]) {
-      for (var j = 0, len = this._eventListeners[event.type()].length; j < len; j++) {
-        this._eventListeners[event.type()][j].apply(this, args);
+    if (this._eventListeners[event.getType()]) {
+      for (var j = 0, len = this._eventListeners[event.getType()].length; j < len; j++) {
+        this._eventListeners[event.getType()][j].apply(this, args);
       }
     }
   }
@@ -517,7 +525,7 @@ SPITFIRE.Class(SPITFIRE.EventDispatcher);
 
 SPITFIRE.DisplayObject = function() {
   this.callSuper();
-  this.qualifiedClassName('SPITFIRE.DisplayObject');
+  this.setQualifiedClassName('SPITFIRE.DisplayObject');
   this._scaleX = 1;
   this._scaleY = 1;
   this._scale = 1;
@@ -546,39 +554,39 @@ SPITFIRE.DisplayObject.prototype = {
   //--------------------------------------
   
   setL: function(value) {
-    this.$this().css('left', value);
+    this.get$this().css('left', value);
   },
   
   getL: function() {
-    var flt = (this.style.left) ? parseFloat(this.style.left) : parseFloat(this.$this().css('left'));
+    var flt = (this.style.left) ? parseFloat(this.style.left) : parseFloat(this.get$this().css('left'));
     return flt || 0;
   },
   
   setT: function(value) {
-    this.$this().css('top', value);
+    this.get$this().css('top', value);
   },
   
   getT: function() {
-    var flt = (this.style.top) ? parseFloat(this.style.top) : parseFloat(this.$this().css('top'));
+    var flt = (this.style.top) ? parseFloat(this.style.top) : parseFloat(this.get$this().css('top'));
     return flt || 0;
   },
   
   getW: function() {
-    return (this._w) ? this._w * this._scaleX : this.$this().width();
+    return (this._w) ? this._w * this._scaleX : this.get$this().width();
   },
   
   setW: function(value) {
     this._w = value;
-    this.$this().width(this._w * this._scaleX);
+    this.get$this().width(this._w * this._scaleX);
   },
 
   getH: function() {
-    return (this._h) ? this._h * this._scaleY : this.$this().height();
+    return (this._h) ? this._h * this._scaleY : this.get$this().height();
   },
   
   setH: function(value) {
     this._h = value;
-    this.$this().height(this._h * this._scaleY);
+    this.get$this().height(this._h * this._scaleY);
   },
   
   getScale: function() {
@@ -587,34 +595,34 @@ SPITFIRE.DisplayObject.prototype = {
   
   setScale: function(value) {
     this._scale = value;
-    this.scaleX(value);
-    this.scaleY(value);
+    this.setScaleX(value);
+    this.setScaleY(value);
   },
   
   setScaleX: function(value) {
     this._scaleX = value;
-    this.w(this._w);
+    this.setW(this._w);
   },
   
   setScaleY: function(value) {
     this._scaleY = value;
-    this.h(this._h);
+    this.setH(this._h);
   },
   
   getRect: function() {
-    return new SPITFIRE.geom.Rectangle(this.l(), this.t(), this.w(), this.h());
+    return new SPITFIRE.Rectangle(this.getL(), this.getT(), this.getW(), this.getH());
   },
   
   setRect: function(value) {
-    this.l(value.x());
-    this.t(value.y());
-    this.w(value.width());
-    this.h(value.height());
+    this.setL(value.getX());
+    this.setT(value.getY());
+    this.setW(value.getWidth());
+    this.setH(value.getHeight());
   },
   
   setZ: function(value) {
     this._z = value >> 0;
-    this.$this().css('z-index', this._z);
+    this.get$this().css('z-index', this._z);
   },
   
   //--------------------------------------
@@ -622,7 +630,7 @@ SPITFIRE.DisplayObject.prototype = {
   //--------------------------------------
   
   init: function() {
-    this.$this($(this));
+    this.set$this($(this));
   },
   
   animate: function(properties, options) {
@@ -656,7 +664,7 @@ SPITFIRE.DisplayObject.prototype = {
     }
     options.complete = this.animationComplete.context(this);
     
-    this.$this().animate(properties, options);
+    this.get$this().animate(properties, options);
   },
   
   animationStep: function(now, fx) {    
@@ -699,8 +707,8 @@ SPITFIRE.Class(SPITFIRE.DisplayObject);
 
 SPITFIRE.Task = function() {
   this.callSuper();
-  this.qualifiedClassName('SPITFIRE.Task');
-  this.progress(0);
+  this.setQualifiedClassName('SPITFIRE.Task');
+  this.setProgress(0);
 };
 
 SPITFIRE.Task.superclass = SPITFIRE.EventDispatcher;
@@ -717,16 +725,16 @@ SPITFIRE.Task.prototype = {
   //--------------------------------------
   
   start: function() {
-    this.progress(0);
+    this.setProgress(0);
   },
   
   complete: function() {
-    this.progress(1);
+    this.setProgress(1);
     this.trigger(new SPITFIRE.Event(SPITFIRE.Event.COMPLETE));
   },
   
   toString: function() {
-    return '[' + this.qualifiedClassName() + ' name=' + this.name() + ']';
+    return '[' + this.getQualifiedClassName() + ' name=' + this.getName() + ']';
   }
 };
 
@@ -935,8 +943,8 @@ SPITFIRE.Class(SPITFIRE.StateEvent);
 
 SPITFIRE.StateManagerEvent = function(type, data, bubbles, cancelable, state) {
   this.callSuper(type, data, bubbles, cancelable);
-  this.state(state);
-  this.qualifiedClassName('SPITFIRE.StateManagerEvent');
+  this.setState(state);
+  this.setQualifiedClassName('SPITFIRE.StateManagerEvent');
 };
 
 SPITFIRE.StateManagerEvent.LOAD_IN_START = 'loadInStart';
@@ -962,7 +970,7 @@ SPITFIRE.Class(SPITFIRE.StateManagerEvent);
 
 SPITFIRE.TimerEvent = function(type, data, bubbles, cancelable) {  
   this.callSuper(type, data, bubbles, cancelable);
-  this.qualifiedClassName('SPITFIRE.TimerEvent');
+  this.setQualifiedClassName('SPITFIRE.TimerEvent');
 };
 
 SPITFIRE.TimerEvent.TIMER = 'timer';
@@ -976,7 +984,7 @@ SPITFIRE.Class(SPITFIRE.TimerEvent);
 
 SPITFIRE.Point = function(x, y) {
   this.callSuper();
-  this.qualifiedClassName('SPITFIRE.Point');
+  this.setQualifiedClassName('SPITFIRE.Point');
   this.x = x;
   this.y = y;
 };
@@ -989,7 +997,7 @@ SPITFIRE.Point.prototype = {
   //--------------------------------------
 
   toString: function() {
-    return '[' + this.qualifiedClassName() + ']';
+    return '[' + this.getQualifiedClassName() + '] x:' + this.x + ' y:' + this.y;
   }
 };
 
@@ -1002,10 +1010,10 @@ SPITFIRE.Rectangle = function(x, y, width, height) {
   this.callSuper();
   this.qualifiedClassName('SPITFIRE.Rectangle');
   
-  this.x(x);
-  this.y(y);
-  this.width(width);
-  this.height(height);
+  this.setX(x);
+  this.setY(y);
+  this.setWidth(width);
+  this.setHeight(height);
 };
 
 SPITFIRE.Rectangle.superclass = SPITFIRE.Object;
@@ -1028,32 +1036,60 @@ SPITFIRE.Rectangle.prototype = {
   // Getters / Setters
   //--------------------------------------
   
+  setTop: function(value) {
+    throw new SPITFIRE.Error('read-only: cannot set top property');
+  },
+  
   getTop: function() {
-    return this.y();
+    return this.getY();
+  },
+  
+  setLeft: function(value) {
+    throw new SPITFIRE.Error('read-only: cannot set left property');
   },
   
   getLeft: function() {
-    return this.x();
+    return this.getX();
+  },
+  
+  setRight: function(value) {
+    throw new SPITFIRE.Error('read-only: cannot set right property');
   },
   
   getRight: function() {
-    return this.x() + this.width();
+    return this.getX() + this.getWidth();
+  },
+  
+  setBottom: function(value) {
+    throw new SPITFIRE.Error('read-only: cannot set bottom property');
   },
   
   getBottom: function() {
-    return this.y() + this.height();
+    return this.getY() + this.getHeight();
+  },
+  
+  setSize: function(value) {
+    throw new SPITFIRE.Error('read-only: cannot set size property');
   },
   
   getSize: function() {
-    return new SPITFIRE.Point(this.width(), this.height());
+    return new SPITFIRE.Point(this.getWidth(), this.getHeight());
+  },
+  
+  setTopLeft: function(value) {
+    throw new SPITFIRE.Error('read-only: cannot set topLeft property');
   },
   
   getTopLeft: function() {
-    return new SPITFIRE.Point(this.top(), this.left());
+    return new SPITFIRE.Point(this.getTop(), this.getLeft());
+  },
+  
+  setBottomRight: function(value) {
+    throw new SPITFIRE.Error('read-only: cannot set bottomRight property');
   },
   
   getBottomRight: function() {
-    return new SPITFIRE.Point(this.bottom(), this.right());
+    return new SPITFIRE.Point(this.getBottom(), this.getRight());
   },
   
   //--------------------------------------
@@ -1061,11 +1097,11 @@ SPITFIRE.Rectangle.prototype = {
   //--------------------------------------
   
   clone: function() {
-    return new SPITFIRE.Rectangle(this.x(), this.y(), this.width(), this.height());
+    return new SPITFIRE.Rectangle(this.getX(), this.getY(), this.getWidth(), this.getHeight());
   },
   
   toString: function() {
-    return '[' + this.qualifiedClassName() + ']';
+    return '[' + this.getQualifiedClassName() + ']';
   }
 };
 
@@ -1083,9 +1119,9 @@ SPITFIRE.Percent = function(percentage, isDecimalPercentage) {
   isDecimalPercentage = isDecimalPercentage || true;
   
   if (isDecimalPercentage) {
-    this.decimalPercentage(percentage);
+    this.setDecimalPercentage(percentage);
   } else {
-    this.percentage(percentage);
+    this.setPercentage(percentage);
   }
 };
 
@@ -1110,19 +1146,19 @@ SPITFIRE.prototype = {
   },
   
   equals: function(percent) {
-    return this.decimalPercentage() == percent.decimalPercentage();
+    return this.getDecimalPercentage() == percent.getDecimalPercentage();
   },
   
   clone: function() {
-    return new SPITFIRE.Percent(this.decimalPercentage());
+    return new SPITFIRE.Percent(this.getDecimalPercentage());
   },
   
   valueOf: function() {
-    return this.decimalPercentage();
+    return this.getDecimalPercentage();
   },
   
   toString: function() {
-    return this.decimalPercentage().toString();
+    return this.getDecimalPercentage().toString();
   }
 };
 
@@ -1133,7 +1169,7 @@ SPITFIRE.Class(SPITFIRE.Percent);
 
 SPITFIRE.Model = function() {
   this.callSuper();
-  this.qualifiedClassName('SPITFIRE.Model');
+  this.setQualifiedClassName('SPITFIRE.Model');
 };
 
 SPITFIRE.Model.superclass = SPITFIRE.EventDispatcher;
@@ -1155,7 +1191,7 @@ SPITFIRE.Model.prototype = {
   //--------------------------------------
 
   toString: function() {
-    return '[' + this.qualifiedClassName() + ']';
+    return '[' + this.getQualifiedClassName() + ']';
   }
 };
 
@@ -1166,9 +1202,9 @@ SPITFIRE.Class(SPITFIRE.Model);
 
 SPITFIRE.Redirect = function(location, newLocation) {
   this.callSuper();
-  this.qualifiedClassName('SPITFIRE.Redirect');
-  this.location(location);
-  this.newLocation(newLocation);
+  this.setQualifiedClassName('SPITFIRE.Redirect');
+  this.setLocation(location);
+  this.setNewLocation(newLocation);
 }
 
 SPITFIRE.Redirect.superclass = SPITFIRE.Object;
@@ -1181,9 +1217,9 @@ SPITFIRE.Class(SPITFIRE.Redirect);
 
 SPITFIRE.State = function(name) {
   this.callSuper();
-  this.name(name);
+  this.setName(name);
   this._children = [];
-  this.qualifiedClassName('SPITFIRE.State');
+  this.setQualifiedClassName('SPITFIRE.State');
 };
 
 SPITFIRE.State.superclass = SPITFIRE.EventDispatcher;
@@ -1220,24 +1256,24 @@ SPITFIRE.State.prototype = {
   
   setRoot: function(value) {
     this._root = value;
-    for (var i = 0, len = this.children().length; i < len; i+=1) {
-      this.children()[i].root(this.root());
+    for (var i = 0, len = this._children.length; i < len; i+=1) {
+      this._children[i].setRoot(this._root);
     }
   },
   
   setStateManager: function(value) {
     this._stateManager = value;
-    for (var i = 0, len = this.children().length; i < len; i+=1) {
-      this.children()[i].stateManager(this.stateManager());
+    for (var i = 0, len = this._children.length; i < len; i+=1) {
+      this._children[i].setStateManager(this.stateManager());
     }
   },
   
   setChildren: function(value) {
-    for (var i = 0, len = this.children().length; i < len; i+=1) {
-      this.removeChild(this.children()[i]);
+    for (var i = 0, len = this._children.length; i < len; i+=1) {
+      this.removeChild(this._children[i]);
     }
     
-    this.children() = [];
+    this._children = [];
     
     for (i = 0, len = value.length; i < len; i++) {
       this.addChild(value[i]);
@@ -1254,8 +1290,8 @@ SPITFIRE.State.prototype = {
   
   getActivatedChild: function() {
     var state, i, len;
-    for (i = 0, len = this.children().length; i < len; i+=1) {
-      child = this.children()[i];
+    for (i = 0, len = this._children.length; i < len; i+=1) {
+      child = this._children[i];
       if (child.activated) {
         state = child;
         break;
@@ -1265,13 +1301,13 @@ SPITFIRE.State.prototype = {
   },
   
   getNumChildren: function() {
-    return this.children().length;
+    return this._children.length;
   },
   
   getSelectedChildIndex: function() {
     var index;
-    if (this.selectedChild()) {
-      index = this.getChildIndex(this.selectedChild());
+    if (this._selectedChild) {
+      index = this.getChildIndex(this._selectedChild);
     }
     
     return index;
@@ -1279,7 +1315,7 @@ SPITFIRE.State.prototype = {
   
   setSelectedChildIndex: function(value) {
     var child = this.getChildAt(value);
-    this.selectedChild(child);
+    this.setSelectedChild(child);
   },
   
   setSelected: function(value) {
@@ -1290,7 +1326,7 @@ SPITFIRE.State.prototype = {
   },
   
   getIndex: function() {
-    return this.parent().getChildIndex(this);
+    return this.getParent().getChildIndex(this);
   },
   
   getStateLocation: function() {
@@ -1301,14 +1337,14 @@ SPITFIRE.State.prototype = {
     
     while (state) {
       locationArray.push(state);
-      state = state.parent();
+      state = state.getParent();
     }
     
     locationArray.reverse();
     
     for (i = 0, len = locationArray.length; i < len; i+=1) {
       inlineState = locationArray[i];
-      location += inlineState.name();
+      location += inlineState.getName();
       if (inlineState != locationArray[len - 1]) {
         location += '/';
       }
@@ -1322,8 +1358,8 @@ SPITFIRE.State.prototype = {
   //--------------------------------------
   
   childChangeHandler: function(event) {
-    var child = event.target();
-    if (child.selected()) {
+    var child = event.getTarget();
+    if (child.getSelected()) {
       this._selectedChild = child;
     } else
     if (child == this._selectedChild) {
@@ -1338,35 +1374,35 @@ SPITFIRE.State.prototype = {
   //--------------------------------------
   
   addChild: function(child) {
-    child.parent(this);
-    child.stateManager(this.stateManager());
-    child.root(this.root());
-    this.children().push(child);
+    child.setParent(this);
+    child.setStateManager(this.getStateManager());
+    child.setRoot(this._root);
+    this._children.push(child);
     child.bind(SPITFIRE.StateEvent.STATE_CHANGE, this.childChangeHandler.context(this));
   },
   
   addChildAt: function(child, index) {
-    child.parent(this);
-    child.stateManager(this.stateManager());
-    child.root(this.root());
-    this.children().splice(index, 0, child);
+    child.setParent(this);
+    child.setStateManager(this.getStateManager());
+    child.setRoot(this._root);
+    this._children.splice(index, 0, child);
     child.bind(SPITFIRE.StateEvent.STATE_CHANGE, this.childChangeHandler.context(this));
     return child;
   },
   
   contains: function(child) {
-    return this.children().indexOf(child) != -1;
+    return this._children.indexOf(child) != -1;
   },
   
   getChildAt: function(index) {
-    return this.children()[index];
+    return this._children[index];
   },
   
   getChildByName: function(name) {
     var foundChild, i, len, child;
-    for (i = 0, len = this.children().length; i < len; i+=1) {
-      child = this.children()[i];
-      if (child.name() == name) {
+    for (i = 0, len = this._children.length; i < len; i+=1) {
+      child = this._children[i];
+      if (child.getName() == name) {
         foundChild = child;
         break;
       }
@@ -1380,7 +1416,7 @@ SPITFIRE.State.prototype = {
       throw new SPITFIRE.Error('The supplied child must be a child of the caller.');
     }
     
-    return this.children().indexOf(child);
+    return this._children.indexOf(child);
   },
   
   removeChild: function(child) {
@@ -1401,7 +1437,7 @@ SPITFIRE.State.prototype = {
   removeChildAt: function(index) {
     var child = this.getChildAt(index);
     child.unbind(SPITFIRE.StateEvent.STATE_CHANGE, this.childChangeHandler.context(this));
-    this.children().splice(index, 1);
+    this._children.splice(index, 1);
     return child;
   },
   
@@ -1411,28 +1447,28 @@ SPITFIRE.State.prototype = {
     }
     
     var childIndex = this.getChildIndex(child);
-    this.children().splice(index, 0, this.children()[childIndex]);
-    this.children().splice(childIndex, 1);
+    this._children.splice(index, 0, this._children[childIndex]);
+    this._children.splice(childIndex, 1);
   },
   
   swapChildrenAt: function(index1, index2) {
-    var temp = this.children()[index1];
-    this.children()[index1] = this.children()[index2];
-    this.children()[index2] = temp;
+    var temp = this._children[index1];
+    this._children[index1] = this._children[index2];
+    this._children[index2] = temp;
   },
   
   setSelectedChildByName: function(name) {
     var foundChild, i, len, child;
-    for (i = 0, len = this.children().length; i < len; i+=1) {
-      child = this.children()[i];
-      if (child.name() == name) {
+    for (i = 0, len = this._children.length; i < len; i+=1) {
+      child = this._children[i];
+      if (child.getName() == name) {
         foundChild = child;
         break;
       }
     }
     
     if (foundChild) {
-      this.selectedChild(foundChild);
+      this.setSelectedChild(foundChild);
     } else {
       throw new SPITFIRE.Error('The supplied child must be a child of the caller.');
     }
@@ -1445,36 +1481,36 @@ SPITFIRE.State.prototype = {
   browsePreviousSibling: function() {
     var previousIndex = this.index - 1;
     if (previousIndex < 0) {
-      previousIndex = this.parent().children().length - 1;
+      previousIndex = this.getParent().getChildren().length - 1;
     }
     
-    this.parent().getChildAt(previousIndex).browse();
+    this.getParent().getChildAt(previousIndex).browse();
   },
   
   browseNextSibling: function() {
     var nextIndex = index + 1;
     
-    if (nextIndex > this.parent().children().length - 1) {
+    if (nextIndex > this.getParent().getChildren().length - 1) {
       nextIndex = 0;
     }
     
-    this.parent().getChildAt(nextIndex).browse();
+    this.getParent().getChildAt(nextIndex).browse();
   },
   
   browsePreviousChild: function() {
-    var previousIndex = this.selectedChildIndex() - 1;
+    var previousIndex = this.getSelectedChildIndex() - 1;
     
     if (previousIndex < 0) {
-      previousIndex = this.children().length - 1;
+      previousIndex = this._children.length - 1;
     }
     
     this.getChildAt(previousIndex).browse();
   },
   
   browseNextChild: function() {
-    var nextIndex = this.selectedChildIndex() + 1;
+    var nextIndex = this.getSelectedChildIndex() + 1;
     
-    if (nextIndex > this.children().length - 1) {
+    if (nextIndex > this._children.length - 1) {
       nextIndex = 0;
     }
     
@@ -1500,14 +1536,14 @@ SPITFIRE.State.prototype = {
       throw new SPITFIRE.Error(this + ': no child class defined');
     }
     
-    var state = new this.childClass();
-		state.name(value);
+    var state = new this.getChildClass();
+		state.setName(value);
 		this.addChild(state);
 		return state;
   },
   
   toString: function() {
-    return '[State' + ' name=' + this.name() + ' title=' + this.title() + ' className=' + this.qualifiedClassName() + ' defaultChild=' + this.defaultChild()  + ']';
+    return '[State' + ' name=' + this.getName() + ' title=' + this.getTitle() + ' className=' + this.getQualifiedClassName() + ' defaultChild=' + this.getDefaultChild()  + ']';
   }
 };
 
@@ -1518,10 +1554,10 @@ SPITFIRE.Class(SPITFIRE.State);
 
 SPITFIRE.StateManager = function(name, root) {
   this.callSuper();
-  this.root(root);
-  this.qualifiedClassName('SPITFIRE.StateManager');
-  this.name(name || this.qualifiedClassName() + ~~(Math.random() * 100000));
-  this.pageViewType(SPITFIRE.StateManager.PAGE_VIEW_LOCATION);
+  this.setRoot(root);
+  this.setQualifiedClassName('SPITFIRE.StateManager');
+  this.setName(name || this.getQualifiedClassName() + ~~(Math.random() * 100000));
+  this.setPageViewType(SPITFIRE.StateManager.PAGE_VIEW_LOCATION);
   this._progressTimer = new SPITFIRE.Timer(33);
   this._progressTimer.bind(SPITFIRE.TimerEvent.TIMER, this.taskManagerProgressHandler.context(this));
   this._transitionInPath;
@@ -1560,25 +1596,25 @@ SPITFIRE.StateManager.prototype = {
   
   setDeepLinking: function(value) {
     this._deepLinking = value;
-    if (this.deepLinking()) {
-      this.deepLinking().change(this.deepLinkingChangeHandler.context(this));
+    if (this.getDeepLinking()) {
+      this.getDeepLinking().change(this.deepLinkingChangeHandler.context(this));
     }
   },
   
   setTree: function(value) {
     this._tree = value;
-    value.stateManager(this);
-    value.root(this.root());
+    value.setStateManager(this);
+    value.setRoot(this.root());
   },
   
   getLocation: function() {
-    var states = this.selectedStates(),
+    var states = this.getSelectedStates(),
         loc = '',
         i, len;
         
     for (i = 0, len = states.length; i < len; i+=1) {
       var inlineState = states[i];
-      loc += inlineState.name();
+      loc += inlineState.getName();
       if (inlineState != states[states.length - 1]) {
         loc += '/';
       }
@@ -1588,20 +1624,20 @@ SPITFIRE.StateManager.prototype = {
   },
   
   setLocation: function(value) {
-    if (this.deepLinking()) {
+    if (this.getDeepLinking()) {
       var array = value.split('/');
       array.shift();
       var loc = '/' + array.join('/');
-      this.deepLinking().value(loc);
+      this.getDeepLinking().value(loc);
     } else {
       var locationArray = value.split('/');
       locationArray.shift();
-      var state = this.tree();
+      var state = this.getTree();
       if (locationArray.length > 0) {
         state = state.getChildFromPath(locationArray.join('/'));
       }
       
-      this._transitionInPath = state.stateLocation();
+      this._transitionInPath = state.getStateLocation();
       this.checkIfInTransition();
     }
   },
@@ -1610,13 +1646,13 @@ SPITFIRE.StateManager.prototype = {
     var states = [],
         state;
         
-    if (this.tree().selected()) {
-      state = this.tree();
+    if (this.getTree().getSelected()) {
+      state = this.getTree();
     }
     
     while (state) {
       states.push(state);
-      state = state.selectedChild();
+      state = state.getSelectedChild();
     }
     
     return states;
@@ -1627,48 +1663,48 @@ SPITFIRE.StateManager.prototype = {
   //--------------------------------------
   
   deepLinkingChangeHandler: function(event) {
-    var path = this.deepLinking().value();
+    var path = this.getDeepLinking().value();
     if (path == '' || path == '/') {
-      this._transitionInPath = this.tree().stateLocation();
+      this._transitionInPath = this.getTree().getStateLocation();
     } else {
-      this._transitionInPath = this.tree().name() + path;
+      this._transitionInPath = this.getTree().getName() + path;
     }
     
     this.checkIfInTransition();
   },
   
   taskManagerProgressHandler: function(event) {
-    var totalProgress = this.taskManager().progress();
-    if (this.debug()) {
-      log(this.name() + ' totalProgress = ' + totalProgress);
+    var totalProgress = this.getTaskManager().getProgress();
+    if (this.getDebug()) {
+      log(this.getName() + ' totalProgress = ' + totalProgress);
     }
     
     if (isNaN(totalProgress)) {
       totalProgress = 0;
     }
     
-    if (this.preloader()) {
-      this.preloader().progress(totalProgress);
+    if (typeof this.getPreloader() !== 'undefined') {
+      this.getPreloader().setProgress(totalProgress);
     }
   },
     
   transitionInCompleteHandler: function(event) {
-    if (this.trackPageViews()) {
+    if (this.getTrackPageViews()) {
   		var param;
-  		switch(this.pageViewType()) {
+  		switch(this.getPageViewType()) {
   			case SPITFIRE.StateManager.PAGE_VIEW_LOCATION:
-  				param = this.location();
+  				param = this.getLocation();
   			break;
   			case SPITFIRE.StateManager.PAGE_VIEW_NAME:
-  				param = this.location();
+  				param = this.getLocation();
   			break;
   		}
   	}
   },
   
   taskManagerCompleteHandler: function(event) {
-    this.taskManager().unbind(SPITFIRE.Event.COMPLETE, this.taskManagerCompleteHandler.context(this));
-		if (this.taskManager().progressive()) {
+    this.getTaskManager().unbind(SPITFIRE.Event.COMPLETE, this.taskManagerCompleteHandler.context(this));
+		if (this.getTaskManager().getProgressive()) {
 			this.taskManagerProgressHandler();
 			this._progressTimer.stop();
 		}
@@ -1691,21 +1727,21 @@ SPITFIRE.StateManager.prototype = {
   //--------------------------------------
   
   init: function() {
-    if (this.deepLinking()) {
-      if (this.deepLinking().value() != '/') {
+    if (this.getDeepLinking()) {
+      if (this.getDeepLinking().value() != '/') {
         this.deepLinkingChangeHandler();
       } else
-      if (this.startLocation()) {
-        this.location(this.startLocation());
+      if (this.getStartLocation()) {
+        this.location(this.getStartLocation());
       } else {
-        this._transitionInPath = this.tree().stateLocation();
+        this._transitionInPath = this.getTree().getStateLocation();
         this.checkIfInTransition(); 
       }
     } else 
-    if (this.startLocation()) {
-      this.location(this.startLocation());
+    if (this.getStartLocation()) {
+      this.location(this.getStartLocation());
     } else {
-      this._transitionInPath = this.tree().stateLocation();
+      this._transitionInPath = this.getTree().getStateLocation();
       this.checkIfInTransition();
     }
   },
@@ -1728,8 +1764,8 @@ SPITFIRE.StateManager.prototype = {
     var nextLocationArray = this._transitionInPath.split('/');
     
     var locationPathArray = [];
-    if (this.location().length > 0) {
-      locationPathArray = this.location().split('/');
+    if (this.getLocation().length > 0) {
+      locationPathArray = this.getLocation().split('/');
     }
     
     var breakIndex = 0, i, len, currentArray, currentPath, nextArray, nextPath;
@@ -1781,7 +1817,7 @@ SPITFIRE.StateManager.prototype = {
       var path = transitionPaths[i];
       var pathArray = path.split('/');
       pathArray.shift();
-      var state = this.tree();
+      var state = this.getTree();
       if (pathArray.length > 0) {
         var j, len2;
         for (j = 0, len2 = pathArray.length; j < len2; j+=1) {
@@ -1801,7 +1837,7 @@ SPITFIRE.StateManager.prototype = {
 		  var path = transitionPaths[i];
 			var pathArray = path.split("/");
 			pathArray.shift();
-			var state = this.tree();
+			var state = this.getTree();
 			
       if (pathArray.length > 0) {
         var j, len2;
@@ -1814,17 +1850,17 @@ SPITFIRE.StateManager.prototype = {
 				}
 			}
 			
-			state.activated(true);
-			this.activeStates().push(state);
-			newPaths.push(state.stateLocation());
+			state.setActivated(true);
+			this.getActiveStates().push(state);
+			newPaths.push(state.getStateLocation());
 			
-			if (state.stateLocation() == transitionPaths[transitionPaths.length - 1]) {
+			if (state.getStateLocation() == transitionPaths[transitionPaths.length - 1]) {
 				var defaultState = state.getChildByName(state.defaultChild());
 				while (defaultState) {
-					defaultState.activated(true);
-					this.activeStates().push(defaultState);
-					newPaths.push(defaultState.stateLocation());
-					defaultState = defaultState.getChildByName(defaultState.defaultChild());
+					defaultState.setActivated(true);
+					this.getActiveStates().push(defaultState);
+					newPaths.push(defaultState.getStateLocation());
+					defaultState = defaultState.getChildByName(defaultState.getDefaultChild());
 				}
 			}
 			
@@ -1837,7 +1873,7 @@ SPITFIRE.StateManager.prototype = {
     var newPaths = [];
 		var pathArray = path.split("/");
 		pathArray.shift();
-		var state = this.tree();
+		var state = this.getTree();
 		if (pathArray.length > 0) {
 		  var i, len;
 			for (i = 0, len = pathArray.length; i < len; i += 1) {
@@ -1847,10 +1883,10 @@ SPITFIRE.StateManager.prototype = {
 		}
 		var defaultState = state.getChildByName(state.defaultChild);
 		while (defaultState) {
-			defaultState.activated(true);
-			this.activeStates().push(defaultState);
-			newPaths.push(defaultState.stateLocation());
-			defaultState = defaultState.getChildByName(defaultState.defaultChild());
+			defaultState.setActivated(true);
+			this.getActiveStates().push(defaultState);
+			newPaths.push(defaultState.getStateLocation());
+			defaultState = defaultState.getChildByName(defaultState.getDefaultChild());
 		}
 		
 		return newPaths;
@@ -1858,54 +1894,54 @@ SPITFIRE.StateManager.prototype = {
   
   startTransition: function() {
     this._currentTransition = this._transitions.shift();
-		this.trigger(new SPITFIRE.Event(this._currentTransition.transitionName() + "Start"));
+		this.trigger(new SPITFIRE.Event(this._currentTransition.getTransitionName() + "Start"));
 		
-		this.taskManager(new SPITFIRE.SequentialTask());
+		this.setTaskManager(new SPITFIRE.SequentialTask());
 		
-		this.taskManager().name(this._currentTransition.transitionName());
-		if (this.debug()) {
-			this.taskManager().debug(this.debug());
+		this.getTaskManager().setName(this._currentTransition.getTransitionName());
+		if (this.getDebug()) {
+			this.getTaskManager().setDebug(this.getDebug());
 		}
 		
-		this.taskManager().bind(SPITFIRE.Event.COMPLETE, this.taskManagerCompleteHandler.context(this));
+		this.getTaskManager().bind(SPITFIRE.Event.COMPLETE, this.taskManagerCompleteHandler.context(this));
 		
 		var i, len;
 		
-		for (i = 0, len = this._currentTransition.locations().length; i < len; i += 1) {
-		  var path = this._currentTransition.locations()[i];
+		for (i = 0, len = this._currentTransition.getLocations().length; i < len; i += 1) {
+		  var path = this._currentTransition.getLocations()[i];
 			var pathArray = path.split("/");
 			pathArray.shift();
-			var state = this.tree();
+			var state = this.getTree();
 			if (pathArray.length > 0) {
 				state = state.getChildFromPath(pathArray.join("/"));
 			}
-			var task = state[this._currentTransition.transitionName()]();
+			var task = state[this._currentTransition.getTransitionName()]();
 			
 			if (task) {
-				this.taskManager().addTask(task);
+				this.getTaskManager().addTask(task);
 			}
 			var stateSelected;
-			if (this._currentTransition.transitionName() == "transitionIn") {
+			if (this._currentTransition.getTransitionName() == "transitionIn") {
 				stateSelected = true;
 			}
-			if (this._currentTransition.transitionName() == "transitionOut") {
+			if (this._currentTransition.getTransitionName() == "transitionOut") {
 				stateSelected = false;
 			}
-			this.taskManager().addTask(new SPITFIRE.PropertyTask(state, "selected", stateSelected));
+			this.getTaskManager().addTask(new SPITFIRE.PropertyTask(state, "selected", stateSelected));
 		}
-		if (this.taskManager().progress() == 1) {
-			this.taskManager().progressive(false);
+		if (this.getTaskManager().getProgress() == 1) {
+			this.getTaskManager().getProgressive(false);
 		}
-		if (this.taskManager().progressive()) {
-			if (this.preloader()) {
-				this.taskManager().addTaskAt(new SPITFIRE.PropertyTask(this.preloader(), "progress", 0), 0);
-				this.taskManager().addTaskAt(this.preloader().transitionIn(), 1);
-				this.taskManager().addTask(this.preloader().transitionOut());
+		if (this.getTaskManager().getProgressive()) {
+			if (this.getPreloader()) {
+				this.getTaskManager().addTaskAt(new SPITFIRE.PropertyTask(this.getPreloader(), "progress", 0), 0);
+				this.getTaskManager().addTaskAt(this.getPreloader().getTransitionIn(), 1);
+				this.getTaskManager().addTask(this.getPreloader().getTransitionOut());
 			}
-			this.taskManager().progress(0);
+			this.getTaskManager().setProgress(0);
 			this._progressTimer.start();
 		}
-		this.taskManager().start();
+		this.getTaskManager().start();
   },
   
   addRedirect: function(location, newLocation) {
@@ -1916,21 +1952,21 @@ SPITFIRE.StateManager.prototype = {
   removeRedirect: function(location) {
     var newRedirects = [];
     var i, len;
-		for (i = 0, len = this.redirects().length; i < len; i += 1) {
-		  var redirect = this.redirects()[i];
-			if (redirect.location() != location) {
+		for (i = 0, len = this.getRedirects().length; i < len; i += 1) {
+		  var redirect = this.getRedirects()[i];
+			if (redirect.getLocation() != location) {
 				newRedirects.push(redirect);
 			}
 		}
-		this.redirects(newRedirects);
+		this.setRedirects(newRedirects);
   },
   
   checkRedirect: function(path) {
     var i, len;
-		for (i = 0, len = this.redirects().length; i < len; i += 1) {
-		  var redirect = redirects()[i];
-			if (path == redirect.location()) {
-				path = redirect.newLocation();
+		for (i = 0, len = this.getRedirects().length; i < len; i += 1) {
+		  var redirect = this.getRedirects()[i];
+			if (path == redirect.getLocation()) {
+				path = redirect.getNewLocation();
 			}
 		}
 		
@@ -1938,7 +1974,7 @@ SPITFIRE.StateManager.prototype = {
   },
   
   toString: function() {
-    return '[StateManager' + ' name=' + this.name() + ' className = ' + this.qualifiedClassName() + ']';
+    return '[StateManager' + ' name=' + this.getName() + ' className = ' + this.getQualifiedClassName() + ']';
   }
 };
 
@@ -1970,13 +2006,13 @@ SPITFIRE.Class(SPITFIRE.TransitionProperties);
 
 SPITFIRE.FunctionTask = function(context, method) {
   this.callSuper();
-  this.qualifiedClassName('SPITFIRE.FunctionTask');
-  this.method(method);
-  this.context(context);
-  this.args([]);
+  this.setQualifiedClassName('SPITFIRE.FunctionTask');
+  this.setMethod(method);
+  this.setContext(context);
+  this.setArgs([]);
   var i, len;
   for (i = 2, len = arguments.length; i < len; i += 1) {
-  	this.args().push(arguments[i]);
+  	this.getArgs().push(arguments[i]);
   }
 };
 
@@ -1989,12 +2025,12 @@ SPITFIRE.FunctionTask.prototype = {
   //--------------------------------------
   
   start: function() {
-    this.method().apply(this.context(), this.args());
+    this.getMethod().apply(this.getContext(), this.getArgs());
     this.complete();
   },
 
   toString: function() {
-    return '[' + this.qualifiedClassName() + '] function:' + this.method()._name;
+    return '[' + this.getQualifiedClassName() + '] function:' + this.getMethod()._name;
   }
 };
 

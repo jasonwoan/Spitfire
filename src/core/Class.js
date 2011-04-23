@@ -100,7 +100,7 @@ SPITFIRE.Class = function(classDefinition) {
     var temp,
         pattern = /callSuper/ig;
     if (typeof classDef !== 'undefined') {
-      temp = clone(classDef);
+      temp = SPITFIRE.clone(classDef);
       
       for (var key in supr) {
         // check to see if method exists
@@ -116,20 +116,7 @@ SPITFIRE.Class = function(classDefinition) {
         }
       }
     } else {
-      temp = clone(supr);
-    }
-    
-    return temp;
-  }
-  
-  function clone(obj) {
-    if (typeof obj !== 'object') return obj;
-    
-    var temp = {};
-    
-    for (var key in obj) {
-      temp[key] = clone(obj[key]);
-      temp[key]._name = key;
+      temp = SPITFIRE.clone(supr);
     }
     
     return temp;

@@ -4,13 +4,13 @@
 
 SPITFIRE.FunctionTask = function(context, method) {
   this.callSuper();
-  this.qualifiedClassName('SPITFIRE.FunctionTask');
-  this.method(method);
-  this.context(context);
-  this.args([]);
+  this.setQualifiedClassName('SPITFIRE.FunctionTask');
+  this.setMethod(method);
+  this.setContext(context);
+  this.setArgs([]);
   var i, len;
   for (i = 2, len = arguments.length; i < len; i += 1) {
-  	this.args().push(arguments[i]);
+  	this.getArgs().push(arguments[i]);
   }
 };
 
@@ -23,12 +23,12 @@ SPITFIRE.FunctionTask.prototype = {
   //--------------------------------------
   
   start: function() {
-    this.method().apply(this.context(), this.args());
+    this.getMethod().apply(this.getContext(), this.getArgs());
     this.complete();
   },
 
   toString: function() {
-    return '[' + this.qualifiedClassName() + '] function:' + this.method()._name;
+    return '[' + this.getQualifiedClassName() + '] function:' + this.getMethod()._name;
   }
 };
 

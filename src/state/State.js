@@ -4,9 +4,9 @@
 
 SPITFIRE.State = function(name) {
   this.callSuper();
-  this.name(name);
+  this.setName(name);
   this._children = [];
-  this.qualifiedClassName('SPITFIRE.State');
+  this.setQualifiedClassName('SPITFIRE.State');
 };
 
 SPITFIRE.State.superclass = SPITFIRE.EventDispatcher;
@@ -43,24 +43,24 @@ SPITFIRE.State.prototype = {
   
   setRoot: function(value) {
     this._root = value;
-    for (var i = 0, len = this.children().length; i < len; i+=1) {
-      this.children()[i].root(this.root());
+    for (var i = 0, len = this._children.length; i < len; i+=1) {
+      this._children[i].setRoot(this._root);
     }
   },
   
   setStateManager: function(value) {
     this._stateManager = value;
-    for (var i = 0, len = this.children().length; i < len; i+=1) {
-      this.children()[i].stateManager(this.stateManager());
+    for (var i = 0, len = this._children.length; i < len; i+=1) {
+      this._children[i].setStateManager(this.stateManager());
     }
   },
   
   setChildren: function(value) {
-    for (var i = 0, len = this.children().length; i < len; i+=1) {
-      this.removeChild(this.children()[i]);
+    for (var i = 0, len = this._children.length; i < len; i+=1) {
+      this.removeChild(this._children[i]);
     }
     
-    this.children() = [];
+    this._children = [];
     
     for (i = 0, len = value.length; i < len; i++) {
       this.addChild(value[i]);
@@ -77,8 +77,8 @@ SPITFIRE.State.prototype = {
   
   getActivatedChild: function() {
     var state, i, len;
-    for (i = 0, len = this.children().length; i < len; i+=1) {
-      child = this.children()[i];
+    for (i = 0, len = this._children.length; i < len; i+=1) {
+      child = this._children[i];
       if (child.activated) {
         state = child;
         break;
@@ -88,13 +88,13 @@ SPITFIRE.State.prototype = {
   },
   
   getNumChildren: function() {
-    return this.children().length;
+    return this._children.length;
   },
   
   getSelectedChildIndex: function() {
     var index;
-    if (this.selectedChild()) {
-      index = this.getChildIndex(this.selectedChild());
+    if (this._selectedChild) {
+      index = this.getChildIndex(this._selectedChild);
     }
     
     return index;
@@ -102,7 +102,7 @@ SPITFIRE.State.prototype = {
   
   setSelectedChildIndex: function(value) {
     var child = this.getChildAt(value);
-    this.selectedChild(child);
+    this.setSelectedChild(child);
   },
   
   setSelected: function(value) {
@@ -113,7 +113,7 @@ SPITFIRE.State.prototype = {
   },
   
   getIndex: function() {
-    return this.parent().getChildIndex(this);
+    return this.getParent().getChildIndex(this);
   },
   
   getStateLocation: function() {
@@ -124,14 +124,14 @@ SPITFIRE.State.prototype = {
     
     while (state) {
       locationArray.push(state);
-      state = state.parent();
+      state = state.getParent();
     }
     
     locationArray.reverse();
     
     for (i = 0, len = locationArray.length; i < len; i+=1) {
       inlineState = locationArray[i];
-      location += inlineState.name();
+      location += inlineState.getName();
       if (inlineState != locationArray[len - 1]) {
         location += '/';
       }
@@ -145,8 +145,8 @@ SPITFIRE.State.prototype = {
   //--------------------------------------
   
   childChangeHandler: function(event) {
-    var child = event.target();
-    if (child.selected()) {
+    var child = event.getTarget();
+    if (child.getSelected()) {
       this._selectedChild = child;
     } else
     if (child == this._selectedChild) {
@@ -161,35 +161,35 @@ SPITFIRE.State.prototype = {
   //--------------------------------------
   
   addChild: function(child) {
-    child.parent(this);
-    child.stateManager(this.stateManager());
-    child.root(this.root());
-    this.children().push(child);
+    child.setParent(this);
+    child.setStateManager(this.getStateManager());
+    child.setRoot(this._root);
+    this._children.push(child);
     child.bind(SPITFIRE.StateEvent.STATE_CHANGE, this.childChangeHandler.context(this));
   },
   
   addChildAt: function(child, index) {
-    child.parent(this);
-    child.stateManager(this.stateManager());
-    child.root(this.root());
-    this.children().splice(index, 0, child);
+    child.setParent(this);
+    child.setStateManager(this.getStateManager());
+    child.setRoot(this._root);
+    this._children.splice(index, 0, child);
     child.bind(SPITFIRE.StateEvent.STATE_CHANGE, this.childChangeHandler.context(this));
     return child;
   },
   
   contains: function(child) {
-    return this.children().indexOf(child) != -1;
+    return this._children.indexOf(child) != -1;
   },
   
   getChildAt: function(index) {
-    return this.children()[index];
+    return this._children[index];
   },
   
   getChildByName: function(name) {
     var foundChild, i, len, child;
-    for (i = 0, len = this.children().length; i < len; i+=1) {
-      child = this.children()[i];
-      if (child.name() == name) {
+    for (i = 0, len = this._children.length; i < len; i+=1) {
+      child = this._children[i];
+      if (child.getName() == name) {
         foundChild = child;
         break;
       }
@@ -203,7 +203,7 @@ SPITFIRE.State.prototype = {
       throw new SPITFIRE.Error('The supplied child must be a child of the caller.');
     }
     
-    return this.children().indexOf(child);
+    return this._children.indexOf(child);
   },
   
   removeChild: function(child) {
@@ -224,7 +224,7 @@ SPITFIRE.State.prototype = {
   removeChildAt: function(index) {
     var child = this.getChildAt(index);
     child.unbind(SPITFIRE.StateEvent.STATE_CHANGE, this.childChangeHandler.context(this));
-    this.children().splice(index, 1);
+    this._children.splice(index, 1);
     return child;
   },
   
@@ -234,28 +234,28 @@ SPITFIRE.State.prototype = {
     }
     
     var childIndex = this.getChildIndex(child);
-    this.children().splice(index, 0, this.children()[childIndex]);
-    this.children().splice(childIndex, 1);
+    this._children.splice(index, 0, this._children[childIndex]);
+    this._children.splice(childIndex, 1);
   },
   
   swapChildrenAt: function(index1, index2) {
-    var temp = this.children()[index1];
-    this.children()[index1] = this.children()[index2];
-    this.children()[index2] = temp;
+    var temp = this._children[index1];
+    this._children[index1] = this._children[index2];
+    this._children[index2] = temp;
   },
   
   setSelectedChildByName: function(name) {
     var foundChild, i, len, child;
-    for (i = 0, len = this.children().length; i < len; i+=1) {
-      child = this.children()[i];
-      if (child.name() == name) {
+    for (i = 0, len = this._children.length; i < len; i+=1) {
+      child = this._children[i];
+      if (child.getName() == name) {
         foundChild = child;
         break;
       }
     }
     
     if (foundChild) {
-      this.selectedChild(foundChild);
+      this.setSelectedChild(foundChild);
     } else {
       throw new SPITFIRE.Error('The supplied child must be a child of the caller.');
     }
@@ -268,36 +268,36 @@ SPITFIRE.State.prototype = {
   browsePreviousSibling: function() {
     var previousIndex = this.index - 1;
     if (previousIndex < 0) {
-      previousIndex = this.parent().children().length - 1;
+      previousIndex = this.getParent().getChildren().length - 1;
     }
     
-    this.parent().getChildAt(previousIndex).browse();
+    this.getParent().getChildAt(previousIndex).browse();
   },
   
   browseNextSibling: function() {
     var nextIndex = index + 1;
     
-    if (nextIndex > this.parent().children().length - 1) {
+    if (nextIndex > this.getParent().getChildren().length - 1) {
       nextIndex = 0;
     }
     
-    this.parent().getChildAt(nextIndex).browse();
+    this.getParent().getChildAt(nextIndex).browse();
   },
   
   browsePreviousChild: function() {
-    var previousIndex = this.selectedChildIndex() - 1;
+    var previousIndex = this.getSelectedChildIndex() - 1;
     
     if (previousIndex < 0) {
-      previousIndex = this.children().length - 1;
+      previousIndex = this._children.length - 1;
     }
     
     this.getChildAt(previousIndex).browse();
   },
   
   browseNextChild: function() {
-    var nextIndex = this.selectedChildIndex() + 1;
+    var nextIndex = this.getSelectedChildIndex() + 1;
     
-    if (nextIndex > this.children().length - 1) {
+    if (nextIndex > this._children.length - 1) {
       nextIndex = 0;
     }
     
@@ -323,14 +323,14 @@ SPITFIRE.State.prototype = {
       throw new SPITFIRE.Error(this + ': no child class defined');
     }
     
-    var state = new this.childClass();
-		state.name(value);
+    var state = new this.getChildClass();
+		state.setName(value);
 		this.addChild(state);
 		return state;
   },
   
   toString: function() {
-    return '[State' + ' name=' + this.name() + ' title=' + this.title() + ' className=' + this.qualifiedClassName() + ' defaultChild=' + this.defaultChild()  + ']';
+    return '[State' + ' name=' + this.getName() + ' title=' + this.getTitle() + ' className=' + this.getQualifiedClassName() + ' defaultChild=' + this.getDefaultChild()  + ']';
   }
 };
 

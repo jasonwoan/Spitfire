@@ -4,9 +4,9 @@
 
 SPITFIRE.Redirect = function(location, newLocation) {
   this.callSuper();
-  this.qualifiedClassName('SPITFIRE.Redirect');
-  this.location(location);
-  this.newLocation(newLocation);
+  this.setQualifiedClassName('SPITFIRE.Redirect');
+  this.setLocation(location);
+  this.setNewLocation(newLocation);
 }
 
 SPITFIRE.Redirect.superclass = SPITFIRE.Object;

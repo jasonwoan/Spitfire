@@ -25,6 +25,39 @@ test("Environment is good",function(){
 module("framework tests");
 
 //--------------------------------------
+// Utilities
+//--------------------------------------
+
+test('Utilities', function() {
+  var obj1 = {
+    one: 'one',
+    two: 'two',
+    three: {
+      one: 'one',
+      two: 'two',
+      three: 'three',
+      five: ['one', 'two', 'three']
+    }
+  };
+  
+  var obj2 = {
+    three: {
+      four: 'four'
+    },
+    four: 'four',
+    five: ['four', 'five', 'six']
+  };
+  
+  var obj3 = SPITFIRE.merge(obj1, obj2);
+  
+  equals(obj3.one, 'one', 'unique property merge works');
+  equals(obj3.four, 'four', 'unique property merge works');
+  equals(obj3.three.one, 'one', 'child object property merge works');
+  equals(obj3.three.four, 'four', 'child object property merge works');
+  equals(obj3.three.five[0], 'one', 'array merge works');
+});
+
+//--------------------------------------
 // Basic inheritance
 //--------------------------------------
 
@@ -397,4 +430,32 @@ asyncTest('ASYNC: JQueryImageLoaderTask works', function() {
     notEqual($img, undefined, 'image loaded');
     start();
   }, 100);
+});
+
+//--------------------------------------
+// Point
+//--------------------------------------
+
+test("Point works", function() {
+  var pt = new SPITFIRE.Point(5, 100);
+  
+  equals(pt.x, 5, 'x property works');
+  equals(pt.y, 100, 'y property works');
+});
+
+//--------------------------------------
+// Rectangle
+//--------------------------------------
+
+test("Rectangle works", function() {
+  var rect = new SPITFIRE.Rectangle(-100, 30, 236, 800);
+  var cloneRect = rect.clone();
+  
+  equals(rect.top(), 30, 'top property works');
+  equals(rect.left(), -100, 'left property works');
+  equals(rect.right(), 136, 'right property works');
+  equals(rect.bottom(), 830, 'bottom property works');
+  raises(rect.setTop, SPITFIRE.Error, 'setting top exception works');
+  notEqual(rect, cloneRect, 'clone works');
+  equals(cloneRect.width(), rect.width(), 'clone width is the same');
 });

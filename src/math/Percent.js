@@ -11,9 +11,9 @@ SPITFIRE.Percent = function(percentage, isDecimalPercentage) {
   isDecimalPercentage = isDecimalPercentage || true;
   
   if (isDecimalPercentage) {
-    this.decimalPercentage(percentage);
+    this.setDecimalPercentage(percentage);
   } else {
-    this.percentage(percentage);
+    this.setPercentage(percentage);
   }
 };
 
@@ -38,19 +38,19 @@ SPITFIRE.prototype = {
   },
   
   equals: function(percent) {
-    return this.decimalPercentage() == percent.decimalPercentage();
+    return this.getDecimalPercentage() == percent.getDecimalPercentage();
   },
   
   clone: function() {
-    return new SPITFIRE.Percent(this.decimalPercentage());
+    return new SPITFIRE.Percent(this.getDecimalPercentage());
   },
   
   valueOf: function() {
-    return this.decimalPercentage();
+    return this.getDecimalPercentage();
   },
   
   toString: function() {
-    return this.decimalPercentage().toString();
+    return this.getDecimalPercentage().toString();
   }
 };
 

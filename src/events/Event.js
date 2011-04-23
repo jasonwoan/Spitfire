@@ -3,10 +3,10 @@
 //--------------------------------------
 
 SPITFIRE.Event = function(type, data, bubbles, cancelable) {
-  this.bubbles(bubbles || false);
-  this.cancelable(cancelable || false);
-  this.data(data || {});
-  this.type(type);
+  this.setBubbles(bubbles || false);
+  this.setCancelable(cancelable || false);
+  this.setData(data || {});
+  this.setType(type);
 };
 
 SPITFIRE.Event.COMPLETE = 'complete';

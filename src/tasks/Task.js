@@ -4,8 +4,8 @@
 
 SPITFIRE.Task = function() {
   this.callSuper();
-  this.qualifiedClassName('SPITFIRE.Task');
-  this.progress(0);
+  this.setQualifiedClassName('SPITFIRE.Task');
+  this.setProgress(0);
 };
 
 SPITFIRE.Task.superclass = SPITFIRE.EventDispatcher;
@@ -22,16 +22,16 @@ SPITFIRE.Task.prototype = {
   //--------------------------------------
   
   start: function() {
-    this.progress(0);
+    this.setProgress(0);
   },
   
   complete: function() {
-    this.progress(1);
+    this.setProgress(1);
     this.trigger(new SPITFIRE.Event(SPITFIRE.Event.COMPLETE));
   },
   
   toString: function() {
-    return '[' + this.qualifiedClassName() + ' name=' + this.name() + ']';
+    return '[' + this.getQualifiedClassName() + ' name=' + this.getName() + ']';
   }
 };
 
