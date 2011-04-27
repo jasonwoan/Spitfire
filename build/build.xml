@@ -20,6 +20,7 @@
         <file name="display/DisplayObject.js" />
         <file name="tasks/Task.js" />
         <file name="tasks/TaskManager.js" />
+        <file name="state/State.js" />
       </filelist>
       
       
@@ -36,6 +37,7 @@
         <exclude name="events/EventDispatcher.js" />
         <exclude name="tasks/Task.js" />
         <exclude name="tasks/TaskManager.js" />
+        <exclude name="state/State.js" />
       </fileset>
     </concat>
   </target>

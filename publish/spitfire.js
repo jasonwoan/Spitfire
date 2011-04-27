@@ -912,306 +912,6 @@ SPITFIRE.TaskManager.prototype = {
 
 SPITFIRE.Class(SPITFIRE.TaskManager);
 //--------------------------------------
-// SPITFIRE.ModelEvent
-//--------------------------------------
-
-SPITFIRE.ModelEvent = function(type, data, bubbles, cancelable) {
-  this.callSuper(type, data, bubbles, cancelable);
-};
-
-SPITFIRE.ModelEvent.DATA_UPDATE = 'dataUpdate';
-
-SPITFIRE.ModelEvent.superclass = SPITFIRE.Event;
-SPITFIRE.Class(SPITFIRE.ModelEvent);
-//--------------------------------------
-// SPITFIRE.StateEvent
-//--------------------------------------
-
-SPITFIRE.StateEvent = function(type, data, bubbles, cancelable) {
-  this.callSuper(type, data, bubbles, cancelable);
-};
-
-SPITFIRE.StateEvent.CHILD_STATE_CHANGE = 'childStateChange';
-SPITFIRE.StateEvent.STATE_CHANGE = 'stateChange';
-SPITFIRE.StateEvent.STATE_ACTIVATED = 'stateActivated';
-
-SPITFIRE.StateEvent.superclass = SPITFIRE.Event;
-SPITFIRE.Class(SPITFIRE.StateEvent);
-//--------------------------------------
-// StateManagerEvent
-//--------------------------------------
-
-SPITFIRE.StateManagerEvent = function(type, data, bubbles, cancelable, state) {
-  this.callSuper(type, data, bubbles, cancelable);
-  this.setState(state);
-  this.setQualifiedClassName('SPITFIRE.StateManagerEvent');
-};
-
-SPITFIRE.StateManagerEvent.LOAD_IN_START = 'loadInStart';
-SPITFIRE.StateManagerEvent.LOAD_IN_COMPLETE = 'loadInComplete';
-SPITFIRE.StateManagerEvent.TRANSITION_IN_START = 'transitionInStart';
-SPITFIRE.StateManagerEvent.TRANSITION_IN_COMPLETE = 'transitionInComplete';
-SPITFIRE.StateManagerEvent.LOAD_OUT_START = 'loadOutStart';
-SPITFIRE.StateManagerEvent.LOAD_OUT_COMPLETE = 'loadOutComplete';
-SPITFIRE.StateManagerEvent.TRANSITION_OUT_START = 'transitionOutStart';
-SPITFIRE.StateManagerEvent.TRANSITION_OUT_COMPLETE = 'transitionOutComplete';
-SPITFIRE.StateManagerEvent.TRANSITION_IN_STATE_COMPLETE = 'transitionInStateComplete';
-SPITFIRE.StateManagerEvent.TRANSITION_OUT_STATE_COMPLETE = 'transitionOutStateComplete';
-SPITFIRE.StateManagerEvent.LOAD_IN_STATE_COMPLETE = 'loadInStateComplete';
-SPITFIRE.StateManagerEvent.LOAD_OUT_STATE_COMPLETE = 'loadOutStateComplete';
-SPITFIRE.StateManagerEvent.DEEPLINK = 'deeplink';
-
-SPITFIRE.StateManagerEvent.superclass = SPITFIRE.Event;
-SPITFIRE.StateManagerEvent.synthesizedProperties = ['state'];
-SPITFIRE.Class(SPITFIRE.StateManagerEvent);
-//--------------------------------------
-// TimerEvent
-//--------------------------------------
-
-SPITFIRE.TimerEvent = function(type, data, bubbles, cancelable) {  
-  this.callSuper(type, data, bubbles, cancelable);
-  this.setQualifiedClassName('SPITFIRE.TimerEvent');
-};
-
-SPITFIRE.TimerEvent.TIMER = 'timer';
-SPITFIRE.TimerEvent.TIMER_COMPLETE = 'timerComplete';
-
-SPITFIRE.TimerEvent.superclass = SPITFIRE.Event;
-SPITFIRE.Class(SPITFIRE.TimerEvent);
-//--------------------------------------
-// SPITFIRE.Point
-//--------------------------------------
-
-SPITFIRE.Point = function(x, y) {
-  this.callSuper();
-  this.setQualifiedClassName('SPITFIRE.Point');
-  this.x = x;
-  this.y = y;
-};
-
-SPITFIRE.Point.superclass = SPITFIRE.Object;
-
-SPITFIRE.Point.prototype = {  
-  //--------------------------------------
-  // Methods
-  //--------------------------------------
-
-  toString: function() {
-    return '[' + this.getQualifiedClassName() + '] x:' + this.x + ' y:' + this.y;
-  }
-};
-
-SPITFIRE.Class(SPITFIRE.Point);
-//--------------------------------------
-// SPITFIRE.Rectangle
-//--------------------------------------
-
-SPITFIRE.Rectangle = function(x, y, width, height) {
-  this.callSuper();
-  this.qualifiedClassName('SPITFIRE.Rectangle');
-  
-  this.setX(x);
-  this.setY(y);
-  this.setWidth(width);
-  this.setHeight(height);
-};
-
-SPITFIRE.Rectangle.superclass = SPITFIRE.Object;
-SPITFIRE.Rectangle.synthesizedProperties = [
-  'x',
-  'y',
-  'width',
-  'height',
-  'top',
-  'left',
-  'right',
-  'bottom',
-  'size',
-  'bottomRight',
-  'topLeft'
-];
-
-SPITFIRE.Rectangle.prototype = {
-  //--------------------------------------
-  // Getters / Setters
-  //--------------------------------------
-  
-  setTop: function(value) {
-    throw new SPITFIRE.Error('read-only: cannot set top property');
-  },
-  
-  getTop: function() {
-    return this.getY();
-  },
-  
-  setLeft: function(value) {
-    throw new SPITFIRE.Error('read-only: cannot set left property');
-  },
-  
-  getLeft: function() {
-    return this.getX();
-  },
-  
-  setRight: function(value) {
-    throw new SPITFIRE.Error('read-only: cannot set right property');
-  },
-  
-  getRight: function() {
-    return this.getX() + this.getWidth();
-  },
-  
-  setBottom: function(value) {
-    throw new SPITFIRE.Error('read-only: cannot set bottom property');
-  },
-  
-  getBottom: function() {
-    return this.getY() + this.getHeight();
-  },
-  
-  setSize: function(value) {
-    throw new SPITFIRE.Error('read-only: cannot set size property');
-  },
-  
-  getSize: function() {
-    return new SPITFIRE.Point(this.getWidth(), this.getHeight());
-  },
-  
-  setTopLeft: function(value) {
-    throw new SPITFIRE.Error('read-only: cannot set topLeft property');
-  },
-  
-  getTopLeft: function() {
-    return new SPITFIRE.Point(this.getTop(), this.getLeft());
-  },
-  
-  setBottomRight: function(value) {
-    throw new SPITFIRE.Error('read-only: cannot set bottomRight property');
-  },
-  
-  getBottomRight: function() {
-    return new SPITFIRE.Point(this.getBottom(), this.getRight());
-  },
-  
-  //--------------------------------------
-  // Methods
-  //--------------------------------------
-  
-  clone: function() {
-    return new SPITFIRE.Rectangle(this.getX(), this.getY(), this.getWidth(), this.getHeight());
-  },
-  
-  toString: function() {
-    return '[' + this.getQualifiedClassName() + ']';
-  }
-};
-
-SPITFIRE.Class(SPITFIRE.Rectangle);
-//--------------------------------------
-// Percent
-//--------------------------------------
-// Port of org.casalib.math.Percent from CASA lib for ActionScript 3.0
-// http://casalib.org/
-
-SPITFIRE.Percent = function(percentage, isDecimalPercentage) {
-  this.callSuper();
-  
-  percentage = isDecimalPercentage || 0;
-  isDecimalPercentage = isDecimalPercentage || true;
-  
-  if (isDecimalPercentage) {
-    this.setDecimalPercentage(percentage);
-  } else {
-    this.setPercentage(percentage);
-  }
-};
-
-SPITFIRE.Percent.superclass = SPITFIRE.Object;
-SPITFIRE.synthesizedProperties = ['percentage', 'decimalPercentage'];
-
-SPITFIRE.prototype = {
-  getPercentage: function() {
-    return 100 * this._percent;
-  },
-  
-  setPercentage: function(value) {
-    this._percent = value * .01;
-  },
-  
-  getDecimalPercentage: function() {
-    return this._percent;
-  },
-  
-  setDecimalPercentage: function(value) {
-    this._percent = value;
-  },
-  
-  equals: function(percent) {
-    return this.getDecimalPercentage() == percent.getDecimalPercentage();
-  },
-  
-  clone: function() {
-    return new SPITFIRE.Percent(this.getDecimalPercentage());
-  },
-  
-  valueOf: function() {
-    return this.getDecimalPercentage();
-  },
-  
-  toString: function() {
-    return this.getDecimalPercentage().toString();
-  }
-};
-
-SPITFIRE.Class(SPITFIRE.Percent);
-//--------------------------------------
-// SPITFIRE.Model
-//--------------------------------------
-
-SPITFIRE.Model = function() {
-  this.callSuper();
-  this.setQualifiedClassName('SPITFIRE.Model');
-};
-
-SPITFIRE.Model.superclass = SPITFIRE.EventDispatcher;
-SPITFIRE.Model.synthesizedProperties = ['data'];
-
-SPITFIRE.Model.prototype = {
-
-  //--------------------------------------
-  // Getters / Setters
-  //--------------------------------------
-  
-  setData: function(value) {
-    this._data = value;
-    this.trigger(new SPITFIRE.ModelEvent(SPITFIRE.ModelEvent.DATA_UPDATE));
-  },
-
-  //--------------------------------------
-  // Methods
-  //--------------------------------------
-
-  toString: function() {
-    return '[' + this.getQualifiedClassName() + ']';
-  }
-};
-
-SPITFIRE.Class(SPITFIRE.Model);
-//--------------------------------------
-// Redirect
-//--------------------------------------
-
-SPITFIRE.Redirect = function(location, newLocation) {
-  this.callSuper();
-  this.setQualifiedClassName('SPITFIRE.Redirect');
-  this.setLocation(location);
-  this.setNewLocation(newLocation);
-}
-
-SPITFIRE.Redirect.superclass = SPITFIRE.Object;
-SPITFIRE.Redirect.synthesizedProperties = ['location', 'newLocation'];
-
-SPITFIRE.Class(SPITFIRE.Redirect);
-//--------------------------------------
 // SPITFIRE.State
 //--------------------------------------
 
@@ -1548,6 +1248,451 @@ SPITFIRE.State.prototype = {
 };
 
 SPITFIRE.Class(SPITFIRE.State);
+//--------------------------------------
+// SPITFIRE.ModelEvent
+//--------------------------------------
+
+SPITFIRE.ModelEvent = function(type, data, bubbles, cancelable) {
+  this.callSuper(type, data, bubbles, cancelable);
+};
+
+SPITFIRE.ModelEvent.DATA_UPDATE = 'dataUpdate';
+
+SPITFIRE.ModelEvent.superclass = SPITFIRE.Event;
+SPITFIRE.Class(SPITFIRE.ModelEvent);
+//--------------------------------------
+// SPITFIRE.StateEvent
+//--------------------------------------
+
+SPITFIRE.StateEvent = function(type, data, bubbles, cancelable) {
+  this.callSuper(type, data, bubbles, cancelable);
+};
+
+SPITFIRE.StateEvent.CHILD_STATE_CHANGE = 'childStateChange';
+SPITFIRE.StateEvent.STATE_CHANGE = 'stateChange';
+SPITFIRE.StateEvent.STATE_ACTIVATED = 'stateActivated';
+
+SPITFIRE.StateEvent.superclass = SPITFIRE.Event;
+SPITFIRE.Class(SPITFIRE.StateEvent);
+//--------------------------------------
+// StateManagerEvent
+//--------------------------------------
+
+SPITFIRE.StateManagerEvent = function(type, data, bubbles, cancelable, state) {
+  this.callSuper(type, data, bubbles, cancelable);
+  this.setState(state);
+  this.setQualifiedClassName('SPITFIRE.StateManagerEvent');
+};
+
+SPITFIRE.StateManagerEvent.LOAD_IN_START = 'loadInStart';
+SPITFIRE.StateManagerEvent.LOAD_IN_COMPLETE = 'loadInComplete';
+SPITFIRE.StateManagerEvent.TRANSITION_IN_START = 'transitionInStart';
+SPITFIRE.StateManagerEvent.TRANSITION_IN_COMPLETE = 'transitionInComplete';
+SPITFIRE.StateManagerEvent.LOAD_OUT_START = 'loadOutStart';
+SPITFIRE.StateManagerEvent.LOAD_OUT_COMPLETE = 'loadOutComplete';
+SPITFIRE.StateManagerEvent.TRANSITION_OUT_START = 'transitionOutStart';
+SPITFIRE.StateManagerEvent.TRANSITION_OUT_COMPLETE = 'transitionOutComplete';
+SPITFIRE.StateManagerEvent.TRANSITION_IN_STATE_COMPLETE = 'transitionInStateComplete';
+SPITFIRE.StateManagerEvent.TRANSITION_OUT_STATE_COMPLETE = 'transitionOutStateComplete';
+SPITFIRE.StateManagerEvent.LOAD_IN_STATE_COMPLETE = 'loadInStateComplete';
+SPITFIRE.StateManagerEvent.LOAD_OUT_STATE_COMPLETE = 'loadOutStateComplete';
+SPITFIRE.StateManagerEvent.DEEPLINK = 'deeplink';
+
+SPITFIRE.StateManagerEvent.superclass = SPITFIRE.Event;
+SPITFIRE.StateManagerEvent.synthesizedProperties = ['state'];
+SPITFIRE.Class(SPITFIRE.StateManagerEvent);
+//--------------------------------------
+// TimerEvent
+//--------------------------------------
+
+SPITFIRE.TimerEvent = function(type, data, bubbles, cancelable) {  
+  this.callSuper(type, data, bubbles, cancelable);
+  this.setQualifiedClassName('SPITFIRE.TimerEvent');
+};
+
+SPITFIRE.TimerEvent.TIMER = 'timer';
+SPITFIRE.TimerEvent.TIMER_COMPLETE = 'timerComplete';
+
+SPITFIRE.TimerEvent.superclass = SPITFIRE.Event;
+SPITFIRE.Class(SPITFIRE.TimerEvent);
+//--------------------------------------
+// SPITFIRE.Point
+//--------------------------------------
+
+SPITFIRE.Point = function(x, y) {
+  this.callSuper();
+  this.setQualifiedClassName('SPITFIRE.Point');
+  this.x = x;
+  this.y = y;
+};
+
+SPITFIRE.Point.superclass = SPITFIRE.Object;
+
+SPITFIRE.Point.prototype = {  
+  //--------------------------------------
+  // Methods
+  //--------------------------------------
+
+  toString: function() {
+    return '[' + this.getQualifiedClassName() + '] x:' + this.x + ' y:' + this.y;
+  }
+};
+
+SPITFIRE.Class(SPITFIRE.Point);
+//--------------------------------------
+// SPITFIRE.Rectangle
+//--------------------------------------
+
+SPITFIRE.Rectangle = function(x, y, width, height) {
+  this.callSuper();
+  this.qualifiedClassName('SPITFIRE.Rectangle');
+  
+  this.setX(x);
+  this.setY(y);
+  this.setWidth(width);
+  this.setHeight(height);
+};
+
+SPITFIRE.Rectangle.superclass = SPITFIRE.Object;
+SPITFIRE.Rectangle.synthesizedProperties = [
+  'x',
+  'y',
+  'width',
+  'height',
+  'top',
+  'left',
+  'right',
+  'bottom',
+  'size',
+  'bottomRight',
+  'topLeft'
+];
+
+SPITFIRE.Rectangle.prototype = {
+  //--------------------------------------
+  // Getters / Setters
+  //--------------------------------------
+  
+  setTop: function(value) {
+    throw new SPITFIRE.Error('read-only: cannot set top property');
+  },
+  
+  getTop: function() {
+    return this.getY();
+  },
+  
+  setLeft: function(value) {
+    throw new SPITFIRE.Error('read-only: cannot set left property');
+  },
+  
+  getLeft: function() {
+    return this.getX();
+  },
+  
+  setRight: function(value) {
+    throw new SPITFIRE.Error('read-only: cannot set right property');
+  },
+  
+  getRight: function() {
+    return this.getX() + this.getWidth();
+  },
+  
+  setBottom: function(value) {
+    throw new SPITFIRE.Error('read-only: cannot set bottom property');
+  },
+  
+  getBottom: function() {
+    return this.getY() + this.getHeight();
+  },
+  
+  setSize: function(value) {
+    throw new SPITFIRE.Error('read-only: cannot set size property');
+  },
+  
+  getSize: function() {
+    return new SPITFIRE.Point(this.getWidth(), this.getHeight());
+  },
+  
+  setTopLeft: function(value) {
+    throw new SPITFIRE.Error('read-only: cannot set topLeft property');
+  },
+  
+  getTopLeft: function() {
+    return new SPITFIRE.Point(this.getTop(), this.getLeft());
+  },
+  
+  setBottomRight: function(value) {
+    throw new SPITFIRE.Error('read-only: cannot set bottomRight property');
+  },
+  
+  getBottomRight: function() {
+    return new SPITFIRE.Point(this.getBottom(), this.getRight());
+  },
+  
+  //--------------------------------------
+  // Methods
+  //--------------------------------------
+  
+  clone: function() {
+    return new SPITFIRE.Rectangle(this.getX(), this.getY(), this.getWidth(), this.getHeight());
+  },
+  
+  toString: function() {
+    return '[' + this.getQualifiedClassName() + ']';
+  }
+};
+
+SPITFIRE.Class(SPITFIRE.Rectangle);
+//--------------------------------------
+// Percent
+//--------------------------------------
+// Port of org.casalib.math.Percent from CASA lib for ActionScript 3.0
+// http://casalib.org/
+
+SPITFIRE.Percent = function(percentage, isDecimalPercentage) {
+  this.callSuper();
+  
+  percentage = isDecimalPercentage || 0;
+  isDecimalPercentage = isDecimalPercentage || true;
+  
+  if (isDecimalPercentage) {
+    this.setDecimalPercentage(percentage);
+  } else {
+    this.setPercentage(percentage);
+  }
+};
+
+SPITFIRE.Percent.superclass = SPITFIRE.Object;
+SPITFIRE.synthesizedProperties = ['percentage', 'decimalPercentage'];
+
+SPITFIRE.prototype = {
+  getPercentage: function() {
+    return 100 * this._percent;
+  },
+  
+  setPercentage: function(value) {
+    this._percent = value * .01;
+  },
+  
+  getDecimalPercentage: function() {
+    return this._percent;
+  },
+  
+  setDecimalPercentage: function(value) {
+    this._percent = value;
+  },
+  
+  equals: function(percent) {
+    return this.getDecimalPercentage() == percent.getDecimalPercentage();
+  },
+  
+  clone: function() {
+    return new SPITFIRE.Percent(this.getDecimalPercentage());
+  },
+  
+  valueOf: function() {
+    return this.getDecimalPercentage();
+  },
+  
+  toString: function() {
+    return this.getDecimalPercentage().toString();
+  }
+};
+
+SPITFIRE.Class(SPITFIRE.Percent);
+//--------------------------------------
+// SPITFIRE.Model
+//--------------------------------------
+
+SPITFIRE.Model = function() {
+  this.callSuper();
+  this.setQualifiedClassName('SPITFIRE.Model');
+};
+
+SPITFIRE.Model.superclass = SPITFIRE.EventDispatcher;
+SPITFIRE.Model.synthesizedProperties = ['data'];
+
+SPITFIRE.Model.prototype = {
+
+  //--------------------------------------
+  // Getters / Setters
+  //--------------------------------------
+  
+  setData: function(value) {
+    this._data = value;
+    this.trigger(new SPITFIRE.ModelEvent(SPITFIRE.ModelEvent.DATA_UPDATE));
+  },
+
+  //--------------------------------------
+  // Methods
+  //--------------------------------------
+
+  toString: function() {
+    return '[' + this.getQualifiedClassName() + ']';
+  }
+};
+
+SPITFIRE.Class(SPITFIRE.Model);
+//--------------------------------------
+// SPITFIRE.DisplayState
+//--------------------------------------
+
+SPITFIRE.DisplayState = function(name, config) {
+  this.callSuper(name);
+  this.qualifiedClassName('SPITFIRE.DisplayState');
+  
+  var defaultConfig = {
+    id: '',
+    assets: {
+      view: '',
+      stylesheets: [],
+      images: []
+    }
+  }
+  
+  var configuration = config || defaultConfig;
+  this.config(configuration);
+  this.stylesheets([]);
+  this.images([]);
+  this._addedDOMAssets = [];
+  this._isCached = false;
+};
+
+SPITFIRE.DisplayState.superclass = SPITFIRE.State;
+SPITFIRE.DisplayState.synthesizedProperties = [
+  'view',
+  'stylesheets',
+  'images',
+  'config',
+  'isCached'
+];
+
+SPITFIRE.DisplayState.prototype = {
+
+  //--------------------------------------
+  // Getters / Setters
+  //--------------------------------------
+  
+  getLoadIn: function() {
+    // don't load if already cached
+    if (this.getIsCached()) return undefined;
+    
+    var sequentialTask = new SPITFIRE.SequentialTask(),
+        i, len, task;
+    
+    // load view
+    var configView = this.config().assets.view;
+    
+    if (configView && configView != '') {
+      this.view(new SPITFIRE.JQueryAjaxTask(configView));
+      sequentialTask.addTask(this.view());
+    }
+    
+    // load stylesheets
+    var configStylesheets = this.config().assets.stylesheets;
+    
+    if (configStylesheets.length > 0) {
+      for (i = 0, len = configStylesheets.length; i < len; i += 1) {
+      	var stylesheet = configStylesheets[i];
+      	task = new SPITFIRE.JQueryAjaxTask(stylesheet);
+      	this.stylesheets().push(task);
+      	sequentialTask.addTask(task);
+      }
+    }
+    
+    // load images
+    var configImages = this.config().assets.images;
+    if (configImages.length > 0) {
+      for (i = 0, len = configImages.length; i < len; i += 1) {
+      	var img = configImages[i];
+      	task = new SPITFIRE.JQueryAjaxTask(img);
+      	this.images().push(task);
+      	sequentialTask.addTask(task);
+      }
+    }
+    
+    sequentialTask.addTask(new SPITFIRE.FunctionTask(this, this.addDOMAssets));
+    return sequentialTask;
+  },
+  
+  getTransitionOut: function() {
+    return new SPITFIRE.FunctionTask(this, this.cleanUp);
+  },
+  
+  //--------------------------------------
+  // Methods
+  //--------------------------------------
+  
+  addDOMAssets: function() {
+    
+    // add stylesheets to DOM
+    var i, len, $obj, style, rules,
+        head = document.getElementsByTagName('head')[0];
+    
+    if (this.stylesheets().length > 0) {
+      for (i = 0, len = this.stylesheets().length; i < len; i += 1) {
+      	style = document.createElement('style');
+      	style.type = 'text/css';
+      	rules = document.createTextNode(this.stylesheets()[i].content());
+      	
+      	if (style.styleSheet) {
+          style.styleSheet.cssText = rules.nodeValue;
+        } else {
+          style.appendChild(rules);
+        }
+        
+      	head.appendChild(style);
+        this._addedDOMAssets.push(style);
+      }
+    }
+    
+    // add view to DOM
+    if (this.view()) {
+      $obj = $(this.view().content()).appendTo('body');
+      this._addedDOMAssets.push($obj);
+    }
+    
+    this.setIsCached(true);
+  },
+  
+  removeDOMAssets: function() {
+    while (this._addedDOMAssets.length > 0) {
+      // check for jQuery objects
+      var obj = this._addedDOMAssets[0];
+      if (typeof obj.remove === 'function') {
+        obj.remove();
+      } else {
+        // raw js
+      }
+      this._addedDOMAssets.shift();
+    }
+  },
+  
+  cleanUp: function() {
+  
+  },
+
+  toString: function() {
+    return '[' + this.qualifiedClassName() + ']';
+  }
+};
+
+SPITFIRE.Class(SPITFIRE.DisplayState);
+//--------------------------------------
+// Redirect
+//--------------------------------------
+
+SPITFIRE.Redirect = function(location, newLocation) {
+  this.callSuper();
+  this.setQualifiedClassName('SPITFIRE.Redirect');
+  this.setLocation(location);
+  this.setNewLocation(newLocation);
+}
+
+SPITFIRE.Redirect.superclass = SPITFIRE.Object;
+SPITFIRE.Redirect.synthesizedProperties = ['location', 'newLocation'];
+
+SPITFIRE.Class(SPITFIRE.Redirect);
 //--------------------------------------
 // SPITFIRE.StateManager
 //--------------------------------------
@@ -2816,6 +2961,165 @@ SPITFIRE.UICarouselItem.prototype = {
 };
 
 SPITFIRE.Class(SPITFIRE.UICarouselItem);
+//--------------------------------------
+// SPITFIRE.UISlideshow
+//--------------------------------------
+
+SPITFIRE.UISlideshow = function(config) {
+  this.callSuper();
+  this.setQualifiedClassName('SPITFIRE.UISlideshow');
+  
+  // validate configuration
+  if (typeof config === 'undefined' ||
+      typeof config.imageContainer === 'undefined') {
+    throw new SPITFIRE.Error(this.toString() + ' is misconfigured');    
+  }
+  
+  this.data = config.data || [];
+  this.$imageContainer = $('#' + config.imageContainer);
+  
+  this.$descriptionContainer = (typeof config.descriptionContainer !== 'undefined') ? $('#' + config.descriptionContainer) : undefined;
+  this.$previousButton = (typeof config.previousButton !== 'undefined') ? $('#' + config.previousButton) : undefined;
+  this.$nextButton = (typeof config.nextButton !== 'undefined') ? $('#' + config.nextButton) : undefined;
+  this.$previousPageButton = (typeof config.previousPageButton !== 'undefined') ? $('#' + config.previousPageButton) : undefined;
+  this.$nextPageButton = (typeof config.nextPageButton !== 'undefined') ? $('#' + config.nextPageButton) : undefined;
+  
+  this.hasLoadingIndicator = (typeof config.loadingIndicator !== 'undefined');
+  this.$loadingIndicator = (this.hasLoadingIndicator) ? $('#' + config.loadingIndicator) : undefined;
+  if (this.hasLoadingIndicator) this.$loadingIndicator.hide();
+  
+  this.hasDrawer = (typeof config.drawer !== 'undefined');
+  this.$drawer = (this.hasDrawer) ? $('#' + config.drawer) : undefined;
+  
+  this.tree = new SPITFIRE.State('tree');
+  this.setTree(this.tree);
+  
+  this.initStates();
+  this.initDrawer();
+  
+  // show default image
+  this.tree.browse();
+};
+
+SPITFIRE.UISlideshow.superclass = SPITFIRE.StateManager;
+
+SPITFIRE.UISlideshow.prototype = {
+
+  //--------------------------------------
+  // Event Handlers
+  //--------------------------------------
+  
+  thumbsLoadedHandler: function(event) {
+    
+  },
+  
+  thumbClickHandler: function(event) {
+    this.states[event.target.index].browse();
+  },
+
+  //--------------------------------------
+  // Methods
+  //--------------------------------------
+  
+  initStates: function() {
+    this.states = [];
+    
+    var i, len, item, uid, state;
+    for (i = 0, len = this.data.length; i < len; i += 1) {
+      item = this.data[i];
+      uid = 'image' + (i + 1);
+      
+      state = new SPITFIRE.UISlideshowItem(uid, item.imageUrl);
+      
+      // add image to container
+      this.$imageContainer.append(state.loader.get$content());
+      
+      this.tree.addChild(state);
+      this.states.push(state);
+    }
+    
+    if (this.data.length) {
+      this.tree.defaultChild(this.tree.getChildren()[0].getName());
+    }
+  },
+  
+  initDrawer: function() {
+    if (!this.hasDrawer) return;
+    
+    this.thumbs = [];
+    var sequentialTask = new SPITFIRE.SequentialTask();
+    sequentialTask.bind(SPITFIRE.Event.COMPLETE, this.thumbsLoadedHandler.context(this));
+    
+    // load thumbnails and add them to drawer
+    var i, len, item, thumb, $el;
+    for (i = 0, len = this.data.length; i < len; i += 1) {
+      item = this.data[i];
+      thumb = new SPITFIRE.JQueryImageLoaderTask(item.thumbnailUrl);
+      $el = thumb.get$content();
+      $el[0].index = i;
+      $el.bind('click', $.proxy(this.thumbClickHandler, this));
+      this.$drawer.append($el);
+      this.thumbs.push(thumb);
+      sequentialTask.addTask(thumb);
+    }
+    
+    sequentialTask.start();
+  }
+};
+
+SPITFIRE.Class(SPITFIRE.UISlideshow);
+//--------------------------------------
+// SPITFIRE.UISlideshowItem
+//--------------------------------------
+
+SPITFIRE.UISlideshowItem = function(name, url) {
+  this.callSuper(name);
+  this.setQualifiedClassName('SPITFIRE.UISlideshowItem');
+  
+  this.url = url;
+  this.loader = new SPITFIRE.JQueryImageLoaderTask(this.url);
+  this.loader.get$content().hide();
+};
+
+SPITFIRE.UISlideshowItem.superclass = SPITFIRE.State;
+SPITFIRE.UISlideshowItem.synthesizedProperties = [];
+
+SPITFIRE.UISlideshowItem.prototype = {
+
+  //--------------------------------------
+  // Getters / Setters
+  //--------------------------------------
+
+  getLoadIn: function() {
+    return new SPITFIRE.FunctionTask(this, this.loadImage);
+  },
+  
+  getTransitionIn: function() {
+    return new SPITFIRE.FunctionTask(this, this.transitionIn);
+  },
+  
+  getTransitionOut: function() {
+    return new SPITFIRE.FunctionTask(this, this.transitionOut);
+  },
+  
+  //--------------------------------------
+  // Methods
+  //--------------------------------------
+  
+  loadImage: function() {
+    this.loader.start();
+  },
+  
+  transitionIn: function() {
+    this.loader.get$content().fadeIn();
+  },
+  
+  transitionOut: function() {
+    this.loader.get$content().fadeOut();
+  }
+};
+
+SPITFIRE.Class(SPITFIRE.UISlideshowItem);
 SPITFIRE.ArrayUtils = {};
 
 //--------------------------------------

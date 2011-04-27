@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>UISlideshow</title>
+		
+		<style type="text/css">
+		  body {
+		    background-color: black;
+		    color: white;
+		  }
+		  
+		  #slideshowImageContainer {
+		    width: 750px;
+		    height: 400px;
+		    border: 1px solid red;
+		  }
+		  
+		  #slideshowImageContainer img {
+		    position: absolute;
+		  }
+		  
+		  #slideshowDrawer {
+		    width: 750px;
+		    height: 100px;
+		    border: 1px solid red;
+		  }
+		  
+		  #imageLoadingIndicator {
+		    width: 32px;
+		    height: 32px;
+		    background: url(img/ajax-loader.gif) no-repeat top left;
+		    position: absolute;
+		    z-index: 10;
+		    position: absolute;
+		    left: 375px;
+		    top: 200px;
+		  }
+		  
+		  #slideshowDescriptionContainer {
+		    width: 750px;
+		    height: 20px;
+		    border: 1px solid red;
+		  }
+		  
+		  #slideshowPreviousButton {
+		    position: absolute;
+		    font-size: 30px;
+		    left: 30px;
+		    top: 200px;
+		  }
+		  
+		  #slideshowNextButton {
+		    position: absolute;
+		    font-size: 30px;
+		    left: 720px;
+		    top: 200px;
+		  }
+		  
+		  #slideshowPreviousPageButton {
+		    position: absolute;
+		    font-size: 30px;
+		    left: 30px;
+		    top: 465px;
+		  }
+		  
+		  #slideshowNextPageButton {
+		    position: absolute;
+		    font-size: 30px;
+		    left: 720px;
+		    top: 465px;
+		  }
+		  
+		</style>
+	</head>
+	<body>
+    <div id="imageLoadingIndicator"></div>
+    <div id="slideshowImageContainer"></div>
+    <div id="slideshowDescriptionContainer"></div>
+    <div id="slideshowDrawer"></div>
+    <div id="slideshowPreviousButton">&#171</div>
+    <div id="slideshowNextButton">&#187</div>
+    <div id="slideshowPreviousPageButton">&#171</div>
+    <div id="slideshowNextPageButton">&#187</div>
+    
+    <script type="text/javascript" src="../../../src/libs/jquery-1.5.2.min.js"></script>
+    <script type="text/javascript" src="../../../publish/spitfire.min.js"></script>
+    <script type="text/javascript">
+		  
+		  var data = [
+		    { thumbnailUrl: 'img/slideshowThumbs/001.jpg', imageUrl: 'img/slideshowImages/001.jpg', description: 'Image 001' },
+		    { thumbnailUrl: 'img/slideshowThumbs/002.jpg', imageUrl: 'img/slideshowImages/002.jpg', description: 'Image 002' },
+		    { thumbnailUrl: 'img/slideshowThumbs/003.jpg', imageUrl: 'img/slideshowImages/003.jpg', description: 'Image 003' },
+		    { thumbnailUrl: 'img/slideshowThumbs/004.jpg', imageUrl: 'img/slideshowImages/004.jpg', description: 'Image 004' },
+		    { thumbnailUrl: 'img/slideshowThumbs/005.jpg', imageUrl: 'img/slideshowImages/005.jpg', description: 'Image 005' },
+		    { thumbnailUrl: 'img/slideshowThumbs/006.jpg', imageUrl: 'img/slideshowImages/006.jpg', description: 'Image 006' },
+		    { thumbnailUrl: 'img/slideshowThumbs/007.jpg', imageUrl: 'img/slideshowImages/007.jpg', description: 'Image 007' },
+		    { thumbnailUrl: 'img/slideshowThumbs/008.jpg', imageUrl: 'img/slideshowImages/008.jpg', description: 'Image 008' },
+		    { thumbnailUrl: 'img/slideshowThumbs/009.jpg', imageUrl: 'img/slideshowImages/009.jpg', description: 'Image 009' },
+		    { thumbnailUrl: 'img/slideshowThumbs/010.jpg', imageUrl: 'img/slideshowImages/010.jpg', description: 'Image 010' },
+		    { thumbnailUrl: 'img/slideshowThumbs/011.jpg', imageUrl: 'img/slideshowImages/011.jpg', description: 'Image 011' },
+		    { thumbnailUrl: 'img/slideshowThumbs/012.jpg', imageUrl: 'img/slideshowImages/012.jpg', description: 'Image 012' },
+		    { thumbnailUrl: 'img/slideshowThumbs/013.jpg', imageUrl: 'img/slideshowImages/013.jpg', description: 'Image 013' }
+		  ];
+		  
+		  var slideshowConfig = {
+		    data: data,
+		    imageContainer: 'slideshowImageContainer',
+		    descriptionContainer: 'slideshowDescriptionContainer',
+		    previousButton: 'slideshowPreviousButton',
+		    nextButton: 'slideshowNextButton',
+		    previousPageButton: 'slideshowPreviousPageButton',
+		    nextPageButton: 'slideshowNextPageButton',
+		    loadingIndicator: 'imageLoadingIndicator',
+		    drawer: 'slideshowDrawer'
+		  };
+		  
+		  this.slideshow = new SPITFIRE.UISlideshow(slideshowConfig);
+		
+		</script>
+	</body>
+</html>
