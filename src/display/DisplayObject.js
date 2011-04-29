@@ -2,7 +2,7 @@
 // SPITFIRE.DisplayObject
 //--------------------------------------
 
-SPITFIRE.DisplayObject = function() {
+SPITFIRE.DisplayObject = function($el) {
   this.callSuper();
   this.setQualifiedClassName('SPITFIRE.DisplayObject');
   this._scaleX = 1;
@@ -10,6 +10,8 @@ SPITFIRE.DisplayObject = function() {
   this._scale = 1;
   this._placeholderProperties = [];
   this._z = 1;
+  this._$this = $el;
+  this._isCentered = false;
 };
 
 SPITFIRE.DisplayObject.superclass = SPITFIRE.EventDispatcher;
@@ -23,7 +25,8 @@ SPITFIRE.DisplayObject.synthesizedProperties = [
   'scaleY',
   'scale',
   'rect',
-  'z'
+  'z',
+  'isCentered'
 ];
 
 SPITFIRE.DisplayObject.prototype = {
@@ -33,39 +36,43 @@ SPITFIRE.DisplayObject.prototype = {
   //--------------------------------------
   
   setL: function(value) {
-    this.get$this().css('left', value);
+    this._$this.css('left', value);
   },
   
   getL: function() {
-    var flt = (this.style.left) ? parseFloat(this.style.left) : parseFloat(this.get$this().css('left'));
+    var flt = (this.style && this.style.left) ? parseFloat(this.style.left) : parseFloat(this._$this.css('left'));
     return flt || 0;
   },
   
   setT: function(value) {
-    this.get$this().css('top', value);
+    this._$this.css('top', value);
   },
   
   getT: function() {
-    var flt = (this.style.top) ? parseFloat(this.style.top) : parseFloat(this.get$this().css('top'));
+    var flt = (this.style && this.style.top) ? parseFloat(this.style.top) : parseFloat(this._$this.css('top'));
     return flt || 0;
   },
   
   getW: function() {
-    return (this._w) ? this._w * this._scaleX : this.get$this().width();
+    return (this._w) ? this._w * this._scaleX : this._$this.width();
   },
   
   setW: function(value) {
     this._w = value;
-    this.get$this().width(this._w * this._scaleX);
+    this._$this.width(this._w * this._scaleX);
+    
+    if (this._isCentered) this.setL(~~(-this._$this.width() * 0.5));
   },
 
   getH: function() {
-    return (this._h) ? this._h * this._scaleY : this.get$this().height();
+    return (this._h) ? this._h * this._scaleY : this._$this.height();
   },
   
   setH: function(value) {
     this._h = value;
-    this.get$this().height(this._h * this._scaleY);
+    this._$this.height(this._h * this._scaleY);
+    
+    if (this._isCentered) this.setT(~~(-this._$this.height() * 0.5));
   },
   
   getScale: function() {
@@ -101,16 +108,12 @@ SPITFIRE.DisplayObject.prototype = {
   
   setZ: function(value) {
     this._z = value >> 0;
-    this.get$this().css('z-index', this._z);
+    this._$this.css('z-index', this._z);
   },
   
   //--------------------------------------
   // Methods
   //--------------------------------------
-  
-  init: function() {
-    this.set$this($(this));
-  },
   
   animate: function(properties, options) {
     
@@ -143,7 +146,7 @@ SPITFIRE.DisplayObject.prototype = {
     }
     options.complete = this.animationComplete.context(this);
     
-    this.get$this().animate(properties, options);
+    this._$this.animate(properties, options);
   },
   
   animationStep: function(now, fx) {    
@@ -172,10 +175,6 @@ SPITFIRE.DisplayObject.prototype = {
       delete this[this._placeholderProperties[0]];
       this._placeholderProperties.shift();
     }
-  },
-
-  toString: function() {
-    return '[' + this.qualifiedClassName() + ']';
   }
 };
 

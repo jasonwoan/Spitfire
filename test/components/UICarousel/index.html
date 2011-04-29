@@ -7,133 +7,94 @@
   <style type="text/css">
   
     body {
-      margin: 0;
-      padding: 0;
-    }
-    
-    #container {
-      position: relative;
-    }
-    
-    #carousel {
-      width: 600px;
-      height: 300px;
-      border: 1px solid black;
-      z-index: 20;
-      position: absolute;
-      overflow: hidden;
-      top: 100px;
-    }
-    
-    #centerLine {
-      position: absolute;
-      z-index: 10;
-      width: 300px;
-      height: 300px;
-      border: 1px solid red;
-      top: 100px;
-    }
-    
-    #previous {
-      position: absolute;
-      top: 420px;
-    }
-    
-    #next {
-      position: absolute;
-      top: 420px;
-      left: 100px;
-    }
-    
-    .itemContainer {
-      position: absolute;
-      width: 10px;
-      height: 10px;
-      background-color: red;
-    }
-    
-    .itemContainer img {
-      position: absolute;
-/*       display: none; */
-    }
-  
+		    background-color: black;
+		    color: white;
+		  }
+		  
+		  #carouselContainer {
+		    width: 750px;
+		    height: 400px;
+		    border: 1px solid red;
+		  }
+		  
+		  #carouselContainer img {
+		    position: absolute;
+		  }
+		  		  
+		  #carouselDescriptionContainer {
+		    width: 750px;
+		    height: 20px;
+		    border: 1px solid red;
+		  }
+		  
+		  #carouselPreviousButton {
+		    position: absolute;
+		    font-size: 30px;
+		    left: 30px;
+		    top: 300px;
+		    cursor: pointer;
+		  }
+		  
+		  #carouselNextButton {
+		    position: absolute;
+		    font-size: 30px;
+		    left: 720px;
+		    top: 300px;
+		    cursor: pointer;
+		  }
+		  
+      #carouselContainer,
+      #carouselPreviousButton,
+      #carouselNextButton  {		  
+		    -webkit-user-select: none;
+        -khtml-user-select: none;
+        -moz-user-select: none;
+        -o-user-select: none;
+        user-select: none;
+      }
+
+      .carouselItemContainer {
+        position: absolute;
+      }
   </style>
 </head>
 
 <body>
-  <div id="container">
-    <h1>Static Carousel</h1>
-    <div id="carousel" sf-base="SPITFIRE.ui.UICarousel">
-      <div class="itemContainer" sf-base="SPITFIRE.ui.UICarouselItem">
-        <img src="img/image-01.jpg" alt="image-01" sf-base="SPITFIRE.display.DisplayObject" />
-      </div>
-      <div class="itemContainer" sf-base="SPITFIRE.ui.UICarouselItem">
-        <img src="img/image-02.jpg" alt="image-02" sf-base="SPITFIRE.display.DisplayObject" />
-      </div>
-      <div class="itemContainer" sf-base="SPITFIRE.ui.UICarouselItem">
-        <img src="img/image-03.jpg" alt="image-03" sf-base="SPITFIRE.display.DisplayObject" />
-      </div>
-      <div class="itemContainer" sf-base="SPITFIRE.ui.UICarouselItem">
-        <img src="img/image-04.jpg" alt="image-04" sf-base="SPITFIRE.display.DisplayObject" />
-      </div>
-      <div class="itemContainer" sf-base="SPITFIRE.ui.UICarouselItem">
-        <img src="img/image-05.jpg" alt="image-05" sf-base="SPITFIRE.display.DisplayObject" />
-      </div>
-      <div class="itemContainer" sf-base="SPITFIRE.ui.UICarouselItem">
-        <img src="img/image-06.jpg" alt="image-06" sf-base="SPITFIRE.display.DisplayObject" />
-      </div>
-<!--
-      <div class="itemContainer" sf-base="SPITFIRE.ui.UICarouselItem">
-        <img src="img/image-07.jpg" alt="image-07" sf-base="SPITFIRE.display.DisplayObject" />
-      </div>
--->
-    </div>
-    
-    <div id="previous">previous</div>
-    <div id="next">next</div>
-    
-    <div id="centerLine"></div>
+  <div id="carouselContainer"></div>
+  <div id="carouselDescriptionContainer"></div>
   
-  </div>
-  
-  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.5.2/jquery.js"></script>
-  <script>window.jQuery || document.write("<script src='../../../src/libs/jquery-1.5.2.min.js'>\x3C/script>")</script>
-  <script type="text/javascript" src="../../../publish/spitfire.js"></script>
-  
-  <script type="text/javascript">
-    
-    $s = SPITFIRE;
-    
-    $s.extendDOM('body');
-    
-    var previous = document.getElementById('previous');
-    var next = document.getElementById('next');
-    var carousel = document.getElementById('carousel');
-    
-    carousel.bind('change', changeHandler);
-    previous.addEventListener('click', previousClickHandler.context(this), false);
-    next.addEventListener('click', nextClickHandler, false);
-    
-    function previousClickHandler() {
-      carousel.previous();
-    }
-    
-    function nextClickHandler() {
-      carousel.next();
-    }
-    
-    function changeHandler() {
-      log('change');
-      carousel.unbind('change', previousClickHandler);
-    }
-    
-/*
-    carousel.itemHeight(200);
-    carousel.itemDistance(100);
-    carousel.scaleRatio(.4);
-    carousel.neighbors(2);
-*/
-    
+  <div id="carouselPreviousButton">&#171</div>
+  <div id="carouselNextButton">&#187</div>
+      
+  <script type="text/javascript" src="../../../src/libs/jquery-1.5.2.min.js"></script>
+    <script type="text/javascript" src="../../../publish/spitfire.js"></script>
+    <script type="text/javascript">
+		  
+		  var data = [
+		    { imageUrl: 'img/image-01.jpg', description: 'Image 001' },
+		    { imageUrl: 'img/image-02.jpg', description: 'Image 002' },
+		    { imageUrl: 'img/image-03.jpg', description: 'Image 003' },
+		    { imageUrl: 'img/image-04.jpg', description: 'Image 004' },
+		    { imageUrl: 'img/image-05.jpg', description: 'Image 005' },
+		    { imageUrl: 'img/image-06.jpg', description: 'Image 006' }
+		  ];
+		  
+		  var carouselConfig = {
+		    name: 'carousel',
+		    data: data,
+		    carouselContainer: 'carouselContainer',
+		    descriptionContainer: 'carouselDescriptionContainer',
+		    previousButton: 'carouselPreviousButton',
+		    nextButton: 'carouselNextButton',
+		    itemHeight: 200,
+		    neighbors: 2,
+		    speed: 500,
+		    scaleRatio: .3
+		  };
+		  
+		  this.stateManager = new SPITFIRE.StateManager();
+		  this.carousel = new SPITFIRE.UICarousel(carouselConfig);
+		  this.stateManager.setTree(this.carousel);
   </script>
 </body>
 </html>

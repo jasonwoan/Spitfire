@@ -158,7 +158,6 @@ SPITFIRE.StateManager.prototype = {
 			this.taskManagerProgressHandler();
 			this._progressTimer.stop();
 		}
-		
 		this.trigger(new SPITFIRE.Event(this._currentTransition.transitionName() + "Complete"));
 		this._currentTransition = null;
 		if (this._transitions.length > 0) {
@@ -207,7 +206,7 @@ SPITFIRE.StateManager.prototype = {
   startTransitions: function() {
     
     this._transitionWasInterrupted = false;
-    this._isInTransition = false;
+    this._isInTransition = true;
     
     this._transitionInPath = this.checkRedirect(this._transitionInPath);
     
@@ -370,13 +369,14 @@ SPITFIRE.StateManager.prototype = {
 			if (task) {
 				this.getTaskManager().addTask(task);
 			}
-			var stateSelected;
+			var stateSelected = false;;
 			if (this._currentTransition.getTransitionName() == "transitionIn") {
 				stateSelected = true;
 			}
 			if (this._currentTransition.getTransitionName() == "transitionOut") {
 				stateSelected = false;
 			}
+
 			this.getTaskManager().addTask(new SPITFIRE.PropertyTask(state, "selected", stateSelected));
 		}
 		if (this.getTaskManager().getProgress() == 1) {

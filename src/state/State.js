@@ -6,6 +6,7 @@ SPITFIRE.State = function(name) {
   this.callSuper();
   this.setName(name);
   this._children = [];
+  this._selected = false;
   this.setQualifiedClassName('SPITFIRE.State');
 };
 
@@ -106,7 +107,7 @@ SPITFIRE.State.prototype = {
   },
   
   setSelected: function(value) {
-    if (value != this.selected()) {
+    if (value != this._selected) {
       this._selected = value;
       this.trigger(new SPITFIRE.StateEvent(SPITFIRE.StateEvent.STATE_CHANGE));
     }
@@ -262,7 +263,35 @@ SPITFIRE.State.prototype = {
   },
   
   browse: function() {
-    this.stateManager().location(this.stateLocation());
+    var location = this.getStateLocation() + this.findDefaultStates();
+    this.stateManager().setLocation(location);
+  },
+  
+  findDefaultStates: function() {
+    var states = [];
+    var defaultState = this.getChildByName(this.getDefaultChild());
+    
+    while (defaultState) {
+      states.push(defaultState);
+      defaultState = defaultState.getChildByName(defaultState.getDefaultChild());
+    }
+    
+    var location = '',
+        i, len;
+    for (i = 0, len = states.length; i < len; i += 1) {
+    	if (i === 0) {
+        location += '/';
+    	}
+    	
+    	var state = states[i];
+    	location += state.getName();
+    	
+    	if (i < states.length - 1) {
+        location += '/';
+    	}
+    }
+    
+    return location;
   },
   
   browsePreviousSibling: function() {

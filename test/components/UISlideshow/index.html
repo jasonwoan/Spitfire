@@ -19,10 +19,30 @@
 		    position: absolute;
 		  }
 		  
+		  #slideshowDrawerContainer {
+		    width: 640px;
+		    border: 1px solid red;
+		    position: relative;
+		    top: 30px;
+		    left: 50px;
+		    overflow: hidden;
+		  }
+		  
 		  #slideshowDrawer {
 		    width: 750px;
 		    height: 100px;
 		    border: 1px solid red;
+		    position: relative;
+		  }
+		  
+		  #slideshowDrawer img {
+		    cursor: pointer;
+		    position: absolute;
+		    border: 1px solid black;
+		  }
+		  
+		  #slideshowDrawer img.selected {
+		    border: 1px solid white;
 		  }
 		  
 		  #imageLoadingIndicator {
@@ -47,6 +67,7 @@
 		    font-size: 30px;
 		    left: 30px;
 		    top: 200px;
+		    cursor: pointer;
 		  }
 		  
 		  #slideshowNextButton {
@@ -54,6 +75,7 @@
 		    font-size: 30px;
 		    left: 720px;
 		    top: 200px;
+		    cursor: pointer;
 		  }
 		  
 		  #slideshowPreviousPageButton {
@@ -61,6 +83,7 @@
 		    font-size: 30px;
 		    left: 30px;
 		    top: 465px;
+		    cursor: pointer;
 		  }
 		  
 		  #slideshowNextPageButton {
@@ -68,7 +91,21 @@
 		    font-size: 30px;
 		    left: 720px;
 		    top: 465px;
+		    cursor: pointer;
 		  }
+      
+      #slideshowDrawer,
+      #slideshowImageContainer,
+      #slideshowPreviousButton,
+      #slideshowNextButton,
+      #slideshowPreviousPageButton,
+      #slideshowNextPageButton {		  
+		    -webkit-user-select: none;
+        -khtml-user-select: none;
+        -moz-user-select: none;
+        -o-user-select: none;
+        user-select: none;
+      }
 		  
 		</style>
 	</head>
@@ -76,14 +113,19 @@
     <div id="imageLoadingIndicator"></div>
     <div id="slideshowImageContainer"></div>
     <div id="slideshowDescriptionContainer"></div>
-    <div id="slideshowDrawer"></div>
+    
+    <!-- Drawer -->
+    <div id="slideshowDrawerContainer">
+      <div id="slideshowDrawer"></div>
+    </div>
+    
     <div id="slideshowPreviousButton">&#171</div>
     <div id="slideshowNextButton">&#187</div>
     <div id="slideshowPreviousPageButton">&#171</div>
     <div id="slideshowNextPageButton">&#187</div>
     
     <script type="text/javascript" src="../../../src/libs/jquery-1.5.2.min.js"></script>
-    <script type="text/javascript" src="../../../publish/spitfire.min.js"></script>
+    <script type="text/javascript" src="../../../publish/spitfire.js"></script>
     <script type="text/javascript">
 		  
 		  var data = [
@@ -103,6 +145,7 @@
 		  ];
 		  
 		  var slideshowConfig = {
+		    name: 'slideshow',
 		    data: data,
 		    imageContainer: 'slideshowImageContainer',
 		    descriptionContainer: 'slideshowDescriptionContainer',
@@ -111,10 +154,16 @@
 		    previousPageButton: 'slideshowPreviousPageButton',
 		    nextPageButton: 'slideshowNextPageButton',
 		    loadingIndicator: 'imageLoadingIndicator',
-		    drawer: 'slideshowDrawer'
+		    drawer: 'slideshowDrawer',
+		    drawerGutter: 10,
+		    drawerThumbsPerPage: 7,
+		    drawerThumbWidth: 80
 		  };
 		  
+		  this.stateManager = new SPITFIRE.StateManager();
 		  this.slideshow = new SPITFIRE.UISlideshow(slideshowConfig);
+		  this.stateManager.setTree(this.slideshow);
+		  this.stateManager.getTree().browse();
 		
 		</script>
 	</body>

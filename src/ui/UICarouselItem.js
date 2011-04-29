@@ -2,22 +2,34 @@
 // SPITFIRE.UICarouselItem
 //--------------------------------------
 
-SPITFIRE.UICarouselItem = function() {
-  this.callSuper();
+SPITFIRE.UICarouselItem = function(name, url, index) {
+  this.callSuper(name);
   this.qualifiedClassName('SPITFIRE.UICarouselItem');
   this._itemHeight = 100;
-  this._isImgInitialized = false;
+  this._scale = 1;
+  this._itemIndex = index;
+  this.loader = new SPITFIRE.JQueryImageLoaderTask(url);
+  this.$img = this.loader.get$content();
+/*   this.$img.bind('click', $.proxy(this.clickHandler, this)); */
+  
+  // create container
+  var el = document.createElement('div');
+  el.className = 'carouselItemContainer';
+  this.$el = $(el);
+  this.$el.append(this.$img);
+  this.displayObject = new SPITFIRE.DisplayObject(this.$el);
+  this.imgDisplayObject = new SPITFIRE.DisplayObject(this.$img);
+  this.imgDisplayObject.setIsCentered(true);
 };
 
-SPITFIRE.UICarouselItem.superclass = SPITFIRE.DisplayObject;
+SPITFIRE.UICarouselItem.superclass = SPITFIRE.State;
 SPITFIRE.UICarouselItem.synthesizedProperties = [
-  'index',
+  'itemIndex',
   'carouselIndex',
   'carousel',
   'img',
   'itemHeight',
-  'itemWidth',
-  'isImgInitialized'
+  'itemWidth'
 ];
 
 SPITFIRE.UICarouselItem.prototype = {
@@ -28,78 +40,61 @@ SPITFIRE.UICarouselItem.prototype = {
   
   setItemHeight: function(value) {
     this._itemHeight = value;
-    
-    if (this.img().complete) {
-      this.imageLoadedHandler();
-    }
+    this.resizeAndScaleImage();
   },
   
   setScale: function(value) {
     this._scale = value;
-    if (this.img().complete) {
-      this.imageLoadedHandler();
-    }
+    this.resizeAndScaleImage();
   },
   
   getScale: function() {
     return this._scale;
   },
   
+  getTransitionIn: function() {
+    return new SPITFIRE.FunctionTask(this, this.transitionIn);
+  },
+  
   //--------------------------------------
   // Event Handlers
   //--------------------------------------
   
-  imageLoadedHandler: function() {
-    SPITFIRE.removeListener(this.img(), 'load', this.imageLoadedHandler);
-    this.initImage();
-    this.resizeImage();
-    this.scaleAndPositionImage();
+  clickHandler: function(event) {
+    this.getParent().setPositionIndex(this.getItemIndex());
   },
 
   //--------------------------------------
   // Methods
   //--------------------------------------
   
-  init: function() {
-    this.callSuper();
-    
-    this.img(this.getElementsByTagName('img')[0]);
-    
-    if (!this.img().complete) {
-      SPITFIRE.addListener(this.img(), 'load', this.imageLoadedHandler, this);
-    } else {
-      this.imageLoadedHandler();
-    }
-  },
-  
-  initImage: function() {
-    if (this._isImgInitialized) return;
-    
-    // explicity set width and height to DisplayObject
-    this.img().w(this.img().width);
-    this.img().h(this.img().height);
-    
-    this._isImgInitialized = true;
-  },
-  
-  resizeImage: function() {
-    var rect = new SPITFIRE.Rectangle(0, 0, this.img().w(), this.img().h());
-    var newRect = SPITFIRE.RatioUtils.scaleWidth(rect, this._itemHeight, true);
-    this.img().w(newRect.width());
-    this.img().h(newRect.height());
-  },
-  
-  scaleAndPositionImage: function() {
-    // scale
-    this.img().scale(this._scale);
-    
-    // position
-    this.img().l(~~(-this.img().w() * 0.5));
-    this.img().t(~~(-this.img().h() * 0.5));
+  transitionIn: function() {
+    this.getParent().setPositionIndex(this.getItemIndex());
   },
 
-  toString: function() {
-    return '[' + this.qualifiedClassName() + ']';
+  resizeAndScaleImage: function() {
+    var rect = new SPITFIRE.Rectangle(0, 0, this.imgDisplayObject.w(), this.imgDisplayObject.h());
+    var newRect = SPITFIRE.RatioUtils.scaleWidth(rect, this._itemHeight, true);
+    this.imgDisplayObject.w(newRect.width());
+    this.imgDisplayObject.h(newRect.height());
+    this.imgDisplayObject.scale(this._scale);
+  },
+  
+  animate: function(x, y, z, scale, opacity, duration) {
+    this.displayObject.animate({
+      l: x,
+      t: y,
+      z: z,
+      opacity: opacity
+    }, {
+      duration: duration
+    });
+    
+    this.imgDisplayObject.animate({
+      scale: scale
+    }, {
+      duration: duration
+    });
   }
 };
 

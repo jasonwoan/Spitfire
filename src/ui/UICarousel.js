@@ -2,19 +2,37 @@
 // SPITFIRE.UICarousel
 //--------------------------------------
 
-SPITFIRE.UICarousel = function() {
-  this.callSuper();
+SPITFIRE.UICarousel = function(config) {
+  config.name = config.name || 'carousel';
+  this.config = config;
+  
+  this.callSuper(config.name);
   this.qualifiedClassName('SPITFIRE.UICarousel');
+  
+  this.data = config.data || [];
   this._items = [];
-  this._itemHeight = 200;
-  this._neighbors = 2;
-  this._itemDistance = 160;
-  this._speed = 500;
-  this._scaleRatio = .3;
+  this._itemHeight = config.itemHeight || 200;
+  this._neighbors = config.neighbors || 2;
+  this._itemDistance = config.itemDistance || 160;
+  this._speed = config.speed || 500;
+  this._scaleRatio = config.scaleRatio || 0.3;
   this._positionIndex = 0;
+  
+  // DOM elements
+  this.$carouselContainer = (typeof config.carouselContainer !== 'undefined') ? $('#' + config.carouselContainer) : undefined;
+  this.hasDescriptionContainer = typeof config.descriptionContainer !== 'undefined';
+  this.$descriptionContainer = (this.hasDescriptionContainer) ? $('#' + config.descriptionContainer) : undefined;
+  this.$previousButton = (typeof config.previousButton !== 'undefined') ? $('#' + config.previousButton) : undefined;
+  this.$nextButton = (typeof config.nextButton !== 'undefined') ? $('#' + config.nextButton) : undefined;
+  
+  // set center point
+  this.center(new SPITFIRE.Point(~~(this.$carouselContainer.width() * 0.5), ~~(this.$carouselContainer.height() * 0.5)));
+  
+  this.initStates();
+  this.initHandlers();
 };
 
-SPITFIRE.UICarousel.superclass = SPITFIRE.DisplayObject;
+SPITFIRE.UICarousel.superclass = SPITFIRE.State;
 SPITFIRE.UICarousel.synthesizedProperties = [
   'items',
   'center',
@@ -34,41 +52,8 @@ SPITFIRE.UICarousel.prototype = {
   // Getters / Setters
   //--------------------------------------
   
-/*
-  setItemHeight: function(value) {
-    this._itemHeight = value;
-    
-    // update items
-    var i, len;
-    for (i = 0, len = this.items().length; i < len; i += 1) {
-      this.items()[i].itemHeight(this._itemHeight);
-    }
-  },
-  
-  setItemDistance: function(value) {
-    this._itemDistance = value;
-    
-    // reposition carousel
-    this.positionItems();
-  },
-  
-  setScaleRatio: function(value) {
-    this._scaleRatio = value;
-    
-    this.positionIndex(this._positionIndex);
-  },
-  
-  setNeighbors: function(value) {
-    this._neighbors = value;
-    
-    this.positionItems();
-    this.positionIndex(this._positionIndex);
-  },
-*/
-  
   setPositionIndex: function(value) {  
 /*     if (this._positionIndex == value) return; */
-    
     var oldPositionIndex = this._positionIndex;
     
     var delta = this.items()[oldPositionIndex].carouselIndex() - this.items()[value].carouselIndex();
@@ -97,122 +82,146 @@ SPITFIRE.UICarousel.prototype = {
       scale = 1 - indexFromCenter * this.scaleRatio();
       
       // animate
-      item.animate({
-        l: newPos,
-        t: this.center().y,
-        opacity: opacity,
-        scale: scale,
-        z: z
-      }, {
-        duration: this._speed * Math.abs(delta)
-      });
+      item.animate(newPos, this.center().y, z, scale, opacity, this._speed * Math.abs(delta));
     }
     
     this._positionIndex = value;
     
     this.trigger(new SPITFIRE.Event(SPITFIRE.Event.CHANGE));
   },
+  
+  //--------------------------------------
+  // Event Handlers
+  //--------------------------------------
+  
+  childChangeHandler: function(event) {
+    this.callSuper(event);
+    
+    this.updateDescription();
+  },
+  
+  imagesLoadedHandler: function(event) {
+    this.positionItems();
+    this.getChildByName(this.getDefaultChild()).browse();
+  },
 
   //--------------------------------------
   // Methods
   //--------------------------------------
   
-  init: function() {
-    this.callSuper();
+  initStates: function() {
+
+    var sequentialTask = new SPITFIRE.SequentialTask();
+    sequentialTask.bind(SPITFIRE.Event.COMPLETE, this.imagesLoadedHandler.context(this));
     
-    // set center point
-    this.center(new SPITFIRE.Point(~~(this.w() * 0.5), ~~(this.h() * 0.5)));
-    
-    // add class to element
-    this.$this().addClass('sf-carousel');
-    
-    // init items
-    var nodeList = this.getElementsByTagName('div');
-    var i, len, el;
-    for (i = 0, len = nodeList.length; i < len; i += 1) {
-      el = nodeList[i];
-      el.index(i);
-      el.itemHeight(this.itemHeight());
-      this.items().push(el);
+    var i, len, data, uid, state, item, $el;
+    for (i = 0, len = this.data.length; i < len; i += 1) {
+      data = this.data[i];
+      uid = 'item' + (i + 1);
+      
+      state = new SPITFIRE.UICarouselItem(uid, data.imageUrl, i);
+      this.$carouselContainer.append(state.$el);
+      
+      sequentialTask.addTask(state.loader);
+      sequentialTask.addTask(new SPITFIRE.FunctionTask(this, this.initImage, state));
+
+      this.addChild(state);
+      this._items.push(state);
     }
     
-    this.positionItems();
+    sequentialTask.start();
     
-    this.positionIndex(0);
+    if (this.data.length) {
+      this.defaultChild(this.getChildren()[this._positionIndex].getName());
+    }
+  },
+  
+  initImage: function(state) {
+    state.itemHeight(this.itemHeight());
+  },
+  
+  initHandlers: function() {
+    if (typeof this.$previousButton !== 'undefined') this.$previousButton.bind('click', $.proxy(this.previous, this));
+    if (typeof this.$nextButton !== 'undefined') this.$nextButton.bind('click', $.proxy(this.next, this));
+  },
+  
+  updateDescription: function() {
+    if (!this.hasDescriptionContainer) return;
+    
+    var desc = this.data[this.getPositionIndex()].description;
+    desc = (typeof desc != 'undefined') ? desc : '';
+
+    this.$descriptionContainer.html(desc);
   },
   
   positionItems: function() {
     var rightIndex = this._positionIndex + 1,
-        leftIndex = (this._positionIndex - 1 >= 0) ? this._positionIndex - 1 : this.items().length - 1,
+        leftIndex = (this._positionIndex - 1 >= 0) ? this._positionIndex - 1 : this._items.length - 1,
         startLeft = leftIndex,
         startRight = rightIndex,
-        xPos = this.center().x,
-        yPos = this.center().y,
+        xPos = this.getCenter().x,
+        yPos = this.getCenter().y,
         centerItem = this.items()[this._positionIndex],
         rightXPos = xPos + this.itemDistance(),
         leftXPos = xPos - this.itemDistance(),
         rightItem, leftItem,
         count = 0,
-        halfNumItems = Math.ceil((this.items().length - 1) * 0.5),
+        halfNumItems = Math.ceil((this._items.length - 1) * 0.5),
         opacity;
         
-    this.centerIndex(Math.floor(this.items().length * 0.5));
+    this.centerIndex(Math.floor(this._items.length * 0.5));
     
-    centerItem.l(xPos);
-    centerItem.t(yPos);
-    centerItem.$this().css('opacity', 1);
+    centerItem.displayObject.l(xPos);
+    centerItem.displayObject.t(yPos);
+    centerItem.$el.css('opacity', 1);
     centerItem.carouselIndex(this.centerIndex());
 
     while (count < halfNumItems) {
 /*       log('left: ' + leftIndex + ' right: ' + rightIndex); */
       count++;
       opacity = (count > this.neighbors()) ? 0 : 1;
-      rightItem = this.items()[rightIndex];
+      rightItem = this._items[rightIndex];
       
       if (rightItem) {
-        rightItem.l(rightXPos);
-        rightItem.t(yPos);
+        rightItem.displayObject.l(rightXPos);
+        rightItem.displayObject.t(yPos);
         rightItem.carouselIndex(this.centerIndex() + count);
-        rightItem.$this().css('opacity', opacity);
+        rightItem.$el.css('opacity', opacity);
         rightXPos += this.itemDistance();
         rightIndex++;
         
-        if (rightIndex >= this.items().length)
+        if (rightIndex >= this._items.length)
           rightIndex = 0;
       }
       
-      leftItem = this.items()[leftIndex];
+      leftItem = this._items[leftIndex];
       if (leftItem) {
-        leftItem.l(leftXPos);
-        leftItem.t(yPos);
+        leftItem.displayObject.l(leftXPos);
+        leftItem.displayObject.t(yPos);
         leftItem.carouselIndex(this.centerIndex() - count);
-        leftItem.$this().css('opacity', opacity);
+        leftItem.$el.css('opacity', opacity);
         
         leftXPos -= this.itemDistance();
         leftIndex--;
         
         if (leftIndex < 0)
-          leftIndex = this.items().length - 1;
+          leftIndex = this._items.length - 1;
       }
     }
     
-    this.startX(leftItem.l());
+    this.startX(leftItem.displayObject.l());
   },
   
   previous: function() {
-    var nextIndex = this.positionIndex() - 1;
-    nextIndex = (nextIndex < 0) ? this.items().length - 1 : nextIndex;
-    this.positionIndex(nextIndex);
+    var nextIndex = this._positionIndex - 1;
+    nextIndex = (nextIndex < 0) ? this._items.length - 1 : nextIndex;
+    this._items[nextIndex].browse();
   },
   
   next: function() {
-    var nextIndex = this.positionIndex() + 1;
-    nextIndex = (nextIndex >= this.items().length) ? 0 : nextIndex;
-    this.positionIndex(nextIndex);
-  },
-
-  toString: function() {
-    return '[' + this.qualifiedClassName() + ']';
+    var nextIndex = this._positionIndex + 1;
+    nextIndex = (nextIndex >= this._items.length) ? 0 : nextIndex;
+    this._items[nextIndex].browse();
   }
 };
 

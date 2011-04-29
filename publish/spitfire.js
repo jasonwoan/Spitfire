@@ -523,7 +523,7 @@ SPITFIRE.Class(SPITFIRE.EventDispatcher);
 // SPITFIRE.DisplayObject
 //--------------------------------------
 
-SPITFIRE.DisplayObject = function() {
+SPITFIRE.DisplayObject = function($el) {
   this.callSuper();
   this.setQualifiedClassName('SPITFIRE.DisplayObject');
   this._scaleX = 1;
@@ -531,6 +531,8 @@ SPITFIRE.DisplayObject = function() {
   this._scale = 1;
   this._placeholderProperties = [];
   this._z = 1;
+  this._$this = $el;
+  this._isCentered = false;
 };
 
 SPITFIRE.DisplayObject.superclass = SPITFIRE.EventDispatcher;
@@ -544,7 +546,8 @@ SPITFIRE.DisplayObject.synthesizedProperties = [
   'scaleY',
   'scale',
   'rect',
-  'z'
+  'z',
+  'isCentered'
 ];
 
 SPITFIRE.DisplayObject.prototype = {
@@ -554,39 +557,43 @@ SPITFIRE.DisplayObject.prototype = {
   //--------------------------------------
   
   setL: function(value) {
-    this.get$this().css('left', value);
+    this._$this.css('left', value);
   },
   
   getL: function() {
-    var flt = (this.style.left) ? parseFloat(this.style.left) : parseFloat(this.get$this().css('left'));
+    var flt = (this.style && this.style.left) ? parseFloat(this.style.left) : parseFloat(this._$this.css('left'));
     return flt || 0;
   },
   
   setT: function(value) {
-    this.get$this().css('top', value);
+    this._$this.css('top', value);
   },
   
   getT: function() {
-    var flt = (this.style.top) ? parseFloat(this.style.top) : parseFloat(this.get$this().css('top'));
+    var flt = (this.style && this.style.top) ? parseFloat(this.style.top) : parseFloat(this._$this.css('top'));
     return flt || 0;
   },
   
   getW: function() {
-    return (this._w) ? this._w * this._scaleX : this.get$this().width();
+    return (this._w) ? this._w * this._scaleX : this._$this.width();
   },
   
   setW: function(value) {
     this._w = value;
-    this.get$this().width(this._w * this._scaleX);
+    this._$this.width(this._w * this._scaleX);
+    
+    if (this._isCentered) this.setL(~~(-this._$this.width() * 0.5));
   },
 
   getH: function() {
-    return (this._h) ? this._h * this._scaleY : this.get$this().height();
+    return (this._h) ? this._h * this._scaleY : this._$this.height();
   },
   
   setH: function(value) {
     this._h = value;
-    this.get$this().height(this._h * this._scaleY);
+    this._$this.height(this._h * this._scaleY);
+    
+    if (this._isCentered) this.setT(~~(-this._$this.height() * 0.5));
   },
   
   getScale: function() {
@@ -622,16 +629,12 @@ SPITFIRE.DisplayObject.prototype = {
   
   setZ: function(value) {
     this._z = value >> 0;
-    this.get$this().css('z-index', this._z);
+    this._$this.css('z-index', this._z);
   },
   
   //--------------------------------------
   // Methods
   //--------------------------------------
-  
-  init: function() {
-    this.set$this($(this));
-  },
   
   animate: function(properties, options) {
     
@@ -664,7 +667,7 @@ SPITFIRE.DisplayObject.prototype = {
     }
     options.complete = this.animationComplete.context(this);
     
-    this.get$this().animate(properties, options);
+    this._$this.animate(properties, options);
   },
   
   animationStep: function(now, fx) {    
@@ -693,10 +696,6 @@ SPITFIRE.DisplayObject.prototype = {
       delete this[this._placeholderProperties[0]];
       this._placeholderProperties.shift();
     }
-  },
-
-  toString: function() {
-    return '[' + this.qualifiedClassName() + ']';
   }
 };
 
@@ -919,6 +918,7 @@ SPITFIRE.State = function(name) {
   this.callSuper();
   this.setName(name);
   this._children = [];
+  this._selected = false;
   this.setQualifiedClassName('SPITFIRE.State');
 };
 
@@ -1019,7 +1019,7 @@ SPITFIRE.State.prototype = {
   },
   
   setSelected: function(value) {
-    if (value != this.selected()) {
+    if (value != this._selected) {
       this._selected = value;
       this.trigger(new SPITFIRE.StateEvent(SPITFIRE.StateEvent.STATE_CHANGE));
     }
@@ -1175,7 +1175,35 @@ SPITFIRE.State.prototype = {
   },
   
   browse: function() {
-    this.stateManager().location(this.stateLocation());
+    var location = this.getStateLocation() + this.findDefaultStates();
+    this.stateManager().setLocation(location);
+  },
+  
+  findDefaultStates: function() {
+    var states = [];
+    var defaultState = this.getChildByName(this.getDefaultChild());
+    
+    while (defaultState) {
+      states.push(defaultState);
+      defaultState = defaultState.getChildByName(defaultState.getDefaultChild());
+    }
+    
+    var location = '',
+        i, len;
+    for (i = 0, len = states.length; i < len; i += 1) {
+    	if (i === 0) {
+        location += '/';
+    	}
+    	
+    	var state = states[i];
+    	location += state.getName();
+    	
+    	if (i < states.length - 1) {
+        location += '/';
+    	}
+    }
+    
+    return location;
   },
   
   browsePreviousSibling: function() {
@@ -1853,7 +1881,6 @@ SPITFIRE.StateManager.prototype = {
 			this.taskManagerProgressHandler();
 			this._progressTimer.stop();
 		}
-		
 		this.trigger(new SPITFIRE.Event(this._currentTransition.transitionName() + "Complete"));
 		this._currentTransition = null;
 		if (this._transitions.length > 0) {
@@ -1902,7 +1929,7 @@ SPITFIRE.StateManager.prototype = {
   startTransitions: function() {
     
     this._transitionWasInterrupted = false;
-    this._isInTransition = false;
+    this._isInTransition = true;
     
     this._transitionInPath = this.checkRedirect(this._transitionInPath);
     
@@ -2065,13 +2092,14 @@ SPITFIRE.StateManager.prototype = {
 			if (task) {
 				this.getTaskManager().addTask(task);
 			}
-			var stateSelected;
+			var stateSelected = false;;
 			if (this._currentTransition.getTransitionName() == "transitionIn") {
 				stateSelected = true;
 			}
 			if (this._currentTransition.getTransitionName() == "transitionOut") {
 				stateSelected = false;
 			}
+
 			this.getTaskManager().addTask(new SPITFIRE.PropertyTask(state, "selected", stateSelected));
 		}
 		if (this.getTaskManager().getProgress() == 1) {
@@ -2640,19 +2668,37 @@ SPITFIRE.Class(SPITFIRE.UIButton);
 // SPITFIRE.UICarousel
 //--------------------------------------
 
-SPITFIRE.UICarousel = function() {
-  this.callSuper();
+SPITFIRE.UICarousel = function(config) {
+  config.name = config.name || 'carousel';
+  this.config = config;
+  
+  this.callSuper(config.name);
   this.qualifiedClassName('SPITFIRE.UICarousel');
+  
+  this.data = config.data || [];
   this._items = [];
-  this._itemHeight = 200;
-  this._neighbors = 2;
-  this._itemDistance = 160;
-  this._speed = 500;
-  this._scaleRatio = .3;
+  this._itemHeight = config.itemHeight || 200;
+  this._neighbors = config.neighbors || 2;
+  this._itemDistance = config.itemDistance || 160;
+  this._speed = config.speed || 500;
+  this._scaleRatio = config.scaleRatio || 0.3;
   this._positionIndex = 0;
+  
+  // DOM elements
+  this.$carouselContainer = (typeof config.carouselContainer !== 'undefined') ? $('#' + config.carouselContainer) : undefined;
+  this.hasDescriptionContainer = typeof config.descriptionContainer !== 'undefined';
+  this.$descriptionContainer = (this.hasDescriptionContainer) ? $('#' + config.descriptionContainer) : undefined;
+  this.$previousButton = (typeof config.previousButton !== 'undefined') ? $('#' + config.previousButton) : undefined;
+  this.$nextButton = (typeof config.nextButton !== 'undefined') ? $('#' + config.nextButton) : undefined;
+  
+  // set center point
+  this.center(new SPITFIRE.Point(~~(this.$carouselContainer.width() * 0.5), ~~(this.$carouselContainer.height() * 0.5)));
+  
+  this.initStates();
+  this.initHandlers();
 };
 
-SPITFIRE.UICarousel.superclass = SPITFIRE.DisplayObject;
+SPITFIRE.UICarousel.superclass = SPITFIRE.State;
 SPITFIRE.UICarousel.synthesizedProperties = [
   'items',
   'center',
@@ -2672,41 +2718,8 @@ SPITFIRE.UICarousel.prototype = {
   // Getters / Setters
   //--------------------------------------
   
-/*
-  setItemHeight: function(value) {
-    this._itemHeight = value;
-    
-    // update items
-    var i, len;
-    for (i = 0, len = this.items().length; i < len; i += 1) {
-      this.items()[i].itemHeight(this._itemHeight);
-    }
-  },
-  
-  setItemDistance: function(value) {
-    this._itemDistance = value;
-    
-    // reposition carousel
-    this.positionItems();
-  },
-  
-  setScaleRatio: function(value) {
-    this._scaleRatio = value;
-    
-    this.positionIndex(this._positionIndex);
-  },
-  
-  setNeighbors: function(value) {
-    this._neighbors = value;
-    
-    this.positionItems();
-    this.positionIndex(this._positionIndex);
-  },
-*/
-  
   setPositionIndex: function(value) {  
 /*     if (this._positionIndex == value) return; */
-    
     var oldPositionIndex = this._positionIndex;
     
     var delta = this.items()[oldPositionIndex].carouselIndex() - this.items()[value].carouselIndex();
@@ -2735,122 +2748,146 @@ SPITFIRE.UICarousel.prototype = {
       scale = 1 - indexFromCenter * this.scaleRatio();
       
       // animate
-      item.animate({
-        l: newPos,
-        t: this.center().y,
-        opacity: opacity,
-        scale: scale,
-        z: z
-      }, {
-        duration: this._speed * Math.abs(delta)
-      });
+      item.animate(newPos, this.center().y, z, scale, opacity, this._speed * Math.abs(delta));
     }
     
     this._positionIndex = value;
     
     this.trigger(new SPITFIRE.Event(SPITFIRE.Event.CHANGE));
   },
+  
+  //--------------------------------------
+  // Event Handlers
+  //--------------------------------------
+  
+  childChangeHandler: function(event) {
+    this.callSuper(event);
+    
+    this.updateDescription();
+  },
+  
+  imagesLoadedHandler: function(event) {
+    this.positionItems();
+    this.getChildByName(this.getDefaultChild()).browse();
+  },
 
   //--------------------------------------
   // Methods
   //--------------------------------------
   
-  init: function() {
-    this.callSuper();
+  initStates: function() {
+
+    var sequentialTask = new SPITFIRE.SequentialTask();
+    sequentialTask.bind(SPITFIRE.Event.COMPLETE, this.imagesLoadedHandler.context(this));
     
-    // set center point
-    this.center(new SPITFIRE.Point(~~(this.w() * 0.5), ~~(this.h() * 0.5)));
-    
-    // add class to element
-    this.$this().addClass('sf-carousel');
-    
-    // init items
-    var nodeList = this.getElementsByTagName('div');
-    var i, len, el;
-    for (i = 0, len = nodeList.length; i < len; i += 1) {
-      el = nodeList[i];
-      el.index(i);
-      el.itemHeight(this.itemHeight());
-      this.items().push(el);
+    var i, len, data, uid, state, item, $el;
+    for (i = 0, len = this.data.length; i < len; i += 1) {
+      data = this.data[i];
+      uid = 'item' + (i + 1);
+      
+      state = new SPITFIRE.UICarouselItem(uid, data.imageUrl, i);
+      this.$carouselContainer.append(state.$el);
+      
+      sequentialTask.addTask(state.loader);
+      sequentialTask.addTask(new SPITFIRE.FunctionTask(this, this.initImage, state));
+
+      this.addChild(state);
+      this._items.push(state);
     }
     
-    this.positionItems();
+    sequentialTask.start();
     
-    this.positionIndex(0);
+    if (this.data.length) {
+      this.defaultChild(this.getChildren()[this._positionIndex].getName());
+    }
+  },
+  
+  initImage: function(state) {
+    state.itemHeight(this.itemHeight());
+  },
+  
+  initHandlers: function() {
+    if (typeof this.$previousButton !== 'undefined') this.$previousButton.bind('click', $.proxy(this.previous, this));
+    if (typeof this.$nextButton !== 'undefined') this.$nextButton.bind('click', $.proxy(this.next, this));
+  },
+  
+  updateDescription: function() {
+    if (!this.hasDescriptionContainer) return;
+    
+    var desc = this.data[this.getPositionIndex()].description;
+    desc = (typeof desc != 'undefined') ? desc : '';
+
+    this.$descriptionContainer.html(desc);
   },
   
   positionItems: function() {
     var rightIndex = this._positionIndex + 1,
-        leftIndex = (this._positionIndex - 1 >= 0) ? this._positionIndex - 1 : this.items().length - 1,
+        leftIndex = (this._positionIndex - 1 >= 0) ? this._positionIndex - 1 : this._items.length - 1,
         startLeft = leftIndex,
         startRight = rightIndex,
-        xPos = this.center().x,
-        yPos = this.center().y,
+        xPos = this.getCenter().x,
+        yPos = this.getCenter().y,
         centerItem = this.items()[this._positionIndex],
         rightXPos = xPos + this.itemDistance(),
         leftXPos = xPos - this.itemDistance(),
         rightItem, leftItem,
         count = 0,
-        halfNumItems = Math.ceil((this.items().length - 1) * 0.5),
+        halfNumItems = Math.ceil((this._items.length - 1) * 0.5),
         opacity;
         
-    this.centerIndex(Math.floor(this.items().length * 0.5));
+    this.centerIndex(Math.floor(this._items.length * 0.5));
     
-    centerItem.l(xPos);
-    centerItem.t(yPos);
-    centerItem.$this().css('opacity', 1);
+    centerItem.displayObject.l(xPos);
+    centerItem.displayObject.t(yPos);
+    centerItem.$el.css('opacity', 1);
     centerItem.carouselIndex(this.centerIndex());
 
     while (count < halfNumItems) {
 /*       log('left: ' + leftIndex + ' right: ' + rightIndex); */
       count++;
       opacity = (count > this.neighbors()) ? 0 : 1;
-      rightItem = this.items()[rightIndex];
+      rightItem = this._items[rightIndex];
       
       if (rightItem) {
-        rightItem.l(rightXPos);
-        rightItem.t(yPos);
+        rightItem.displayObject.l(rightXPos);
+        rightItem.displayObject.t(yPos);
         rightItem.carouselIndex(this.centerIndex() + count);
-        rightItem.$this().css('opacity', opacity);
+        rightItem.$el.css('opacity', opacity);
         rightXPos += this.itemDistance();
         rightIndex++;
         
-        if (rightIndex >= this.items().length)
+        if (rightIndex >= this._items.length)
           rightIndex = 0;
       }
       
-      leftItem = this.items()[leftIndex];
+      leftItem = this._items[leftIndex];
       if (leftItem) {
-        leftItem.l(leftXPos);
-        leftItem.t(yPos);
+        leftItem.displayObject.l(leftXPos);
+        leftItem.displayObject.t(yPos);
         leftItem.carouselIndex(this.centerIndex() - count);
-        leftItem.$this().css('opacity', opacity);
+        leftItem.$el.css('opacity', opacity);
         
         leftXPos -= this.itemDistance();
         leftIndex--;
         
         if (leftIndex < 0)
-          leftIndex = this.items().length - 1;
+          leftIndex = this._items.length - 1;
       }
     }
     
-    this.startX(leftItem.l());
+    this.startX(leftItem.displayObject.l());
   },
   
   previous: function() {
-    var nextIndex = this.positionIndex() - 1;
-    nextIndex = (nextIndex < 0) ? this.items().length - 1 : nextIndex;
-    this.positionIndex(nextIndex);
+    var nextIndex = this._positionIndex - 1;
+    nextIndex = (nextIndex < 0) ? this._items.length - 1 : nextIndex;
+    this._items[nextIndex].browse();
   },
   
   next: function() {
-    var nextIndex = this.positionIndex() + 1;
-    nextIndex = (nextIndex >= this.items().length) ? 0 : nextIndex;
-    this.positionIndex(nextIndex);
-  },
-
-  toString: function() {
-    return '[' + this.qualifiedClassName() + ']';
+    var nextIndex = this._positionIndex + 1;
+    nextIndex = (nextIndex >= this._items.length) ? 0 : nextIndex;
+    this._items[nextIndex].browse();
   }
 };
 
@@ -2859,22 +2896,34 @@ SPITFIRE.Class(SPITFIRE.UICarousel);
 // SPITFIRE.UICarouselItem
 //--------------------------------------
 
-SPITFIRE.UICarouselItem = function() {
-  this.callSuper();
+SPITFIRE.UICarouselItem = function(name, url, index) {
+  this.callSuper(name);
   this.qualifiedClassName('SPITFIRE.UICarouselItem');
   this._itemHeight = 100;
-  this._isImgInitialized = false;
+  this._scale = 1;
+  this._itemIndex = index;
+  this.loader = new SPITFIRE.JQueryImageLoaderTask(url);
+  this.$img = this.loader.get$content();
+/*   this.$img.bind('click', $.proxy(this.clickHandler, this)); */
+  
+  // create container
+  var el = document.createElement('div');
+  el.className = 'carouselItemContainer';
+  this.$el = $(el);
+  this.$el.append(this.$img);
+  this.displayObject = new SPITFIRE.DisplayObject(this.$el);
+  this.imgDisplayObject = new SPITFIRE.DisplayObject(this.$img);
+  this.imgDisplayObject.setIsCentered(true);
 };
 
-SPITFIRE.UICarouselItem.superclass = SPITFIRE.DisplayObject;
+SPITFIRE.UICarouselItem.superclass = SPITFIRE.State;
 SPITFIRE.UICarouselItem.synthesizedProperties = [
-  'index',
+  'itemIndex',
   'carouselIndex',
   'carousel',
   'img',
   'itemHeight',
-  'itemWidth',
-  'isImgInitialized'
+  'itemWidth'
 ];
 
 SPITFIRE.UICarouselItem.prototype = {
@@ -2885,78 +2934,61 @@ SPITFIRE.UICarouselItem.prototype = {
   
   setItemHeight: function(value) {
     this._itemHeight = value;
-    
-    if (this.img().complete) {
-      this.imageLoadedHandler();
-    }
+    this.resizeAndScaleImage();
   },
   
   setScale: function(value) {
     this._scale = value;
-    if (this.img().complete) {
-      this.imageLoadedHandler();
-    }
+    this.resizeAndScaleImage();
   },
   
   getScale: function() {
     return this._scale;
   },
   
+  getTransitionIn: function() {
+    return new SPITFIRE.FunctionTask(this, this.transitionIn);
+  },
+  
   //--------------------------------------
   // Event Handlers
   //--------------------------------------
   
-  imageLoadedHandler: function() {
-    SPITFIRE.removeListener(this.img(), 'load', this.imageLoadedHandler);
-    this.initImage();
-    this.resizeImage();
-    this.scaleAndPositionImage();
+  clickHandler: function(event) {
+    this.getParent().setPositionIndex(this.getItemIndex());
   },
 
   //--------------------------------------
   // Methods
   //--------------------------------------
   
-  init: function() {
-    this.callSuper();
-    
-    this.img(this.getElementsByTagName('img')[0]);
-    
-    if (!this.img().complete) {
-      SPITFIRE.addListener(this.img(), 'load', this.imageLoadedHandler, this);
-    } else {
-      this.imageLoadedHandler();
-    }
-  },
-  
-  initImage: function() {
-    if (this._isImgInitialized) return;
-    
-    // explicity set width and height to DisplayObject
-    this.img().w(this.img().width);
-    this.img().h(this.img().height);
-    
-    this._isImgInitialized = true;
-  },
-  
-  resizeImage: function() {
-    var rect = new SPITFIRE.Rectangle(0, 0, this.img().w(), this.img().h());
-    var newRect = SPITFIRE.RatioUtils.scaleWidth(rect, this._itemHeight, true);
-    this.img().w(newRect.width());
-    this.img().h(newRect.height());
-  },
-  
-  scaleAndPositionImage: function() {
-    // scale
-    this.img().scale(this._scale);
-    
-    // position
-    this.img().l(~~(-this.img().w() * 0.5));
-    this.img().t(~~(-this.img().h() * 0.5));
+  transitionIn: function() {
+    this.getParent().setPositionIndex(this.getItemIndex());
   },
 
-  toString: function() {
-    return '[' + this.qualifiedClassName() + ']';
+  resizeAndScaleImage: function() {
+    var rect = new SPITFIRE.Rectangle(0, 0, this.imgDisplayObject.w(), this.imgDisplayObject.h());
+    var newRect = SPITFIRE.RatioUtils.scaleWidth(rect, this._itemHeight, true);
+    this.imgDisplayObject.w(newRect.width());
+    this.imgDisplayObject.h(newRect.height());
+    this.imgDisplayObject.scale(this._scale);
+  },
+  
+  animate: function(x, y, z, scale, opacity, duration) {
+    this.displayObject.animate({
+      l: x,
+      t: y,
+      z: z,
+      opacity: opacity
+    }, {
+      duration: duration
+    });
+    
+    this.imgDisplayObject.animate({
+      scale: scale
+    }, {
+      duration: duration
+    });
   }
 };
 
@@ -2966,7 +2998,10 @@ SPITFIRE.Class(SPITFIRE.UICarouselItem);
 //--------------------------------------
 
 SPITFIRE.UISlideshow = function(config) {
-  this.callSuper();
+  config.name = config.name || 'slideshow';
+  this.config = config;
+  
+  this.callSuper(config.name);
   this.setQualifiedClassName('SPITFIRE.UISlideshow');
   
   // validate configuration
@@ -2977,8 +3012,10 @@ SPITFIRE.UISlideshow = function(config) {
   
   this.data = config.data || [];
   this.$imageContainer = $('#' + config.imageContainer);
+  this._currentIndex = 0;
   
-  this.$descriptionContainer = (typeof config.descriptionContainer !== 'undefined') ? $('#' + config.descriptionContainer) : undefined;
+  this.hasDescriptionContainer = typeof config.descriptionContainer !== 'undefined';
+  this.$descriptionContainer = (this.hasDescriptionContainer) ? $('#' + config.descriptionContainer) : undefined;
   this.$previousButton = (typeof config.previousButton !== 'undefined') ? $('#' + config.previousButton) : undefined;
   this.$nextButton = (typeof config.nextButton !== 'undefined') ? $('#' + config.nextButton) : undefined;
   this.$previousPageButton = (typeof config.previousPageButton !== 'undefined') ? $('#' + config.previousPageButton) : undefined;
@@ -2991,30 +3028,55 @@ SPITFIRE.UISlideshow = function(config) {
   this.hasDrawer = (typeof config.drawer !== 'undefined');
   this.$drawer = (this.hasDrawer) ? $('#' + config.drawer) : undefined;
   
-  this.tree = new SPITFIRE.State('tree');
-  this.setTree(this.tree);
-  
   this.initStates();
   this.initDrawer();
-  
-  // show default image
-  this.tree.browse();
+  this.initHandlers();
 };
 
-SPITFIRE.UISlideshow.superclass = SPITFIRE.StateManager;
+SPITFIRE.UISlideshow.superclass = SPITFIRE.State;
+SPITFIRE.UISlideshow.synthesizedProperties = [
+  'currentIndex',
+  'currentPageIndex'
+];
 
 SPITFIRE.UISlideshow.prototype = {
 
   //--------------------------------------
+  // Getters / Setters
+  //--------------------------------------
+  
+  setCurrentIndex: function(value) {
+    this._currentIndex = value;
+    this.states[this._currentIndex].browse();
+  },
+  
+  setCurrentPageIndex: function(value) {
+    if (this._currentPageIndex === value) return;
+    this._currentPageIndex = value;
+    
+    // move to current page
+    var xPos = -1 * this._currentPageIndex * (this._drawerThumbWidth + this._drawerGutter) * this._drawerThumbsPerPage;
+    
+    this.$drawer.animate({left: xPos}, {duration: 600, queue: false});
+  },
+
+  //--------------------------------------
   // Event Handlers
   //--------------------------------------
+  
+  childChangeHandler: function(event) {
+    this.callSuper(event);
+    
+    this.updateDrawer();
+    this.updateDescription();
+  },
   
   thumbsLoadedHandler: function(event) {
     
   },
   
   thumbClickHandler: function(event) {
-    this.states[event.target.index].browse();
+    this.setCurrentIndex(event.target.index);
   },
 
   //--------------------------------------
@@ -3034,19 +3096,24 @@ SPITFIRE.UISlideshow.prototype = {
       // add image to container
       this.$imageContainer.append(state.loader.get$content());
       
-      this.tree.addChild(state);
+      this.addChild(state);
       this.states.push(state);
     }
     
     if (this.data.length) {
-      this.tree.defaultChild(this.tree.getChildren()[0].getName());
+      this.defaultChild(this.getChildren()[this._currentIndex].getName());
     }
   },
   
   initDrawer: function() {
     if (!this.hasDrawer) return;
     
-    this.thumbs = [];
+    this._drawerItemX = 0;
+    this._drawerThumbsPerPage = this.config.drawerThumbsPerPage || 10;
+    this._drawerGutter = this.config.drawerGutter || 0;
+    this._drawerThumbWidth = this.config.drawerThumbWidth || 100;
+    this._$thumbs = [];
+    this._numPages = Math.ceil(this.data.length / this._drawerThumbsPerPage);
     var sequentialTask = new SPITFIRE.SequentialTask();
     sequentialTask.bind(SPITFIRE.Event.COMPLETE, this.thumbsLoadedHandler.context(this));
     
@@ -3056,14 +3123,88 @@ SPITFIRE.UISlideshow.prototype = {
       item = this.data[i];
       thumb = new SPITFIRE.JQueryImageLoaderTask(item.thumbnailUrl);
       $el = thumb.get$content();
+      $el.hide();
       $el[0].index = i;
       $el.bind('click', $.proxy(this.thumbClickHandler, this));
       this.$drawer.append($el);
-      this.thumbs.push(thumb);
+      this._$thumbs.push($el);
       sequentialTask.addTask(thumb);
+      sequentialTask.addTask(new SPITFIRE.FunctionTask(this, this.positionThumb, $el));
     }
     
     sequentialTask.start();
+  },
+  
+  initHandlers: function() {
+    if (typeof this.$previousButton !== 'undefined') this.$previousButton.bind('click', $.proxy(this.previousImage, this));
+    if (typeof this.$nextButton !== 'undefined') this.$nextButton.bind('click', $.proxy(this.nextImage, this));
+    if (typeof this.$previousPageButton !== 'undefined') this.$previousPageButton.bind('click', $.proxy(this.previousPage, this));
+    if (typeof this.$nextPageButton !== 'undefined') this.$nextPageButton.bind('click', $.proxy(this.nextPage, this));
+  },
+  
+  positionThumb: function($el) {
+    $el.css('left', this._drawerItemX);
+    this._drawerItemX += this._drawerThumbWidth + this._drawerGutter;
+    $el.show();
+  },
+  
+  previousImage: function() {
+    var currIndex = this.getCurrentIndex();
+    currIndex--;
+    currIndex = (currIndex < 0) ? this.states.length - 1 : currIndex;
+    
+    this.setCurrentIndex(currIndex);
+  },
+  
+  nextImage: function() {
+    var currIndex = this.getCurrentIndex();
+    currIndex++;
+    currIndex = (currIndex >= this.states.length) ? 0 : currIndex;
+    
+    this.setCurrentIndex(currIndex);
+  },
+  
+  previousPage: function() {
+    var currPageIndex = this.getCurrentPageIndex();
+    currPageIndex--;
+    currPageIndex = (currPageIndex < 0) ? this._numPages - 1 : currPageIndex;
+    this.setCurrentPageIndex(currPageIndex);
+  },
+  
+  nextPage: function() {
+    var currPageIndex = this.getCurrentPageIndex();
+    currPageIndex++;
+    currPageIndex = (currPageIndex >= this._numPages) ? 0 : currPageIndex;
+    
+    this.setCurrentPageIndex(currPageIndex);
+  },
+  
+  updateDrawer: function() {
+    if (!this.hasDrawer) return;
+  
+    var i, len, $thumb;
+    for (i = 0, len = this._$thumbs.length; i < len; i += 1) {
+      var $thumb = this._$thumbs[i];
+      
+      if (i === this.getCurrentIndex()) {
+        $thumb.addClass('selected');
+      } else {
+        $thumb.removeClass('selected');
+      }
+    }
+    
+    // set the correct page
+    var pageIndex = ~~ (this.getCurrentIndex() / this._drawerThumbsPerPage);
+    this.setCurrentPageIndex(pageIndex);
+  },
+  
+  updateDescription: function() {
+    if (!this.hasDescriptionContainer) return;
+    
+    var desc = this.data[this.getCurrentIndex()].description;
+    desc = (typeof desc != 'undefined') ? desc : '';
+
+    this.$descriptionContainer.html(desc);
   }
 };
 
