@@ -81,7 +81,7 @@ SPITFIRE.UISlideshow.prototype = {
   },
   
   thumbClickHandler: function(event) {
-    this.setCurrentIndex(event.target.index);
+    this.setCurrentIndex(event.currentTarget.index);
   },
 
   //--------------------------------------
@@ -127,7 +127,8 @@ SPITFIRE.UISlideshow.prototype = {
     for (i = 0, len = this.data.length; i < len; i += 1) {
       item = this.data[i];
       thumb = new SPITFIRE.JQueryImageLoaderTask(item.thumbnailUrl);
-      $el = thumb.get$content();
+      $el = $('<div class="slideshowThumbContainer"></div>');
+      $el.append(thumb.get$content());
       $el.hide();
       $el[0].index = i;
       $el.bind('click', $.proxy(this.thumbClickHandler, this));

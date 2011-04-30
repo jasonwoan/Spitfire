@@ -11,7 +11,8 @@ SPITFIRE.UICarousel = function(config) {
   
   this.data = config.data || [];
   this._items = [];
-  this._itemHeight = config.itemHeight || 200;
+  this._itemWidth = config.itemWidth || 270;
+  this._itemHeight = config.itemHeight || 180;
   this._neighbors = config.neighbors || 2;
   this._itemDistance = config.itemDistance || 160;
   this._speed = config.speed || 500;
@@ -37,6 +38,7 @@ SPITFIRE.UICarousel.synthesizedProperties = [
   'items',
   'center',
   'itemHeight',
+  'itemWidth',
   'neighbors',
   'itemDistance',
   'positionIndex',
@@ -137,7 +139,7 @@ SPITFIRE.UICarousel.prototype = {
   },
   
   initImage: function(state) {
-    state.itemHeight(this.itemHeight());
+    state.setItemDimensions(this._itemWidth, this._itemHeight);
   },
   
   initHandlers: function() {

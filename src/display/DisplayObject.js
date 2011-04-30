@@ -58,7 +58,7 @@ SPITFIRE.DisplayObject.prototype = {
   },
   
   setW: function(value) {
-    this._w = value;
+    this._w = value || 270;
     this._$this.width(this._w * this._scaleX);
     
     if (this._isCentered) this.setL(~~(-this._$this.width() * 0.5));

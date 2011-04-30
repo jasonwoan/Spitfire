@@ -579,7 +579,7 @@ SPITFIRE.DisplayObject.prototype = {
   },
   
   setW: function(value) {
-    this._w = value;
+    this._w = value || 270;
     this._$this.width(this._w * this._scaleX);
     
     if (this._isCentered) this.setL(~~(-this._$this.width() * 0.5));
@@ -2677,7 +2677,8 @@ SPITFIRE.UICarousel = function(config) {
   
   this.data = config.data || [];
   this._items = [];
-  this._itemHeight = config.itemHeight || 200;
+  this._itemWidth = config.itemWidth || 270;
+  this._itemHeight = config.itemHeight || 180;
   this._neighbors = config.neighbors || 2;
   this._itemDistance = config.itemDistance || 160;
   this._speed = config.speed || 500;
@@ -2703,6 +2704,7 @@ SPITFIRE.UICarousel.synthesizedProperties = [
   'items',
   'center',
   'itemHeight',
+  'itemWidth',
   'neighbors',
   'itemDistance',
   'positionIndex',
@@ -2803,7 +2805,7 @@ SPITFIRE.UICarousel.prototype = {
   },
   
   initImage: function(state) {
-    state.itemHeight(this.itemHeight());
+    state.setItemDimensions(this._itemWidth, this._itemHeight);
   },
   
   initHandlers: function() {
@@ -2932,11 +2934,6 @@ SPITFIRE.UICarouselItem.prototype = {
   // Getters / Setters
   //--------------------------------------
   
-  setItemHeight: function(value) {
-    this._itemHeight = value;
-    this.resizeAndScaleImage();
-  },
-  
   getTransitionIn: function() {
     return new SPITFIRE.FunctionTask(this, this.transitionIn);
   },
@@ -2957,12 +2954,15 @@ SPITFIRE.UICarouselItem.prototype = {
     this.getParent().setPositionIndex(this.getItemIndex());
   },
 
-  resizeAndScaleImage: function() {    
-    var rect = new SPITFIRE.Rectangle(0, 0, this.imgDisplayObject.getW(), this.imgDisplayObject.getH());
+  setItemDimensions: function(width, height) {
+    this.setItemWidth(width);
+    this.setItemHeight(height);
+    /*
+    var rect = new SPITFIRE.Rectangle(0, 0, this._itemWidth, this._itemHeight);
     var newRect = SPITFIRE.RatioUtils.scaleWidth(rect, this._itemHeight, true);
-    
-    this.imgDisplayObject.w(newRect.width());
-    this.imgDisplayObject.h(newRect.height());
+    */
+    this.imgDisplayObject.setW(this._itemWidth);
+    this.imgDisplayObject.setH(this._itemHeight);
     this.imgDisplayObject.scale(this._scale);
   },
   
@@ -3069,7 +3069,7 @@ SPITFIRE.UISlideshow.prototype = {
   },
   
   thumbClickHandler: function(event) {
-    this.setCurrentIndex(event.target.index);
+    this.setCurrentIndex(event.currentTarget.index);
   },
 
   //--------------------------------------
@@ -3115,7 +3115,8 @@ SPITFIRE.UISlideshow.prototype = {
     for (i = 0, len = this.data.length; i < len; i += 1) {
       item = this.data[i];
       thumb = new SPITFIRE.JQueryImageLoaderTask(item.thumbnailUrl);
-      $el = thumb.get$content();
+      $el = $('<div class="slideshowThumbContainer"></div>');
+      $el.append(thumb.get$content());
       $el.hide();
       $el[0].index = i;
       $el.bind('click', $.proxy(this.thumbClickHandler, this));

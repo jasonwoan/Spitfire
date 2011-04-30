@@ -38,11 +38,6 @@ SPITFIRE.UICarouselItem.prototype = {
   // Getters / Setters
   //--------------------------------------
   
-  setItemHeight: function(value) {
-    this._itemHeight = value;
-    this.resizeAndScaleImage();
-  },
-  
   getTransitionIn: function() {
     return new SPITFIRE.FunctionTask(this, this.transitionIn);
   },
@@ -63,12 +58,15 @@ SPITFIRE.UICarouselItem.prototype = {
     this.getParent().setPositionIndex(this.getItemIndex());
   },
 
-  resizeAndScaleImage: function() {    
-    var rect = new SPITFIRE.Rectangle(0, 0, this.imgDisplayObject.getW(), this.imgDisplayObject.getH());
+  setItemDimensions: function(width, height) {
+    this.setItemWidth(width);
+    this.setItemHeight(height);
+    /*
+    var rect = new SPITFIRE.Rectangle(0, 0, this._itemWidth, this._itemHeight);
     var newRect = SPITFIRE.RatioUtils.scaleWidth(rect, this._itemHeight, true);
-    
-    this.imgDisplayObject.w(newRect.width());
-    this.imgDisplayObject.h(newRect.height());
+    */
+    this.imgDisplayObject.setW(this._itemWidth);
+    this.imgDisplayObject.setH(this._itemHeight);
     this.imgDisplayObject.scale(this._scale);
   },
   
