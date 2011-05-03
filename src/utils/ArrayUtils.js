@@ -145,3 +145,12 @@ SPITFIRE.ArrayUtils.getItemsByKey = function(inArray, key, match) {
   
   return t;
 };
+
+SPITFIRE.ArrayUtils.hasValue = function(inArray, value) {
+  var i, len;
+  for (i = 0, len = inArray.length; i < len; i += 1) {
+  	if (inArray[i] === value) return true;
+  }
+  
+  return false;
+}

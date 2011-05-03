@@ -3402,6 +3402,32 @@ SPITFIRE.ArrayUtils.getItemsByKey = function(inArray, key, match) {
   
   return t;
 };
+
+SPITFIRE.ArrayUtils.hasValue = function(inArray, value) {
+  var i, len;
+  for (i = 0, len = inArray.length; i < len; i += 1) {
+  	if (inArray[i] === value) return true;
+  }
+  
+  return false;
+}
+SPITFIRE.ObjectUtils = {};
+
+//--------------------------------------
+// getItemByKeys()
+//--------------------------------------
+// Port of org.casalib.util.ArrayUtil.getItemByKeys() from CASA lib for ActionScript 3.0
+// http://casalib.org/
+
+SPITFIRE.ObjectUtils.getKeyByValue = function(inObject, value) {
+  for (var key in inObject) {
+    if (inObject[key] === value) {
+      return key;
+    }
+  }
+  
+  return undefined;
+};
 // Ported to JS from CasaLib AS3
 // http://casalib.org/
 SPITFIRE.RatioUtils = SPITFIRE.RatioUtils || {
@@ -3515,7 +3541,6 @@ SPITFIRE.Timer.prototype = {
   
   stop: function() {
     if (this._interval) {
-      log('clear: ' + this._interval);
       clearTimeout(this._interval);
     }
     

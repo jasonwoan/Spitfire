@@ -43,7 +43,6 @@ SPITFIRE.Timer.prototype = {
   
   stop: function() {
     if (this._interval) {
-      log('clear: ' + this._interval);
       clearTimeout(this._interval);
     }
     
