@@ -2695,7 +2695,6 @@ SPITFIRE.UICarousel = function(config) {
   // set center point
   this.center(new SPITFIRE.Point(~~(this.$carouselContainer.width() * 0.5), ~~(this.$carouselContainer.height() * 0.5)));
   
-  this.initStates();
   this.initHandlers();
 };
 
@@ -2758,6 +2757,32 @@ SPITFIRE.UICarousel.prototype = {
     this.trigger(new SPITFIRE.Event(SPITFIRE.Event.CHANGE));
   },
   
+  getLoadIn: function() {
+    var sequentialTask = new SPITFIRE.SequentialTask();
+    sequentialTask.bind(SPITFIRE.Event.COMPLETE, this.imagesLoadedHandler.context(this));
+    
+    var i, len, data, uid, state, item, $el;
+    for (i = 0, len = this.data.length; i < len; i += 1) {
+      data = this.data[i];
+      uid = 'item' + (i + 1);
+      
+      state = new SPITFIRE.UICarouselItem(uid, data.imageUrl, i);
+      this.$carouselContainer.append(state.$el);
+      
+      sequentialTask.addTask(state.loader);
+      sequentialTask.addTask(new SPITFIRE.FunctionTask(this, this.initImage, state));
+
+      this.addChild(state);
+      this._items.push(state);
+    }
+    
+    if (this.data.length) {
+      this.defaultChild(this.getChildren()[this._positionIndex].getName());
+    }
+    
+    return sequentialTask;
+  },
+  
   //--------------------------------------
   // Event Handlers
   //--------------------------------------
@@ -2797,11 +2822,11 @@ SPITFIRE.UICarousel.prototype = {
       this._items.push(state);
     }
     
-    sequentialTask.start();
-    
     if (this.data.length) {
       this.defaultChild(this.getChildren()[this._positionIndex].getName());
     }
+    
+    sequentialTask.start();
   },
   
   initImage: function(state) {
