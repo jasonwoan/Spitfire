@@ -249,6 +249,14 @@ SPITFIRE.UICarousel.prototype = {
     var nextIndex = this._positionIndex + 1;
     nextIndex = (nextIndex >= this._items.length) ? 0 : nextIndex;
     this._items[nextIndex].browse();
+  },
+  
+  destroy: function() {
+    while (this._items.length > 0) {
+      var item = this._items[0];
+      // remove element from dom
+      state.$el.remove();
+    }
   }
 };
 

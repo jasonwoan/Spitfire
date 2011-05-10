@@ -126,16 +126,21 @@ SPITFIRE.UISlideshow.prototype = {
     var i, len, item, thumb, $el;
     for (i = 0, len = this.data.length; i < len; i += 1) {
       item = this.data[i];
-      thumb = new SPITFIRE.JQueryImageLoaderTask(item.thumbnailUrl);
+      
       $el = $('<div class="slideshowThumbContainer"></div>');
-      $el.append(thumb.get$content());
+      
+      if (typeof item.thumbnailUrl !== 'undefined') {
+        thumb = new SPITFIRE.JQueryImageLoaderTask(item.thumbnailUrl);
+        $el.append(thumb.get$content());
+        sequentialTask.addTask(thumb);
+        sequentialTask.addTask(new SPITFIRE.FunctionTask(this, this.positionThumb, $el));
+      }
+      
       $el.hide();
       $el[0].index = i;
       $el.bind('click', $.proxy(this.thumbClickHandler, this));
       this.$drawer.append($el);
       this._$thumbs.push($el);
-      sequentialTask.addTask(thumb);
-      sequentialTask.addTask(new SPITFIRE.FunctionTask(this, this.positionThumb, $el));
     }
     
     sequentialTask.start();

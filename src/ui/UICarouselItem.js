@@ -71,7 +71,6 @@ SPITFIRE.UICarouselItem.prototype = {
   },
   
   animate: function(x, y, z, scale, opacity, duration) {
-    this.$el.css('opacity', 1);
     this.displayObject.animate({
       l: x,
       t: y,
