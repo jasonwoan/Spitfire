@@ -343,55 +343,55 @@ SPITFIRE.StateManager.prototype = {
   
   startTransition: function() {
     this._currentTransition = this._transitions.shift();
-		this.trigger(new SPITFIRE.Event(this._currentTransition.getTransitionName() + "Start"));
-		
-		this.setTaskManager(new SPITFIRE.SequentialTask());
-		
-		this.getTaskManager().setName(this._currentTransition.getTransitionName());
-		if (this.getDebug()) {
-			this.getTaskManager().setDebug(this.getDebug());
-		}
-		
-		this.getTaskManager().bind(SPITFIRE.Event.COMPLETE, this.taskManagerCompleteHandler.context(this));
-		
-		var i, len;
-		
-		for (i = 0, len = this._currentTransition.getLocations().length; i < len; i += 1) {
-		  var path = this._currentTransition.getLocations()[i];
-			var pathArray = path.split("/");
-			pathArray.shift();
-			var state = this.getTree();
-			if (pathArray.length > 0) {
-				state = state.getChildFromPath(pathArray.join("/"));
-			}
-			var task = state[this._currentTransition.getTransitionName()]();
-			
-			if (task) {
-				this.getTaskManager().addTask(task);
-			}
-			var stateSelected = false;;
-			if (this._currentTransition.getTransitionName() == "transitionIn") {
-				stateSelected = true;
-			}
-			if (this._currentTransition.getTransitionName() == "transitionOut") {
-				stateSelected = false;
-			}
+    this.trigger(new SPITFIRE.Event(this._currentTransition.getTransitionName() + "Start"));
+    
+    this.setTaskManager(new SPITFIRE.SequentialTask());
+    
+    this.getTaskManager().setName(this._currentTransition.getTransitionName());
+    if (this.getDebug()) {
+	    this.getTaskManager().setDebug(this.getDebug());
+    }
+    
+    this.getTaskManager().bind(SPITFIRE.Event.COMPLETE, this.taskManagerCompleteHandler.context(this));
+    
+    var i, len;
+    
+    for (i = 0, len = this._currentTransition.getLocations().length; i < len; i += 1) {
+      var path = this._currentTransition.getLocations()[i];
+      var pathArray = path.split("/");
+      pathArray.shift();
+      var state = this.getTree();
+      if (pathArray.length > 0) {
+	      state = state.getChildFromPath(pathArray.join("/"));
+      }
+      var task = state[this._currentTransition.getTransitionName()]();
+      
+      if (task) {
+	      this.getTaskManager().addTask(task);
+      }
+      var stateSelected = false;;
+      if (this._currentTransition.getTransitionName() == "transitionIn") {
+	      stateSelected = true;
+      }
+      if (this._currentTransition.getTransitionName() == "transitionOut") {
+	      stateSelected = false;
+      }
 
-			this.getTaskManager().addTask(new SPITFIRE.PropertyTask(state, "selected", stateSelected));
-		}
-		if (this.getTaskManager().getProgress() == 1) {
-			this.getTaskManager().getProgressive(false);
-		}
-		if (this.getTaskManager().getProgressive()) {
-			if (this.getPreloader()) {
-				this.getTaskManager().addTaskAt(new SPITFIRE.PropertyTask(this.getPreloader(), "progress", 0), 0);
-				this.getTaskManager().addTaskAt(this.getPreloader().getTransitionIn(), 1);
-				this.getTaskManager().addTask(this.getPreloader().getTransitionOut());
-			}
-			this.getTaskManager().setProgress(0);
-			this._progressTimer.start();
-		}
-		this.getTaskManager().start();
+      this.getTaskManager().addTask(new SPITFIRE.PropertyTask(state, "selected", stateSelected));
+    }
+    if (this.getTaskManager().getProgress() == 1) {
+	    this.getTaskManager().getProgressive(false);
+    }
+    if (this.getTaskManager().getProgressive()) {
+	    if (this.getPreloader()) {
+		    this.getTaskManager().addTaskAt(new SPITFIRE.PropertyTask(this.getPreloader(), "progress", 0), 0);
+		    this.getTaskManager().addTaskAt(this.getPreloader().getTransitionIn(), 1);
+		    this.getTaskManager().addTask(this.getPreloader().getTransitionOut());
+	    }
+	    this.getTaskManager().setProgress(0);
+	    this._progressTimer.start();
+    }
+    this.getTaskManager().start();
   },
   
   addRedirect: function(location, newLocation) {

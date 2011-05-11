@@ -8,6 +8,7 @@ SPITFIRE.DisplayState = function(name, config) {
   
   var defaultConfig = {
     id: '',
+    trackingPageId: '',
     assets: {
       view: '',
       stylesheets: [],
@@ -16,7 +17,7 @@ SPITFIRE.DisplayState = function(name, config) {
   }
   
   var configuration = config || defaultConfig;
-  this.config(configuration);
+  this.setConfig(configuration);
   this.stylesheets([]);
   this.images([]);
   this._addedDOMAssets = [];
@@ -80,6 +81,10 @@ SPITFIRE.DisplayState.prototype = {
     return sequentialTask;
   },
   
+  getTransitionIn: function() {
+    return new SPITFIRE.FunctionTask(this, this.trackPage);
+  },
+  
   getTransitionOut: function() {
     return new SPITFIRE.FunctionTask(this, this.cleanUp);
   },
@@ -135,6 +140,12 @@ SPITFIRE.DisplayState.prototype = {
   
   cleanUp: function() {
   
+  },
+  
+  trackPage: function() {
+    var trackingPageId = this.getConfig().trackingPageId;
+    if (typeof trackingPageId !== 'undefined' && trackingPageId !== '')
+      SPITFIRE.trackPage(trackingPageId);
   },
 
   toString: function() {

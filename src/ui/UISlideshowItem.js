@@ -2,13 +2,25 @@
 // SPITFIRE.UISlideshowItem
 //--------------------------------------
 
-SPITFIRE.UISlideshowItem = function(name, url) {
+SPITFIRE.UISlideshowItem = function(name, url, disableContextMenu) {
+  disableContextMenu = disableContextMenu || false;
   this.callSuper(name);
   this.setQualifiedClassName('SPITFIRE.UISlideshowItem');
   
   this.url = url;
   this.loader = new SPITFIRE.JQueryImageLoaderTask(this.url);
   this.loader.get$content().hide();
+  
+  if (disableContextMenu) {
+    this.loader.bind('contextmenu', function(event) {
+      event = event || window.event;
+      if (event.stopPropagation)
+          event.stopPropagation();
+    
+      event.cancelBubble = true;
+      return false;
+    });
+  }
 };
 
 SPITFIRE.UISlideshowItem.superclass = SPITFIRE.State;

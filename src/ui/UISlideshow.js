@@ -33,6 +33,8 @@ SPITFIRE.UISlideshow = function(config) {
   this.hasDrawer = (typeof config.drawer !== 'undefined');
   this.$drawer = (this.hasDrawer) ? $('#' + config.drawer) : undefined;
   
+  this.disableContextMenu = (typeof config.disableContextMenu !== 'undefined') ? config.disableContextMenu : false;
+  
   this.initStates();
   this.initDrawer();
   this.initHandlers();
@@ -96,7 +98,7 @@ SPITFIRE.UISlideshow.prototype = {
       item = this.data[i];
       uid = 'image' + (i + 1);
       
-      state = new SPITFIRE.UISlideshowItem(uid, item.imageUrl);
+      state = new SPITFIRE.UISlideshowItem(uid, item.imageUrl, this.disableContextMenu);
       
       // add image to container
       this.$imageContainer.append(state.loader.get$content());

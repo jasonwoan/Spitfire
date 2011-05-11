@@ -259,6 +259,25 @@ SPITFIRE.extendChildren = function($parent) {
   	el.init();
   }
 };
+
+// Tracking
+SPITFIRE.trackEvent = function(category, action, label, value) {
+  _gaq = _gaq || [];
+  
+  if (typeof category !== 'undefined' && typeof action !== 'undefined') {
+    log('[TRACKING EVENT // category:' + category + ' action:' + action + ' label:' + label + ' value:' + value + ']');
+    _gaq.push(['_trackEvent', category, action, label, value]);
+  }
+};
+
+SPITFIRE.trackPage = function(page) {
+  _gaq = _gaq || [];
+  
+  if (typeof page !== 'undefined') {
+    log('[TRACKING PAGE // page:' + page + ']');
+    _gaq.push(['_trackPageview', page]);
+  }
+};
 // Augments Array if indexOf is unavailable (IE7, IE8)
 if(!Array.indexOf){
   Array.prototype.indexOf = function(obj) {
@@ -499,6 +518,12 @@ SPITFIRE.EventDispatcher.prototype = {
   },
   
   unbind: function(type, handler) {
+    // remove all listeners of type if no handler is specified
+    if (typeof handler === 'undefined') {
+      this._eventListeners[type] = [];
+      return;
+    }
+    
     for (var i = 0, len = this._eventListeners[type].length; i < len; i++) {
       if (this._eventListeners[type][i] == handler) {
         this._eventListeners[type].splice(i, 1);
@@ -1571,6 +1596,7 @@ SPITFIRE.DisplayState = function(name, config) {
   
   var defaultConfig = {
     id: '',
+    trackingPageId: '',
     assets: {
       view: '',
       stylesheets: [],
@@ -1579,7 +1605,7 @@ SPITFIRE.DisplayState = function(name, config) {
   }
   
   var configuration = config || defaultConfig;
-  this.config(configuration);
+  this.setConfig(configuration);
   this.stylesheets([]);
   this.images([]);
   this._addedDOMAssets = [];
@@ -1643,6 +1669,10 @@ SPITFIRE.DisplayState.prototype = {
     return sequentialTask;
   },
   
+  getTransitionIn: function() {
+    return new SPITFIRE.FunctionTask(this, this.trackPage);
+  },
+  
   getTransitionOut: function() {
     return new SPITFIRE.FunctionTask(this, this.cleanUp);
   },
@@ -1698,6 +1728,12 @@ SPITFIRE.DisplayState.prototype = {
   
   cleanUp: function() {
   
+  },
+  
+  trackPage: function() {
+    var trackingPageId = this.getConfig().trackingPageId;
+    if (typeof trackingPageId !== 'undefined' && trackingPageId !== '')
+      SPITFIRE.trackPage(trackingPageId);
   },
 
   toString: function() {
@@ -2066,55 +2102,55 @@ SPITFIRE.StateManager.prototype = {
   
   startTransition: function() {
     this._currentTransition = this._transitions.shift();
-		this.trigger(new SPITFIRE.Event(this._currentTransition.getTransitionName() + "Start"));
-		
-		this.setTaskManager(new SPITFIRE.SequentialTask());
-		
-		this.getTaskManager().setName(this._currentTransition.getTransitionName());
-		if (this.getDebug()) {
-			this.getTaskManager().setDebug(this.getDebug());
-		}
-		
-		this.getTaskManager().bind(SPITFIRE.Event.COMPLETE, this.taskManagerCompleteHandler.context(this));
-		
-		var i, len;
-		
-		for (i = 0, len = this._currentTransition.getLocations().length; i < len; i += 1) {
-		  var path = this._currentTransition.getLocations()[i];
-			var pathArray = path.split("/");
-			pathArray.shift();
-			var state = this.getTree();
-			if (pathArray.length > 0) {
-				state = state.getChildFromPath(pathArray.join("/"));
-			}
-			var task = state[this._currentTransition.getTransitionName()]();
-			
-			if (task) {
-				this.getTaskManager().addTask(task);
-			}
-			var stateSelected = false;;
-			if (this._currentTransition.getTransitionName() == "transitionIn") {
-				stateSelected = true;
-			}
-			if (this._currentTransition.getTransitionName() == "transitionOut") {
-				stateSelected = false;
-			}
+    this.trigger(new SPITFIRE.Event(this._currentTransition.getTransitionName() + "Start"));
+    
+    this.setTaskManager(new SPITFIRE.SequentialTask());
+    
+    this.getTaskManager().setName(this._currentTransition.getTransitionName());
+    if (this.getDebug()) {
+	    this.getTaskManager().setDebug(this.getDebug());
+    }
+    
+    this.getTaskManager().bind(SPITFIRE.Event.COMPLETE, this.taskManagerCompleteHandler.context(this));
+    
+    var i, len;
+    
+    for (i = 0, len = this._currentTransition.getLocations().length; i < len; i += 1) {
+      var path = this._currentTransition.getLocations()[i];
+      var pathArray = path.split("/");
+      pathArray.shift();
+      var state = this.getTree();
+      if (pathArray.length > 0) {
+	      state = state.getChildFromPath(pathArray.join("/"));
+      }
+      var task = state[this._currentTransition.getTransitionName()]();
+      
+      if (task) {
+	      this.getTaskManager().addTask(task);
+      }
+      var stateSelected = false;;
+      if (this._currentTransition.getTransitionName() == "transitionIn") {
+	      stateSelected = true;
+      }
+      if (this._currentTransition.getTransitionName() == "transitionOut") {
+	      stateSelected = false;
+      }
 
-			this.getTaskManager().addTask(new SPITFIRE.PropertyTask(state, "selected", stateSelected));
-		}
-		if (this.getTaskManager().getProgress() == 1) {
-			this.getTaskManager().getProgressive(false);
-		}
-		if (this.getTaskManager().getProgressive()) {
-			if (this.getPreloader()) {
-				this.getTaskManager().addTaskAt(new SPITFIRE.PropertyTask(this.getPreloader(), "progress", 0), 0);
-				this.getTaskManager().addTaskAt(this.getPreloader().getTransitionIn(), 1);
-				this.getTaskManager().addTask(this.getPreloader().getTransitionOut());
-			}
-			this.getTaskManager().setProgress(0);
-			this._progressTimer.start();
-		}
-		this.getTaskManager().start();
+      this.getTaskManager().addTask(new SPITFIRE.PropertyTask(state, "selected", stateSelected));
+    }
+    if (this.getTaskManager().getProgress() == 1) {
+	    this.getTaskManager().getProgressive(false);
+    }
+    if (this.getTaskManager().getProgressive()) {
+	    if (this.getPreloader()) {
+		    this.getTaskManager().addTaskAt(new SPITFIRE.PropertyTask(this.getPreloader(), "progress", 0), 0);
+		    this.getTaskManager().addTaskAt(this.getPreloader().getTransitionIn(), 1);
+		    this.getTaskManager().addTask(this.getPreloader().getTransitionOut());
+	    }
+	    this.getTaskManager().setProgress(0);
+	    this._progressTimer.start();
+    }
+    this.getTaskManager().start();
   },
   
   addRedirect: function(location, newLocation) {
@@ -2565,16 +2601,16 @@ SPITFIRE.SequentialTask.prototype = {
   
   taskCompleteHandler: function(event) {
     var task = event.target();
-		if (this.debug()) {
-			log("taskComplete " + task);
-		}
-		task.unbind(SPITFIRE.Event.COMPLETE, this.taskCompleteHandler.context(this));
-		this._createdTasks.push(task);
-		if (this._createdTasks.length == this.tasks().length) {
-			this.complete();
-		} else {
-			this.createTask();
-		}
+    if (this.debug()) {
+      log("taskComplete " + task);
+    }
+    task.unbind(SPITFIRE.Event.COMPLETE);
+    this._createdTasks.push(task);
+    if (this._createdTasks.length == this.tasks().length) {
+      this.complete();
+    } else {
+      this.createTask();
+    }
   },
   
   //--------------------------------------
@@ -2720,7 +2756,6 @@ SPITFIRE.UICarousel.prototype = {
   //--------------------------------------
   
   setPositionIndex: function(value) {  
-/*     if (this._positionIndex == value) return; */
     var oldPositionIndex = this._positionIndex;
     
     var delta = this.items()[oldPositionIndex].carouselIndex() - this.items()[value].carouselIndex();
@@ -2758,6 +2793,32 @@ SPITFIRE.UICarousel.prototype = {
   },
   
   getLoadIn: function() {
+    return this.createStatesTask();
+  },
+  
+  //--------------------------------------
+  // Event Handlers
+  //--------------------------------------
+  
+  childChangeHandler: function(event) {
+    this.callSuper(event);
+    
+    this.updateDescription();
+  },
+  
+  imagesLoadedHandler: function(event) {
+    this.positionItems();
+    this.getChildByName(this.getDefaultChild()).browse();
+  },
+
+  //--------------------------------------
+  // Methods
+  //--------------------------------------
+  
+  /**
+   *  Creates states and image tasks.
+   */
+  createStatesTask: function() {
     var sequentialTask = new SPITFIRE.SequentialTask();
     sequentialTask.bind(SPITFIRE.Event.COMPLETE, this.imagesLoadedHandler.context(this));
     
@@ -2783,52 +2844,6 @@ SPITFIRE.UICarousel.prototype = {
     return sequentialTask;
   },
   
-  //--------------------------------------
-  // Event Handlers
-  //--------------------------------------
-  
-  childChangeHandler: function(event) {
-    this.callSuper(event);
-    
-    this.updateDescription();
-  },
-  
-  imagesLoadedHandler: function(event) {
-    this.positionItems();
-    this.getChildByName(this.getDefaultChild()).browse();
-  },
-
-  //--------------------------------------
-  // Methods
-  //--------------------------------------
-  
-  initStates: function() {
-
-    var sequentialTask = new SPITFIRE.SequentialTask();
-    sequentialTask.bind(SPITFIRE.Event.COMPLETE, this.imagesLoadedHandler.context(this));
-    
-    var i, len, data, uid, state, item, $el;
-    for (i = 0, len = this.data.length; i < len; i += 1) {
-      data = this.data[i];
-      uid = 'item' + (i + 1);
-      
-      state = new SPITFIRE.UICarouselItem(uid, data.imageUrl, i);
-      this.$carouselContainer.append(state.$el);
-      
-      sequentialTask.addTask(state.loader);
-      sequentialTask.addTask(new SPITFIRE.FunctionTask(this, this.initImage, state));
-
-      this.addChild(state);
-      this._items.push(state);
-    }
-    
-    if (this.data.length) {
-      this.defaultChild(this.getChildren()[this._positionIndex].getName());
-    }
-    
-    sequentialTask.start();
-  },
-  
   initImage: function(state) {
     state.setItemDimensions(this._itemWidth, this._itemHeight);
   },
@@ -2845,6 +2860,33 @@ SPITFIRE.UICarousel.prototype = {
     desc = (typeof desc != 'undefined') ? desc : '';
 
     this.$descriptionContainer.html(desc);
+  },
+  
+  /**
+   *  Replaces and resets current carousel
+   *  with new items based on the supplied data
+   */
+  changeData: function(data) {
+    this.data = data;
+    
+    // reset
+    this._positionIndex = 0;
+    this.setDefaultChild(undefined);
+    this.browse();
+    
+    // remove current dom elements and states
+    while (this._items.length > 0) {
+      var item = this._items[0];
+      // remove element from dom
+      item.$el.remove();
+      this.removeChild(item);
+      item = null;
+      this._items.shift();
+    }
+    
+    // create states and images
+    var task = this.createStatesTask();
+    task.start();
   },
   
   positionItems: function() {
@@ -2870,7 +2912,6 @@ SPITFIRE.UICarousel.prototype = {
     centerItem.carouselIndex(this.centerIndex());
 
     while (count < halfNumItems) {
-/*       log('left: ' + leftIndex + ' right: ' + rightIndex); */
       count++;
       opacity = (count > this.neighbors()) ? 0 : 1;
       rightItem = this._items[rightIndex];
@@ -2915,6 +2956,14 @@ SPITFIRE.UICarousel.prototype = {
     var nextIndex = this._positionIndex + 1;
     nextIndex = (nextIndex >= this._items.length) ? 0 : nextIndex;
     this._items[nextIndex].browse();
+  },
+  
+  destroy: function() {
+    while (this._items.length > 0) {
+      var item = this._items[0];
+      // remove element from dom
+      state.$el.remove();
+    }
   }
 };
 
@@ -3045,6 +3094,8 @@ SPITFIRE.UISlideshow = function(config) {
   this.hasDrawer = (typeof config.drawer !== 'undefined');
   this.$drawer = (this.hasDrawer) ? $('#' + config.drawer) : undefined;
   
+  this.disableContextMenu = (typeof config.disableContextMenu !== 'undefined') ? config.disableContextMenu : false;
+  
   this.initStates();
   this.initDrawer();
   this.initHandlers();
@@ -3108,7 +3159,7 @@ SPITFIRE.UISlideshow.prototype = {
       item = this.data[i];
       uid = 'image' + (i + 1);
       
-      state = new SPITFIRE.UISlideshowItem(uid, item.imageUrl);
+      state = new SPITFIRE.UISlideshowItem(uid, item.imageUrl, this.disableContextMenu);
       
       // add image to container
       this.$imageContainer.append(state.loader.get$content());
@@ -3236,13 +3287,25 @@ SPITFIRE.Class(SPITFIRE.UISlideshow);
 // SPITFIRE.UISlideshowItem
 //--------------------------------------
 
-SPITFIRE.UISlideshowItem = function(name, url) {
+SPITFIRE.UISlideshowItem = function(name, url, disableContextMenu) {
+  disableContextMenu = disableContextMenu || false;
   this.callSuper(name);
   this.setQualifiedClassName('SPITFIRE.UISlideshowItem');
   
   this.url = url;
   this.loader = new SPITFIRE.JQueryImageLoaderTask(this.url);
   this.loader.get$content().hide();
+  
+  if (disableContextMenu) {
+    this.loader.bind('contextmenu', function(event) {
+      event = event || window.event;
+      if (event.stopPropagation)
+          event.stopPropagation();
+    
+      event.cancelBubble = true;
+      return false;
+    });
+  }
 };
 
 SPITFIRE.UISlideshowItem.superclass = SPITFIRE.State;

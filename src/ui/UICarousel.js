@@ -54,7 +54,6 @@ SPITFIRE.UICarousel.prototype = {
   //--------------------------------------
   
   setPositionIndex: function(value) {  
-/*     if (this._positionIndex == value) return; */
     var oldPositionIndex = this._positionIndex;
     
     var delta = this.items()[oldPositionIndex].carouselIndex() - this.items()[value].carouselIndex();
@@ -92,6 +91,32 @@ SPITFIRE.UICarousel.prototype = {
   },
   
   getLoadIn: function() {
+    return this.createStatesTask();
+  },
+  
+  //--------------------------------------
+  // Event Handlers
+  //--------------------------------------
+  
+  childChangeHandler: function(event) {
+    this.callSuper(event);
+    
+    this.updateDescription();
+  },
+  
+  imagesLoadedHandler: function(event) {
+    this.positionItems();
+    this.getChildByName(this.getDefaultChild()).browse();
+  },
+
+  //--------------------------------------
+  // Methods
+  //--------------------------------------
+  
+  /**
+   *  Creates states and image tasks.
+   */
+  createStatesTask: function() {
     var sequentialTask = new SPITFIRE.SequentialTask();
     sequentialTask.bind(SPITFIRE.Event.COMPLETE, this.imagesLoadedHandler.context(this));
     
@@ -117,52 +142,6 @@ SPITFIRE.UICarousel.prototype = {
     return sequentialTask;
   },
   
-  //--------------------------------------
-  // Event Handlers
-  //--------------------------------------
-  
-  childChangeHandler: function(event) {
-    this.callSuper(event);
-    
-    this.updateDescription();
-  },
-  
-  imagesLoadedHandler: function(event) {
-    this.positionItems();
-    this.getChildByName(this.getDefaultChild()).browse();
-  },
-
-  //--------------------------------------
-  // Methods
-  //--------------------------------------
-  
-  initStates: function() {
-
-    var sequentialTask = new SPITFIRE.SequentialTask();
-    sequentialTask.bind(SPITFIRE.Event.COMPLETE, this.imagesLoadedHandler.context(this));
-    
-    var i, len, data, uid, state, item, $el;
-    for (i = 0, len = this.data.length; i < len; i += 1) {
-      data = this.data[i];
-      uid = 'item' + (i + 1);
-      
-      state = new SPITFIRE.UICarouselItem(uid, data.imageUrl, i);
-      this.$carouselContainer.append(state.$el);
-      
-      sequentialTask.addTask(state.loader);
-      sequentialTask.addTask(new SPITFIRE.FunctionTask(this, this.initImage, state));
-
-      this.addChild(state);
-      this._items.push(state);
-    }
-    
-    if (this.data.length) {
-      this.defaultChild(this.getChildren()[this._positionIndex].getName());
-    }
-    
-    sequentialTask.start();
-  },
-  
   initImage: function(state) {
     state.setItemDimensions(this._itemWidth, this._itemHeight);
   },
@@ -179,6 +158,33 @@ SPITFIRE.UICarousel.prototype = {
     desc = (typeof desc != 'undefined') ? desc : '';
 
     this.$descriptionContainer.html(desc);
+  },
+  
+  /**
+   *  Replaces and resets current carousel
+   *  with new items based on the supplied data
+   */
+  changeData: function(data) {
+    this.data = data;
+    
+    // reset
+    this._positionIndex = 0;
+    this.setDefaultChild(undefined);
+    this.browse();
+    
+    // remove current dom elements and states
+    while (this._items.length > 0) {
+      var item = this._items[0];
+      // remove element from dom
+      item.$el.remove();
+      this.removeChild(item);
+      item = null;
+      this._items.shift();
+    }
+    
+    // create states and images
+    var task = this.createStatesTask();
+    task.start();
   },
   
   positionItems: function() {
@@ -204,7 +210,6 @@ SPITFIRE.UICarousel.prototype = {
     centerItem.carouselIndex(this.centerIndex());
 
     while (count < halfNumItems) {
-/*       log('left: ' + leftIndex + ' right: ' + rightIndex); */
       count++;
       opacity = (count > this.neighbors()) ? 0 : 1;
       rightItem = this._items[rightIndex];

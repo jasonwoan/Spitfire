@@ -19,6 +19,12 @@ SPITFIRE.EventDispatcher.prototype = {
   },
   
   unbind: function(type, handler) {
+    // remove all listeners of type if no handler is specified
+    if (typeof handler === 'undefined') {
+      this._eventListeners[type] = [];
+      return;
+    }
+    
     for (var i = 0, len = this._eventListeners[type].length; i < len; i++) {
       if (this._eventListeners[type][i] == handler) {
         this._eventListeners[type].splice(i, 1);

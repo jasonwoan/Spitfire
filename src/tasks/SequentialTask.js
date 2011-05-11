@@ -22,16 +22,16 @@ SPITFIRE.SequentialTask.prototype = {
   
   taskCompleteHandler: function(event) {
     var task = event.target();
-		if (this.debug()) {
-			log("taskComplete " + task);
-		}
-		task.unbind(SPITFIRE.Event.COMPLETE, this.taskCompleteHandler.context(this));
-		this._createdTasks.push(task);
-		if (this._createdTasks.length == this.tasks().length) {
-			this.complete();
-		} else {
-			this.createTask();
-		}
+    if (this.debug()) {
+      log("taskComplete " + task);
+    }
+    task.unbind(SPITFIRE.Event.COMPLETE);
+    this._createdTasks.push(task);
+    if (this._createdTasks.length == this.tasks().length) {
+      this.complete();
+    } else {
+      this.createTask();
+    }
   },
   
   //--------------------------------------
