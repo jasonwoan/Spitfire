@@ -2,9 +2,12 @@
 // SPITFIRE.DisplayState
 //--------------------------------------
 
-SPITFIRE.DisplayState = function(name, config) {
+SPITFIRE.DisplayState = function(name, config, cache) {
   this.callSuper(name);
   this.qualifiedClassName('SPITFIRE.DisplayState');
+  
+  // An array of cached assets
+  this.cache = cache || [];
   
   var defaultConfig = {
     id: '',
@@ -49,9 +52,11 @@ SPITFIRE.DisplayState.prototype = {
     // load view
     var configView = this.config().assets.view;
     
-    if (configView && configView != '') {
+    if (configView && configView != '' && !this.checkIsCached(configView)) {
+      this.cache.push(configView);
       this.view(new SPITFIRE.JQueryAjaxTask(configView));
       sequentialTask.addTask(this.view());
+
     }
     
     // load stylesheets
@@ -60,6 +65,9 @@ SPITFIRE.DisplayState.prototype = {
     if (configStylesheets.length > 0) {
       for (i = 0, len = configStylesheets.length; i < len; i += 1) {
       	var stylesheet = configStylesheets[i];
+	if (this.checkIsCached(stylesheet))
+	  continue;
+	this.cache.push(stylesheet);
       	task = new SPITFIRE.JQueryAjaxTask(stylesheet);
       	this.stylesheets().push(task);
       	sequentialTask.addTask(task);
@@ -71,6 +79,9 @@ SPITFIRE.DisplayState.prototype = {
     if (configImages.length > 0) {
       for (i = 0, len = configImages.length; i < len; i += 1) {
       	var img = configImages[i];
+	if (this.checkIsCached(img))
+	  continue;
+	this.cache.push(img);
       	task = new SPITFIRE.JQueryAjaxTask(img);
       	this.images().push(task);
       	sequentialTask.addTask(task);
@@ -94,6 +105,7 @@ SPITFIRE.DisplayState.prototype = {
   //--------------------------------------
   
   addDOMAssets: function() {
+    this.setIsCached(true);
     
     // add stylesheets to DOM
     var i, len, $obj, style, rules,
@@ -121,8 +133,17 @@ SPITFIRE.DisplayState.prototype = {
       $obj = $(this.view().content()).appendTo('body');
       this._addedDOMAssets.push($obj);
     }
+  },
+  
+  checkIsCached: function(asset) {
+    var i, len;
+    for (i = 0, len = this.cache.length; i < len; i += 1) {
+      if (this.cache[i] === asset) {
+	return true;
+      }
+    }
     
-    this.setIsCached(true);
+    return false;
   },
   
   removeDOMAssets: function() {

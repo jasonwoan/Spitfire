@@ -55,6 +55,7 @@ SPITFIRE.StateManager.prototype = {
     this._tree = value;
     value.setStateManager(this);
     value.setRoot(this.root());
+    value.setDebug(this._debug);
   },
   
   getLocation: function() {
@@ -140,35 +141,35 @@ SPITFIRE.StateManager.prototype = {
     
   transitionInCompleteHandler: function(event) {
     if (this.getTrackPageViews()) {
-  		var param;
-  		switch(this.getPageViewType()) {
-  			case SPITFIRE.StateManager.PAGE_VIEW_LOCATION:
-  				param = this.getLocation();
-  			break;
-  			case SPITFIRE.StateManager.PAGE_VIEW_NAME:
-  				param = this.getLocation();
-  			break;
-  		}
-  	}
+      var param;
+      switch(this.getPageViewType()) {
+	case SPITFIRE.StateManager.PAGE_VIEW_LOCATION:
+	  param = this.getLocation();
+	break;
+	case SPITFIRE.StateManager.PAGE_VIEW_NAME:
+	  param = this.getLocation();
+	break;
+      }
+    }
   },
   
   taskManagerCompleteHandler: function(event) {
     this.getTaskManager().unbind(SPITFIRE.Event.COMPLETE, this.taskManagerCompleteHandler.context(this));
-		if (this.getTaskManager().getProgressive()) {
-			this.taskManagerProgressHandler();
-			this._progressTimer.stop();
-		}
-		this.trigger(new SPITFIRE.Event(this._currentTransition.transitionName() + "Complete"));
-		this._currentTransition = null;
-		if (this._transitions.length > 0) {
-			this.startTransition();
-		} else {
-			this._transitions = null;
-			this._isInTransition = false;
-			if (this._transitionWasInterrupted) {
-				this.startTransitions();
-			}
-		}
+    if (this.getTaskManager().getProgressive()) {
+      this.taskManagerProgressHandler();
+      this._progressTimer.stop();
+    }
+    this.trigger(new SPITFIRE.Event(this._currentTransition.transitionName() + "Complete"));
+    this._currentTransition = null;
+    if (this._transitions.length > 0) {
+      this.startTransition();
+    } else {
+      this._transitions = null;
+      this._isInTransition = false;
+      if (this._transitionWasInterrupted) {
+	      this.startTransitions();
+      }
+    }
   },
   
   //--------------------------------------
@@ -281,41 +282,41 @@ SPITFIRE.StateManager.prototype = {
   
   activateStates: function(transitionPaths) {
     var newPaths = [], i, len;
-		this._activeStates = [];
-		for (i = 0, len = transitionPaths.length; i < len; i += 1) {
-		  var path = transitionPaths[i];
-			var pathArray = path.split("/");
-			pathArray.shift();
-			var state = this.getTree();
-			
+    this._activeStates = [];
+    for (i = 0, len = transitionPaths.length; i < len; i += 1) {
+      var path = transitionPaths[i];
+      var pathArray = path.split("/");
+      pathArray.shift();
+      var state = this.getTree();
+      
       if (pathArray.length > 0) {
-        var j, len2;
-				for (j = 0, len2 = pathArray.length; j < len2; j += 1) {
-					var currentState = state;
-					state = currentState.getChildByName(pathArray[j]);
-					if (!state) {
-						state = currentState.createChildByName(pathArray[j]);
-					}
-				}
-			}
-			
-			state.setActivated(true);
-			this.getActiveStates().push(state);
-			newPaths.push(state.getStateLocation());
-			
-			if (state.getStateLocation() == transitionPaths[transitionPaths.length - 1]) {
-				var defaultState = state.getChildByName(state.defaultChild());
-				while (defaultState) {
-					defaultState.setActivated(true);
-					this.getActiveStates().push(defaultState);
-					newPaths.push(defaultState.getStateLocation());
-					defaultState = defaultState.getChildByName(defaultState.getDefaultChild());
-				}
-			}
-			
-		}
-		
-		return newPaths;
+	var j, len2;
+	for (j = 0, len2 = pathArray.length; j < len2; j += 1) {
+	  var currentState = state;
+	  state = currentState.getChildByName(pathArray[j]);
+	  if (!state) {
+	    state = currentState.createChildByName(pathArray[j]);
+	  }
+	}
+      }
+      
+      state.setActivated(true);
+      this.getActiveStates().push(state);
+      newPaths.push(state.getStateLocation());
+      
+      if (state.getStateLocation() == transitionPaths[transitionPaths.length - 1]) {
+	var defaultState = state.getChildByName(state.defaultChild());
+	while (defaultState) {
+	  defaultState.setActivated(true);
+	  this.getActiveStates().push(defaultState);
+	  newPaths.push(defaultState.getStateLocation());
+	  defaultState = defaultState.getChildByName(defaultState.getDefaultChild());
+	}
+      }
+      
+    }
+    
+    return newPaths;
   },
   
   checkForDefaultStates: function(path) {

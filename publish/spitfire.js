@@ -232,7 +232,7 @@ SPITFIRE.extendChildren = function($parent) {
 
   var i, len;
   for (i = 0, len = children.length; i < len; i += 1) {
-  	SPITFIRE.extendChildren($(children[i]));
+    SPITFIRE.extendChildren($(children[i]));
   }
   
   if (self.length) {
@@ -240,23 +240,23 @@ SPITFIRE.extendChildren = function($parent) {
     var el = self[0];
     var basePath = el.getAttribute('sf-base');
 
-  	// loop through namespace to retrieve class function
-  	var nsObjects = basePath.split('.');
-  	var j, obj, len2;
-  	obj = window;
-  	
-  	for (j = 0, len2 = nsObjects.length; j < len2; j += 1) {
-  		obj = obj[nsObjects[j]];
-  	}
-  	
-  	if (!obj) {
+    // loop through namespace to retrieve class function
+    var nsObjects = basePath.split('.');
+    var j, obj, len2;
+    obj = window;
+    
+    for (j = 0, len2 = nsObjects.length; j < len2; j += 1) {
+      obj = obj[nsObjects[j]];
+    }
+    
+    if (!obj) {
       throw new SPITFIRE.Error('base class not found');
     }
-  	
-  	var inst = new obj();
-  	
-  	SPITFIRE.extend(el, inst);
-  	el.init();
+    
+    var inst = new obj();
+    
+    SPITFIRE.extend(el, inst);
+    el.init();
   }
 };
 
@@ -944,12 +944,14 @@ SPITFIRE.State = function(name) {
   this.setName(name);
   this._children = [];
   this._selected = false;
+  this._debug = false;
   this.setQualifiedClassName('SPITFIRE.State');
 };
 
 SPITFIRE.State.superclass = SPITFIRE.EventDispatcher;
 SPITFIRE.State.synthesizedProperties = [
   'root',
+  'debug',
   'children',
   'stateManager',
   'parent',
@@ -1102,6 +1104,7 @@ SPITFIRE.State.prototype = {
     child.setParent(this);
     child.setStateManager(this.getStateManager());
     child.setRoot(this._root);
+    child.setDebug(this._debug);
     this._children.push(child);
     child.bind(SPITFIRE.StateEvent.STATE_CHANGE, this.childChangeHandler.context(this));
   },
@@ -1216,16 +1219,16 @@ SPITFIRE.State.prototype = {
     var location = '',
         i, len;
     for (i = 0, len = states.length; i < len; i += 1) {
-    	if (i === 0) {
-        location += '/';
-    	}
-    	
-    	var state = states[i];
-    	location += state.getName();
-    	
-    	if (i < states.length - 1) {
-        location += '/';
-    	}
+      if (i === 0) {
+	location += '/';
+      }
+      
+      var state = states[i];
+      location += state.getName();
+      
+      if (i < states.length - 1) {
+	location += '/';
+      }
     }
     
     return location;
@@ -1289,10 +1292,10 @@ SPITFIRE.State.prototype = {
       throw new SPITFIRE.Error(this + ': no child class defined');
     }
     
-    var state = new this.getChildClass();
-		state.setName(value);
-		this.addChild(state);
-		return state;
+    var state = new this._childClass();
+    state.setName(value);
+    this.addChild(state);
+    return state;
   },
   
   toString: function() {
@@ -1590,9 +1593,12 @@ SPITFIRE.Class(SPITFIRE.Model);
 // SPITFIRE.DisplayState
 //--------------------------------------
 
-SPITFIRE.DisplayState = function(name, config) {
+SPITFIRE.DisplayState = function(name, config, cache) {
   this.callSuper(name);
   this.qualifiedClassName('SPITFIRE.DisplayState');
+  
+  // An array of cached assets
+  this.cache = cache || [];
   
   var defaultConfig = {
     id: '',
@@ -1637,9 +1643,11 @@ SPITFIRE.DisplayState.prototype = {
     // load view
     var configView = this.config().assets.view;
     
-    if (configView && configView != '') {
+    if (configView && configView != '' && !this.checkIsCached(configView)) {
+      this.cache.push(configView);
       this.view(new SPITFIRE.JQueryAjaxTask(configView));
       sequentialTask.addTask(this.view());
+
     }
     
     // load stylesheets
@@ -1648,6 +1656,9 @@ SPITFIRE.DisplayState.prototype = {
     if (configStylesheets.length > 0) {
       for (i = 0, len = configStylesheets.length; i < len; i += 1) {
       	var stylesheet = configStylesheets[i];
+	if (this.checkIsCached(stylesheet))
+	  continue;
+	this.cache.push(stylesheet);
       	task = new SPITFIRE.JQueryAjaxTask(stylesheet);
       	this.stylesheets().push(task);
       	sequentialTask.addTask(task);
@@ -1659,6 +1670,9 @@ SPITFIRE.DisplayState.prototype = {
     if (configImages.length > 0) {
       for (i = 0, len = configImages.length; i < len; i += 1) {
       	var img = configImages[i];
+	if (this.checkIsCached(img))
+	  continue;
+	this.cache.push(img);
       	task = new SPITFIRE.JQueryAjaxTask(img);
       	this.images().push(task);
       	sequentialTask.addTask(task);
@@ -1682,6 +1696,7 @@ SPITFIRE.DisplayState.prototype = {
   //--------------------------------------
   
   addDOMAssets: function() {
+    this.setIsCached(true);
     
     // add stylesheets to DOM
     var i, len, $obj, style, rules,
@@ -1709,8 +1724,17 @@ SPITFIRE.DisplayState.prototype = {
       $obj = $(this.view().content()).appendTo('body');
       this._addedDOMAssets.push($obj);
     }
+  },
+  
+  checkIsCached: function(asset) {
+    var i, len;
+    for (i = 0, len = this.cache.length; i < len; i += 1) {
+      if (this.cache[i] === asset) {
+	return true;
+      }
+    }
     
-    this.setIsCached(true);
+    return false;
   },
   
   removeDOMAssets: function() {
@@ -1814,6 +1838,7 @@ SPITFIRE.StateManager.prototype = {
     this._tree = value;
     value.setStateManager(this);
     value.setRoot(this.root());
+    value.setDebug(this._debug);
   },
   
   getLocation: function() {
@@ -1899,35 +1924,35 @@ SPITFIRE.StateManager.prototype = {
     
   transitionInCompleteHandler: function(event) {
     if (this.getTrackPageViews()) {
-  		var param;
-  		switch(this.getPageViewType()) {
-  			case SPITFIRE.StateManager.PAGE_VIEW_LOCATION:
-  				param = this.getLocation();
-  			break;
-  			case SPITFIRE.StateManager.PAGE_VIEW_NAME:
-  				param = this.getLocation();
-  			break;
-  		}
-  	}
+      var param;
+      switch(this.getPageViewType()) {
+	case SPITFIRE.StateManager.PAGE_VIEW_LOCATION:
+	  param = this.getLocation();
+	break;
+	case SPITFIRE.StateManager.PAGE_VIEW_NAME:
+	  param = this.getLocation();
+	break;
+      }
+    }
   },
   
   taskManagerCompleteHandler: function(event) {
     this.getTaskManager().unbind(SPITFIRE.Event.COMPLETE, this.taskManagerCompleteHandler.context(this));
-		if (this.getTaskManager().getProgressive()) {
-			this.taskManagerProgressHandler();
-			this._progressTimer.stop();
-		}
-		this.trigger(new SPITFIRE.Event(this._currentTransition.transitionName() + "Complete"));
-		this._currentTransition = null;
-		if (this._transitions.length > 0) {
-			this.startTransition();
-		} else {
-			this._transitions = null;
-			this._isInTransition = false;
-			if (this._transitionWasInterrupted) {
-				this.startTransitions();
-			}
-		}
+    if (this.getTaskManager().getProgressive()) {
+      this.taskManagerProgressHandler();
+      this._progressTimer.stop();
+    }
+    this.trigger(new SPITFIRE.Event(this._currentTransition.transitionName() + "Complete"));
+    this._currentTransition = null;
+    if (this._transitions.length > 0) {
+      this.startTransition();
+    } else {
+      this._transitions = null;
+      this._isInTransition = false;
+      if (this._transitionWasInterrupted) {
+	      this.startTransitions();
+      }
+    }
   },
   
   //--------------------------------------
@@ -2040,41 +2065,41 @@ SPITFIRE.StateManager.prototype = {
   
   activateStates: function(transitionPaths) {
     var newPaths = [], i, len;
-		this._activeStates = [];
-		for (i = 0, len = transitionPaths.length; i < len; i += 1) {
-		  var path = transitionPaths[i];
-			var pathArray = path.split("/");
-			pathArray.shift();
-			var state = this.getTree();
-			
+    this._activeStates = [];
+    for (i = 0, len = transitionPaths.length; i < len; i += 1) {
+      var path = transitionPaths[i];
+      var pathArray = path.split("/");
+      pathArray.shift();
+      var state = this.getTree();
+      
       if (pathArray.length > 0) {
-        var j, len2;
-				for (j = 0, len2 = pathArray.length; j < len2; j += 1) {
-					var currentState = state;
-					state = currentState.getChildByName(pathArray[j]);
-					if (!state) {
-						state = currentState.createChildByName(pathArray[j]);
-					}
-				}
-			}
-			
-			state.setActivated(true);
-			this.getActiveStates().push(state);
-			newPaths.push(state.getStateLocation());
-			
-			if (state.getStateLocation() == transitionPaths[transitionPaths.length - 1]) {
-				var defaultState = state.getChildByName(state.defaultChild());
-				while (defaultState) {
-					defaultState.setActivated(true);
-					this.getActiveStates().push(defaultState);
-					newPaths.push(defaultState.getStateLocation());
-					defaultState = defaultState.getChildByName(defaultState.getDefaultChild());
-				}
-			}
-			
-		}
-		
-		return newPaths;
+	var j, len2;
+	for (j = 0, len2 = pathArray.length; j < len2; j += 1) {
+	  var currentState = state;
+	  state = currentState.getChildByName(pathArray[j]);
+	  if (!state) {
+	    state = currentState.createChildByName(pathArray[j]);
+	  }
+	}
+      }
+      
+      state.setActivated(true);
+      this.getActiveStates().push(state);
+      newPaths.push(state.getStateLocation());
+      
+      if (state.getStateLocation() == transitionPaths[transitionPaths.length - 1]) {
+	var defaultState = state.getChildByName(state.defaultChild());
+	while (defaultState) {
+	  defaultState.setActivated(true);
+	  this.getActiveStates().push(defaultState);
+	  newPaths.push(defaultState.getStateLocation());
+	  defaultState = defaultState.getChildByName(defaultState.getDefaultChild());
+	}
+      }
+      
+    }
+    
+    return newPaths;
   },
   
   checkForDefaultStates: function(path) {
@@ -2209,6 +2234,48 @@ SPITFIRE.TransitionProperties.prototype = {
 }
 
 SPITFIRE.Class(SPITFIRE.TransitionProperties);
+//--------------------------------------
+// SPITFIRE.EventTask
+//--------------------------------------
+
+SPITFIRE.EventTask = function(target, eventName, method) {
+  this.callSuper();
+  this.qualifiedClassName('SPITFIRE.EventTask');
+  this.target(target);
+  this.eventName(eventName || 'complete');
+  this.method(method);
+};
+
+SPITFIRE.EventTask.superclass = SPITFIRE.Task;
+SPITFIRE.EventTask.synthesizedProperties = ['target', 'eventName', 'method'];
+
+SPITFIRE.EventTask.prototype = {
+  
+  //--------------------------------------
+  // Event Handlers
+  //--------------------------------------
+  
+  eventCompleteHandler: function(event) {
+    this.complete();
+  },
+  
+  //--------------------------------------
+  // Methods
+  //--------------------------------------
+  
+  start: function() {
+    this._target.bind(this._eventName, this.eventCompleteHandler.context(this));
+    if (typeof this._method !== 'undefined') {
+      this._method.apply(this._target);
+    }
+  },
+  
+  toString: function() {
+    return '[' + this.qualifiedClassName() + ' target=' + this.target() + ' eventName=' + this.eventName() + ' method=' + this.method() + ']';
+  }
+};
+
+SPITFIRE.Class(SPITFIRE.EventTask);
 //--------------------------------------
 // SPITFIRE.FunctionTask
 //--------------------------------------
@@ -2506,17 +2573,17 @@ SPITFIRE.ParallelTask.prototype = {
   
   taskCompleteHandler: function(event) {
     var task = event.target();
-		if (this.debug()) {
-			log("taskComplete " + task);
-		}
-		task.unbind(SPITFIRE.Event.COMPLETE, this.taskCompleteHandler.context(this));
-		this._createdTasks.push(task);
-		if (this._createdTasks.length == this.tasks().length) {
-		  if (this.debug()) {
-		    log('tasksComplete ' + this);
-		  }
-			this.complete();
-		}
+    if (this.debug()) {
+	    log("taskComplete " + task);
+    }
+    task.unbind(SPITFIRE.Event.COMPLETE, this.taskCompleteHandler.context(this));
+    this._createdTasks.push(task);
+    if (this._createdTasks.length == this.tasks().length) {
+      if (this.debug()) {
+	log('tasksComplete ' + this);
+      }
+	    this.complete();
+    }
   },
   
   //--------------------------------------

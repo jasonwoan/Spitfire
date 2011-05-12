@@ -20,17 +20,17 @@ SPITFIRE.ParallelTask.prototype = {
   
   taskCompleteHandler: function(event) {
     var task = event.target();
-		if (this.debug()) {
-			log("taskComplete " + task);
-		}
-		task.unbind(SPITFIRE.Event.COMPLETE, this.taskCompleteHandler.context(this));
-		this._createdTasks.push(task);
-		if (this._createdTasks.length == this.tasks().length) {
-		  if (this.debug()) {
-		    log('tasksComplete ' + this);
-		  }
-			this.complete();
-		}
+    if (this.debug()) {
+	    log("taskComplete " + task);
+    }
+    task.unbind(SPITFIRE.Event.COMPLETE, this.taskCompleteHandler.context(this));
+    this._createdTasks.push(task);
+    if (this._createdTasks.length == this.tasks().length) {
+      if (this.debug()) {
+	log('tasksComplete ' + this);
+      }
+	    this.complete();
+    }
   },
   
   //--------------------------------------

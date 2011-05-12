@@ -232,7 +232,7 @@ SPITFIRE.extendChildren = function($parent) {
 
   var i, len;
   for (i = 0, len = children.length; i < len; i += 1) {
-  	SPITFIRE.extendChildren($(children[i]));
+    SPITFIRE.extendChildren($(children[i]));
   }
   
   if (self.length) {
@@ -240,23 +240,23 @@ SPITFIRE.extendChildren = function($parent) {
     var el = self[0];
     var basePath = el.getAttribute('sf-base');
 
-  	// loop through namespace to retrieve class function
-  	var nsObjects = basePath.split('.');
-  	var j, obj, len2;
-  	obj = window;
-  	
-  	for (j = 0, len2 = nsObjects.length; j < len2; j += 1) {
-  		obj = obj[nsObjects[j]];
-  	}
-  	
-  	if (!obj) {
+    // loop through namespace to retrieve class function
+    var nsObjects = basePath.split('.');
+    var j, obj, len2;
+    obj = window;
+    
+    for (j = 0, len2 = nsObjects.length; j < len2; j += 1) {
+      obj = obj[nsObjects[j]];
+    }
+    
+    if (!obj) {
       throw new SPITFIRE.Error('base class not found');
     }
-  	
-  	var inst = new obj();
-  	
-  	SPITFIRE.extend(el, inst);
-  	el.init();
+    
+    var inst = new obj();
+    
+    SPITFIRE.extend(el, inst);
+    el.init();
   }
 };
 

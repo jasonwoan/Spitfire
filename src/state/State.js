@@ -7,12 +7,14 @@ SPITFIRE.State = function(name) {
   this.setName(name);
   this._children = [];
   this._selected = false;
+  this._debug = false;
   this.setQualifiedClassName('SPITFIRE.State');
 };
 
 SPITFIRE.State.superclass = SPITFIRE.EventDispatcher;
 SPITFIRE.State.synthesizedProperties = [
   'root',
+  'debug',
   'children',
   'stateManager',
   'parent',
@@ -165,6 +167,7 @@ SPITFIRE.State.prototype = {
     child.setParent(this);
     child.setStateManager(this.getStateManager());
     child.setRoot(this._root);
+    child.setDebug(this._debug);
     this._children.push(child);
     child.bind(SPITFIRE.StateEvent.STATE_CHANGE, this.childChangeHandler.context(this));
   },
@@ -279,16 +282,16 @@ SPITFIRE.State.prototype = {
     var location = '',
         i, len;
     for (i = 0, len = states.length; i < len; i += 1) {
-    	if (i === 0) {
-        location += '/';
-    	}
-    	
-    	var state = states[i];
-    	location += state.getName();
-    	
-    	if (i < states.length - 1) {
-        location += '/';
-    	}
+      if (i === 0) {
+	location += '/';
+      }
+      
+      var state = states[i];
+      location += state.getName();
+      
+      if (i < states.length - 1) {
+	location += '/';
+      }
     }
     
     return location;
@@ -352,10 +355,10 @@ SPITFIRE.State.prototype = {
       throw new SPITFIRE.Error(this + ': no child class defined');
     }
     
-    var state = new this.getChildClass();
-		state.setName(value);
-		this.addChild(state);
-		return state;
+    var state = new this._childClass();
+    state.setName(value);
+    this.addChild(state);
+    return state;
   },
   
   toString: function() {
