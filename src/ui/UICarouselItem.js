@@ -16,10 +16,10 @@ SPITFIRE.UICarouselItem = function(name, url, index) {
   el.className = 'carouselItemContainer';
   this.$el = $(el);
   this.$el.append(this.$img);
-  this.$el.css('opacity', 0);
   this.displayObject = new SPITFIRE.DisplayObject(this.$el);
   this.imgDisplayObject = new SPITFIRE.DisplayObject(this.$img);
   this.imgDisplayObject.setIsCentered(true);
+  this.$img.css('opacity', 0);
 };
 
 SPITFIRE.UICarouselItem.superclass = SPITFIRE.State;
@@ -61,10 +61,6 @@ SPITFIRE.UICarouselItem.prototype = {
   setItemDimensions: function(width, height) {
     this.setItemWidth(width);
     this.setItemHeight(height);
-    /*
-    var rect = new SPITFIRE.Rectangle(0, 0, this._itemWidth, this._itemHeight);
-    var newRect = SPITFIRE.RatioUtils.scaleWidth(rect, this._itemHeight, true);
-    */
     this.imgDisplayObject.setW(this._itemWidth);
     this.imgDisplayObject.setH(this._itemHeight);
     this.imgDisplayObject.scale(this._scale);
@@ -74,14 +70,14 @@ SPITFIRE.UICarouselItem.prototype = {
     this.displayObject.animate({
       l: x,
       t: y,
-      z: z,
-      opacity: opacity
+      z: z
     }, {
       duration: duration
     });
     
     this.imgDisplayObject.animate({
-      scale: scale
+      scale: scale,
+      opacity: opacity
     }, {
       duration: duration
     });

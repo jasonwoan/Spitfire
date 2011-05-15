@@ -206,7 +206,7 @@ SPITFIRE.UICarousel.prototype = {
     
     centerItem.displayObject.l(xPos);
     centerItem.displayObject.t(yPos);
-    centerItem.$el.css('opacity', 1);
+    centerItem.$img.css('opacity', 1);
     centerItem.carouselIndex(this.centerIndex());
 
     while (count < halfNumItems) {
@@ -218,7 +218,7 @@ SPITFIRE.UICarousel.prototype = {
         rightItem.displayObject.l(rightXPos);
         rightItem.displayObject.t(yPos);
         rightItem.carouselIndex(this.centerIndex() + count);
-        rightItem.$el.css('opacity', opacity);
+        rightItem.$img.css('opacity', opacity);
         rightXPos += this.itemDistance();
         rightIndex++;
         
@@ -231,7 +231,7 @@ SPITFIRE.UICarousel.prototype = {
         leftItem.displayObject.l(leftXPos);
         leftItem.displayObject.t(yPos);
         leftItem.carouselIndex(this.centerIndex() - count);
-        leftItem.$el.css('opacity', opacity);
+        leftItem.$img.css('opacity', opacity);
         
         leftXPos -= this.itemDistance();
         leftIndex--;

@@ -480,6 +480,7 @@ SPITFIRE.Error.prototype = {
 }
 
 SPITFIRE.Class(SPITFIRE.Error);
+
 //--------------------------------------
 // Event
 //--------------------------------------
@@ -1556,6 +1557,7 @@ SPITFIRE.prototype = {
 };
 
 SPITFIRE.Class(SPITFIRE.Percent);
+
 //--------------------------------------
 // SPITFIRE.Model
 //--------------------------------------
@@ -1766,6 +1768,7 @@ SPITFIRE.DisplayState.prototype = {
 };
 
 SPITFIRE.Class(SPITFIRE.DisplayState);
+
 //--------------------------------------
 // Redirect
 //--------------------------------------
@@ -2235,48 +2238,6 @@ SPITFIRE.TransitionProperties.prototype = {
 
 SPITFIRE.Class(SPITFIRE.TransitionProperties);
 //--------------------------------------
-// SPITFIRE.EventTask
-//--------------------------------------
-
-SPITFIRE.EventTask = function(target, eventName, method) {
-  this.callSuper();
-  this.qualifiedClassName('SPITFIRE.EventTask');
-  this.target(target);
-  this.eventName(eventName || 'complete');
-  this.method(method);
-};
-
-SPITFIRE.EventTask.superclass = SPITFIRE.Task;
-SPITFIRE.EventTask.synthesizedProperties = ['target', 'eventName', 'method'];
-
-SPITFIRE.EventTask.prototype = {
-  
-  //--------------------------------------
-  // Event Handlers
-  //--------------------------------------
-  
-  eventCompleteHandler: function(event) {
-    this.complete();
-  },
-  
-  //--------------------------------------
-  // Methods
-  //--------------------------------------
-  
-  start: function() {
-    this._target.bind(this._eventName, this.eventCompleteHandler.context(this));
-    if (typeof this._method !== 'undefined') {
-      this._method.apply(this._target);
-    }
-  },
-  
-  toString: function() {
-    return '[' + this.qualifiedClassName() + ' target=' + this.target() + ' eventName=' + this.eventName() + ' method=' + this.method() + ']';
-  }
-};
-
-SPITFIRE.Class(SPITFIRE.EventTask);
-//--------------------------------------
 // SPITFIRE.FunctionTask
 //--------------------------------------
 
@@ -2551,6 +2512,7 @@ SPITFIRE.JQueryLoadTask.prototype = {
 };
 
 SPITFIRE.Class(SPITFIRE.JQueryLoadTask);
+
 //--------------------------------------
 // SPITFIRE.ParallelTask
 //--------------------------------------
@@ -2613,6 +2575,7 @@ SPITFIRE.ParallelTask.prototype = {
 };
 
 SPITFIRE.Class(SPITFIRE.ParallelTask);
+
 //--------------------------------------
 // SPITFIRE.PropertyTask
 //--------------------------------------
@@ -2767,6 +2730,7 @@ SPITFIRE.UIButton.prototype = {
 };
 
 SPITFIRE.Class(SPITFIRE.UIButton);
+
 //--------------------------------------
 // SPITFIRE.UICarousel
 //--------------------------------------
@@ -2975,7 +2939,7 @@ SPITFIRE.UICarousel.prototype = {
     
     centerItem.displayObject.l(xPos);
     centerItem.displayObject.t(yPos);
-    centerItem.$el.css('opacity', 1);
+    centerItem.$img.css('opacity', 1);
     centerItem.carouselIndex(this.centerIndex());
 
     while (count < halfNumItems) {
@@ -2987,7 +2951,7 @@ SPITFIRE.UICarousel.prototype = {
         rightItem.displayObject.l(rightXPos);
         rightItem.displayObject.t(yPos);
         rightItem.carouselIndex(this.centerIndex() + count);
-        rightItem.$el.css('opacity', opacity);
+        rightItem.$img.css('opacity', opacity);
         rightXPos += this.itemDistance();
         rightIndex++;
         
@@ -3000,7 +2964,7 @@ SPITFIRE.UICarousel.prototype = {
         leftItem.displayObject.l(leftXPos);
         leftItem.displayObject.t(yPos);
         leftItem.carouselIndex(this.centerIndex() - count);
-        leftItem.$el.css('opacity', opacity);
+        leftItem.$img.css('opacity', opacity);
         
         leftXPos -= this.itemDistance();
         leftIndex--;
@@ -3035,6 +2999,7 @@ SPITFIRE.UICarousel.prototype = {
 };
 
 SPITFIRE.Class(SPITFIRE.UICarousel);
+
 //--------------------------------------
 // SPITFIRE.UICarouselItem
 //--------------------------------------
@@ -3053,10 +3018,10 @@ SPITFIRE.UICarouselItem = function(name, url, index) {
   el.className = 'carouselItemContainer';
   this.$el = $(el);
   this.$el.append(this.$img);
-  this.$el.css('opacity', 0);
   this.displayObject = new SPITFIRE.DisplayObject(this.$el);
   this.imgDisplayObject = new SPITFIRE.DisplayObject(this.$img);
   this.imgDisplayObject.setIsCentered(true);
+  this.$img.css('opacity', 0);
 };
 
 SPITFIRE.UICarouselItem.superclass = SPITFIRE.State;
@@ -3098,10 +3063,6 @@ SPITFIRE.UICarouselItem.prototype = {
   setItemDimensions: function(width, height) {
     this.setItemWidth(width);
     this.setItemHeight(height);
-    /*
-    var rect = new SPITFIRE.Rectangle(0, 0, this._itemWidth, this._itemHeight);
-    var newRect = SPITFIRE.RatioUtils.scaleWidth(rect, this._itemHeight, true);
-    */
     this.imgDisplayObject.setW(this._itemWidth);
     this.imgDisplayObject.setH(this._itemHeight);
     this.imgDisplayObject.scale(this._scale);
@@ -3111,14 +3072,14 @@ SPITFIRE.UICarouselItem.prototype = {
     this.displayObject.animate({
       l: x,
       t: y,
-      z: z,
-      opacity: opacity
+      z: z
     }, {
       duration: duration
     });
     
     this.imgDisplayObject.animate({
-      scale: scale
+      scale: scale,
+      opacity: opacity
     }, {
       duration: duration
     });
@@ -3350,6 +3311,7 @@ SPITFIRE.UISlideshow.prototype = {
 };
 
 SPITFIRE.Class(SPITFIRE.UISlideshow);
+
 //--------------------------------------
 // SPITFIRE.UISlideshowItem
 //--------------------------------------
@@ -3414,6 +3376,7 @@ SPITFIRE.UISlideshowItem.prototype = {
 };
 
 SPITFIRE.Class(SPITFIRE.UISlideshowItem);
+
 SPITFIRE.ArrayUtils = {};
 
 //--------------------------------------

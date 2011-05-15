@@ -19,6 +19,7 @@
 		  
 		  #carouselContainer img {
 		    position: absolute;
+				border: 1px solid red;
 		  }
 		  		  
 		  #carouselDescriptionContainer {
@@ -76,7 +77,13 @@
 		    { imageUrl: 'img/image-03.jpg', description: 'Image 003' },
 		    { imageUrl: 'img/image-04.jpg', description: 'Image 004' },
 		    { imageUrl: 'img/image-05.jpg', description: 'Image 005' },
-		    { imageUrl: 'img/image-06.jpg', description: 'Image 006' }
+		    { imageUrl: 'img/image-06.jpg', description: 'Image 006' },
+				{ imageUrl: 'img/image-01.jpg', description: 'Image 007' },
+		    { imageUrl: 'img/image-02.jpg', description: 'Image 008' },
+		    { imageUrl: 'img/image-03.jpg', description: 'Image 009' },
+		    { imageUrl: 'img/image-04.jpg', description: 'Image 010' },
+		    { imageUrl: 'img/image-05.jpg', description: 'Image 011' },
+		    { imageUrl: 'img/image-06.jpg', description: 'Image 012' }
 		  ];
 		  
 		  var carouselConfig = {
@@ -97,6 +104,7 @@
 		  this.stateManager = new SPITFIRE.StateManager();
 		  this.carousel = new SPITFIRE.UICarousel(carouselConfig);
 		  this.stateManager.setTree(this.carousel);
+			this.carousel.browse();
   </script>
 </body>
 </html>
