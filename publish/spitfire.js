@@ -480,7 +480,6 @@ SPITFIRE.Error.prototype = {
 }
 
 SPITFIRE.Class(SPITFIRE.Error);
-
 //--------------------------------------
 // Event
 //--------------------------------------
@@ -1557,7 +1556,6 @@ SPITFIRE.prototype = {
 };
 
 SPITFIRE.Class(SPITFIRE.Percent);
-
 //--------------------------------------
 // SPITFIRE.Model
 //--------------------------------------
@@ -1768,7 +1766,6 @@ SPITFIRE.DisplayState.prototype = {
 };
 
 SPITFIRE.Class(SPITFIRE.DisplayState);
-
 //--------------------------------------
 // Redirect
 //--------------------------------------
@@ -2238,6 +2235,48 @@ SPITFIRE.TransitionProperties.prototype = {
 
 SPITFIRE.Class(SPITFIRE.TransitionProperties);
 //--------------------------------------
+// SPITFIRE.EventTask
+//--------------------------------------
+
+SPITFIRE.EventTask = function(target, eventName, method) {
+  this.callSuper();
+  this.qualifiedClassName('SPITFIRE.EventTask');
+  this.target(target);
+  this.eventName(eventName || 'complete');
+  this.method(method);
+};
+
+SPITFIRE.EventTask.superclass = SPITFIRE.Task;
+SPITFIRE.EventTask.synthesizedProperties = ['target', 'eventName', 'method'];
+
+SPITFIRE.EventTask.prototype = {
+  
+  //--------------------------------------
+  // Event Handlers
+  //--------------------------------------
+  
+  eventCompleteHandler: function(event) {
+    this.complete();
+  },
+  
+  //--------------------------------------
+  // Methods
+  //--------------------------------------
+  
+  start: function() {
+    this._target.bind(this._eventName, this.eventCompleteHandler.context(this));
+    if (typeof this._method !== 'undefined') {
+      this._method.apply(this._target);
+    }
+  },
+  
+  toString: function() {
+    return '[' + this.qualifiedClassName() + ' target=' + this.target() + ' eventName=' + this.eventName() + ' method=' + this.method() + ']';
+  }
+};
+
+SPITFIRE.Class(SPITFIRE.EventTask);
+//--------------------------------------
 // SPITFIRE.FunctionTask
 //--------------------------------------
 
@@ -2512,7 +2551,6 @@ SPITFIRE.JQueryLoadTask.prototype = {
 };
 
 SPITFIRE.Class(SPITFIRE.JQueryLoadTask);
-
 //--------------------------------------
 // SPITFIRE.ParallelTask
 //--------------------------------------
@@ -2575,7 +2613,6 @@ SPITFIRE.ParallelTask.prototype = {
 };
 
 SPITFIRE.Class(SPITFIRE.ParallelTask);
-
 //--------------------------------------
 // SPITFIRE.PropertyTask
 //--------------------------------------
@@ -2730,7 +2767,6 @@ SPITFIRE.UIButton.prototype = {
 };
 
 SPITFIRE.Class(SPITFIRE.UIButton);
-
 //--------------------------------------
 // SPITFIRE.UICarousel
 //--------------------------------------
@@ -2999,7 +3035,6 @@ SPITFIRE.UICarousel.prototype = {
 };
 
 SPITFIRE.Class(SPITFIRE.UICarousel);
-
 //--------------------------------------
 // SPITFIRE.UICarouselItem
 //--------------------------------------
@@ -3311,7 +3346,6 @@ SPITFIRE.UISlideshow.prototype = {
 };
 
 SPITFIRE.Class(SPITFIRE.UISlideshow);
-
 //--------------------------------------
 // SPITFIRE.UISlideshowItem
 //--------------------------------------
@@ -3376,7 +3410,6 @@ SPITFIRE.UISlideshowItem.prototype = {
 };
 
 SPITFIRE.Class(SPITFIRE.UISlideshowItem);
-
 SPITFIRE.ArrayUtils = {};
 
 //--------------------------------------
