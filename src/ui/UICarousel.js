@@ -163,20 +163,7 @@ SPITFIRE.UICarousel.prototype = {
   changeData: function(data) {
     this.data = data;
     
-    // reset
-    this._positionIndex = 0;
-    this.setDefaultChild(undefined);
-    this.browse();
-    
-    // remove current dom elements and states
-    while (this._items.length > 0) {
-      var item = this._items[0];
-      // remove element from dom
-      item.$el.remove();
-      this.removeChild(item);
-      item = null;
-      this._items.shift();
-    }
+    this.destroy();
     
     // create states and images
     var task = this.createStatesTask();
@@ -253,10 +240,18 @@ SPITFIRE.UICarousel.prototype = {
   },
   
   destroy: function() {
+    // reset
+    this._positionIndex = 0;
+    this.setDefaultChild(undefined);
+    this.browse();
+    
     while (this._items.length > 0) {
       var item = this._items[0];
+      
       // remove element from dom
-      item.$el.remove();
+      this.removeChild(item);
+      item.destroy();
+      item = null;
       this._items.shift();
     }
   }

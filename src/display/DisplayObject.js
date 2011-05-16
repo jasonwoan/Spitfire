@@ -175,6 +175,10 @@ SPITFIRE.DisplayObject.prototype = {
       delete this[this._placeholderProperties[0]];
       this._placeholderProperties.shift();
     }
+  },
+  
+  destroy: function() {
+    this._$this = null;
   }
 };
 

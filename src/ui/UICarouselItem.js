@@ -81,6 +81,13 @@ SPITFIRE.UICarouselItem.prototype = {
     }, {
       duration: duration
     });
+  },
+  
+  destroy: function() {
+    this.displayObject.destroy();
+    this.imgDisplayObject.destroy();
+    this.$img.remove();
+    this.$el.remove();
   }
 };
 

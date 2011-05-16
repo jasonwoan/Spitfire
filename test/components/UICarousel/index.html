@@ -66,6 +66,9 @@
   
   <div id="carouselPreviousButton">&#171</div>
   <div id="carouselNextButton">&#187</div>
+	
+	<div id="destroy">DESTROY</div>
+	<div id="create">CREATE</div>
       
   <script type="text/javascript" src="../../../src/libs/jquery-1.5.2.min.js"></script>
     <script type="text/javascript" src="../../../publish/spitfire.js"></script>
@@ -83,7 +86,19 @@
 		    { imageUrl: 'img/image-03.jpg', description: 'Image 009' },
 		    { imageUrl: 'img/image-04.jpg', description: 'Image 010' },
 		    { imageUrl: 'img/image-05.jpg', description: 'Image 011' },
-		    { imageUrl: 'img/image-06.jpg', description: 'Image 012' }
+		    { imageUrl: 'img/image-06.jpg', description: 'Image 012' },
+				{ imageUrl: 'img/image-01.jpg', description: 'Image 013' },
+		    { imageUrl: 'img/image-02.jpg', description: 'Image 014' },
+		    { imageUrl: 'img/image-03.jpg', description: 'Image 015' },
+		    { imageUrl: 'img/image-04.jpg', description: 'Image 016' },
+		    { imageUrl: 'img/image-05.jpg', description: 'Image 017' },
+		    { imageUrl: 'img/image-06.jpg', description: 'Image 018' },
+				{ imageUrl: 'img/image-01.jpg', description: 'Image 019' },
+		    { imageUrl: 'img/image-02.jpg', description: 'Image 020' },
+		    { imageUrl: 'img/image-03.jpg', description: 'Image 021' },
+		    { imageUrl: 'img/image-04.jpg', description: 'Image 022' },
+		    { imageUrl: 'img/image-05.jpg', description: 'Image 023' },
+		    { imageUrl: 'img/image-06.jpg', description: 'Image 024' }
 		  ];
 		  
 		  var carouselConfig = {
@@ -105,6 +120,15 @@
 		  this.carousel = new SPITFIRE.UICarousel(carouselConfig);
 		  this.stateManager.setTree(this.carousel);
 			this.carousel.browse();
+			
+			var that = this;
+			$('#destroy').click(function(event) {
+				that.carousel.destroy();
+			});
+			
+			$('#create').click(function(event) {
+				that.carousel.changeData(carouselConfig.data);
+			});
   </script>
 </body>
 </html>

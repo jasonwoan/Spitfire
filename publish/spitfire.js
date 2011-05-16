@@ -480,6 +480,7 @@ SPITFIRE.Error.prototype = {
 }
 
 SPITFIRE.Class(SPITFIRE.Error);
+
 //--------------------------------------
 // Event
 //--------------------------------------
@@ -721,6 +722,10 @@ SPITFIRE.DisplayObject.prototype = {
       delete this[this._placeholderProperties[0]];
       this._placeholderProperties.shift();
     }
+  },
+  
+  destroy: function() {
+    this._$this = null;
   }
 };
 
@@ -1556,6 +1561,7 @@ SPITFIRE.prototype = {
 };
 
 SPITFIRE.Class(SPITFIRE.Percent);
+
 //--------------------------------------
 // SPITFIRE.Model
 //--------------------------------------
@@ -1766,6 +1772,7 @@ SPITFIRE.DisplayState.prototype = {
 };
 
 SPITFIRE.Class(SPITFIRE.DisplayState);
+
 //--------------------------------------
 // Redirect
 //--------------------------------------
@@ -2551,6 +2558,7 @@ SPITFIRE.JQueryLoadTask.prototype = {
 };
 
 SPITFIRE.Class(SPITFIRE.JQueryLoadTask);
+
 //--------------------------------------
 // SPITFIRE.ParallelTask
 //--------------------------------------
@@ -2613,6 +2621,7 @@ SPITFIRE.ParallelTask.prototype = {
 };
 
 SPITFIRE.Class(SPITFIRE.ParallelTask);
+
 //--------------------------------------
 // SPITFIRE.PropertyTask
 //--------------------------------------
@@ -2767,6 +2776,7 @@ SPITFIRE.UIButton.prototype = {
 };
 
 SPITFIRE.Class(SPITFIRE.UIButton);
+
 //--------------------------------------
 // SPITFIRE.UICarousel
 //--------------------------------------
@@ -2932,20 +2942,7 @@ SPITFIRE.UICarousel.prototype = {
   changeData: function(data) {
     this.data = data;
     
-    // reset
-    this._positionIndex = 0;
-    this.setDefaultChild(undefined);
-    this.browse();
-    
-    // remove current dom elements and states
-    while (this._items.length > 0) {
-      var item = this._items[0];
-      // remove element from dom
-      item.$el.remove();
-      this.removeChild(item);
-      item = null;
-      this._items.shift();
-    }
+    this.destroy();
     
     // create states and images
     var task = this.createStatesTask();
@@ -3022,16 +3019,25 @@ SPITFIRE.UICarousel.prototype = {
   },
   
   destroy: function() {
+    // reset
+    this._positionIndex = 0;
+    this.setDefaultChild(undefined);
+    this.browse();
+    
     while (this._items.length > 0) {
       var item = this._items[0];
+      
       // remove element from dom
-      item.$el.remove();
+      this.removeChild(item);
+      item.destroy();
+      item = null;
       this._items.shift();
     }
   }
 };
 
 SPITFIRE.Class(SPITFIRE.UICarousel);
+
 //--------------------------------------
 // SPITFIRE.UICarouselItem
 //--------------------------------------
@@ -3115,6 +3121,13 @@ SPITFIRE.UICarouselItem.prototype = {
     }, {
       duration: duration
     });
+  },
+  
+  destroy: function() {
+    this.displayObject.destroy();
+    this.imgDisplayObject.destroy();
+    this.$img.remove();
+    this.$el.remove();
   }
 };
 
@@ -3343,6 +3356,7 @@ SPITFIRE.UISlideshow.prototype = {
 };
 
 SPITFIRE.Class(SPITFIRE.UISlideshow);
+
 //--------------------------------------
 // SPITFIRE.UISlideshowItem
 //--------------------------------------
@@ -3407,6 +3421,7 @@ SPITFIRE.UISlideshowItem.prototype = {
 };
 
 SPITFIRE.Class(SPITFIRE.UISlideshowItem);
+
 SPITFIRE.ArrayUtils = {};
 
 //--------------------------------------
