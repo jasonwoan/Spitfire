@@ -88,6 +88,8 @@ SPITFIRE.UICarousel.prototype = {
     this._positionIndex = value;
     
     this.trigger(new SPITFIRE.Event(SPITFIRE.Event.CHANGE));
+    
+    this.updateDescription();
   },
   
   getLoadIn: function() {
@@ -97,12 +99,6 @@ SPITFIRE.UICarousel.prototype = {
   //--------------------------------------
   // Event Handlers
   //--------------------------------------
-  
-  childChangeHandler: function(event) {
-    this.callSuper(event);
-    
-    this.updateDescription();
-  },
   
   imagesLoadedHandler: function(event) {
     this.positionItems();
@@ -260,7 +256,8 @@ SPITFIRE.UICarousel.prototype = {
     while (this._items.length > 0) {
       var item = this._items[0];
       // remove element from dom
-      state.$el.remove();
+      item.$el.remove();
+      this._items.shift();
     }
   }
 };

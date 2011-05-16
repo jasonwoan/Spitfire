@@ -265,7 +265,7 @@ SPITFIRE.trackEvent = function(category, action, label, value) {
   _gaq = _gaq || [];
   
   if (typeof category !== 'undefined' && typeof action !== 'undefined') {
-    log('[TRACKING EVENT // category:' + category + ' action:' + action + ' label:' + label + ' value:' + value + ']');
+    //log('[TRACKING EVENT // category:' + category + ' action:' + action + ' label:' + label + ' value:' + value + ']');
     _gaq.push(['_trackEvent', category, action, label, value]);
   }
 };
@@ -274,7 +274,7 @@ SPITFIRE.trackPage = function(page) {
   _gaq = _gaq || [];
   
   if (typeof page !== 'undefined') {
-    log('[TRACKING PAGE // page:' + page + ']');
+    //log('[TRACKING PAGE // page:' + page + ']');
     _gaq.push(['_trackPageview', page]);
   }
 };
@@ -1656,9 +1656,9 @@ SPITFIRE.DisplayState.prototype = {
     if (configStylesheets.length > 0) {
       for (i = 0, len = configStylesheets.length; i < len; i += 1) {
       	var stylesheet = configStylesheets[i];
-	if (this.checkIsCached(stylesheet))
-	  continue;
-	this.cache.push(stylesheet);
+				if (this.checkIsCached(stylesheet))
+					continue;
+				this.cache.push(stylesheet);
       	task = new SPITFIRE.JQueryAjaxTask(stylesheet);
       	this.stylesheets().push(task);
       	sequentialTask.addTask(task);
@@ -1670,9 +1670,9 @@ SPITFIRE.DisplayState.prototype = {
     if (configImages.length > 0) {
       for (i = 0, len = configImages.length; i < len; i += 1) {
       	var img = configImages[i];
-	if (this.checkIsCached(img))
-	  continue;
-	this.cache.push(img);
+				if (this.checkIsCached(img))
+					continue;
+				this.cache.push(img);
       	task = new SPITFIRE.JQueryAjaxTask(img);
       	this.images().push(task);
       	sequentialTask.addTask(task);
@@ -1751,7 +1751,7 @@ SPITFIRE.DisplayState.prototype = {
   },
   
   cleanUp: function() {
-  
+
   },
   
   trackPage: function() {
@@ -2857,6 +2857,8 @@ SPITFIRE.UICarousel.prototype = {
     this._positionIndex = value;
     
     this.trigger(new SPITFIRE.Event(SPITFIRE.Event.CHANGE));
+    
+    this.updateDescription();
   },
   
   getLoadIn: function() {
@@ -2866,12 +2868,6 @@ SPITFIRE.UICarousel.prototype = {
   //--------------------------------------
   // Event Handlers
   //--------------------------------------
-  
-  childChangeHandler: function(event) {
-    this.callSuper(event);
-    
-    this.updateDescription();
-  },
   
   imagesLoadedHandler: function(event) {
     this.positionItems();
@@ -3029,7 +3025,8 @@ SPITFIRE.UICarousel.prototype = {
     while (this._items.length > 0) {
       var item = this._items[0];
       // remove element from dom
-      state.$el.remove();
+      item.$el.remove();
+      this._items.shift();
     }
   }
 };

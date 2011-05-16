@@ -265,7 +265,7 @@ SPITFIRE.trackEvent = function(category, action, label, value) {
   _gaq = _gaq || [];
   
   if (typeof category !== 'undefined' && typeof action !== 'undefined') {
-    log('[TRACKING EVENT // category:' + category + ' action:' + action + ' label:' + label + ' value:' + value + ']');
+    //log('[TRACKING EVENT // category:' + category + ' action:' + action + ' label:' + label + ' value:' + value + ']');
     _gaq.push(['_trackEvent', category, action, label, value]);
   }
 };
@@ -274,7 +274,7 @@ SPITFIRE.trackPage = function(page) {
   _gaq = _gaq || [];
   
   if (typeof page !== 'undefined') {
-    log('[TRACKING PAGE // page:' + page + ']');
+    //log('[TRACKING PAGE // page:' + page + ']');
     _gaq.push(['_trackPageview', page]);
   }
 };
