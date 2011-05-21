@@ -1,22 +1,24 @@
+/*global window, $*/
+"use strict";
+
 var SPITFIRE = SPITFIRE || {};
 
 var $s = $s || SPITFIRE;
 
-SPITFIRE.browser = {  
-  Opera: window.opera ? true : false,
-  IE: document.all && !this.Opera ? true : false,
-  IE6: this.IE && typeof(window.XMLHttpRequest) === "undefined" ? true : false,
-  IE8: this.IE && typeof(document.querySelectorAll) !== "undefined" ? true : false,
-  IE7: this.IE && ! this.IE6 && !this.IE8 ? true : false,
-  WebKit: /WebKit/i.test(navigator.userAgent) ? true : false,
-  iPhone: /iPhone|iPod/i.test(navigator.userAgent)? true : false,
-  Chrome: /Chrome/i.test(navigator.userAgent) ? true : false,
-  Safari: /Safari/i.test(navigator.userAgent) && !this.Chrome ? true : false,
-  Konqueror: navigator.vendor === "KDE" ? true : false,
-  Konqueror4: this.Konqueror && /native code/.test(document.getElementsByClassName) ? true : false,
-  Gecko: !this.WebKit && navigator.product === "Gecko" ? true : false,
-  Gecko19: this.Gecko && Array.reduce ? true : false
-};
+SPITFIRE.browser = {};
+SPITFIRE.browser.Opera = window.opera ? true : false;
+SPITFIRE.browser.IE = document.all && !SPITFIRE.browser.Opera ? true : false;
+SPITFIRE.browser.IE6 = SPITFIRE.browser.IE && typeof(window.XMLHttpRequest) === "undefined" ? true : false;
+SPITFIRE.browser.IE8 = SPITFIRE.browser.IE && typeof(document.querySelectorAll) !== "undefined" ? true : false;
+SPITFIRE.browser.IE7 = SPITFIRE.browser.IE && ! SPITFIRE.browser.IE6 && !SPITFIRE.browser.IE8 ? true : false;
+SPITFIRE.browser.WebKit = /WebKit/i.test(navigator.userAgent) ? true : false;
+SPITFIRE.browser.iPhone = /iPhone|iPod/i.test(navigator.userAgent) ? true : false;
+SPITFIRE.browser.Chrome = /Chrome/i.test(navigator.userAgent) ? true : false;
+SPITFIRE.browser.Safari = /Safari/i.test(navigator.userAgent) && !SPITFIRE.browser.Chrome ? true : false;
+SPITFIRE.browser.Konqueror = navigator.vendor === "KDE" ? true : false;
+SPITFIRE.browser.Konqueror4 = SPITFIRE.browser.Konqueror && /native code/.test(document.getElementsByClassName) ? true : false;
+SPITFIRE.browser.Gecko = !SPITFIRE.browser.WebKit && navigator.product === "Gecko" ? true : false;
+SPITFIRE.browser.Gecko19 = SPITFIRE.browser.Gecko && Array.reduce ? true : false;
 
 SPITFIRE.isArray = function(obj) {
   return typeof obj === 'object' && obj.length;
@@ -29,7 +31,7 @@ SPITFIRE.isFunction = function(obj) {
 //  Credit: jQuery
 //  A crude way of determining if an object is a window
 SPITFIRE.isWindow = function(obj) {
-		return obj && typeof obj === "object" && 'setInterval' in obj;
+	return obj && typeof obj === "object" && 'setInterval' in obj;
 };
 
 //  Credit: jQuery
@@ -41,30 +43,25 @@ SPITFIRE.isPlainObject = function(obj) {
 		return false;
 	}
 	
-	var hasOwn = Object.prototype.hasOwnProperty;
+	var hasOwn = Object.prototype.hasOwnProperty,
+			key;
 
 	// Not own constructor property must be Object
-	if ( obj.constructor &&
+	if (obj.constructor &&
 		!hasOwn.call(obj, "constructor") &&
-		!hasOwn.call(obj.constructor.prototype, "isPrototypeOf") ) {
+		!hasOwn.call(obj.constructor.prototype, "isPrototypeOf")) {
 		return false;
 	}
-
-	// Own properties are enumerated firstly, so to speed up,
-	// if last one is own, then all properties are own.
-
-	var key;
-	for ( key in obj ) {}
-
-	return key === undefined || hasOwn.call( obj, key );
+	
+	return typeof key === 'undefined' || hasOwn.call(obj, key);
 };
 
 SPITFIRE.isSynthesizedProperty = function(property, classDefinition) {
   var arr = classDefinition.synthesizedProperties,
-      isSynthesizedProperty = false;
+      isSynthesizedProperty = false,
+			i, len;
   
   if (arr) {
-    var i, len;
     for (i = 0, len = arr.length; i < len; i += 1) {
       if (arr[i] === property) {
         isSynthesizedProperty = true;
@@ -115,38 +112,40 @@ SPITFIRE.extend = function() {
 	// extend TCD itself if only one argument is passed
 	if ( length === i ) {
 		target = this;
-		--i;
+		i -= 1;
 	}
 
-	for ( ; i < length; i++ ) {
+	for ( ; i < length; i += 1 ) {
 		// Only deal with non-null/undefined values
-		if ( (options = arguments[ i ]) != null ) {
+		if ( (options = arguments[ i ]) !== null ) {
 			// Extend the base object
 			for ( name in options ) {
-				src = target[ name ];
-				copy = options[ name ];
-
-				// Prevent never-ending loop
-				if ( target === copy ) {
-					continue;
-				}
-
-			  // Recurse if we're merging plain objects or arrays
-				if ( deep && copy && ( SPITFIRE.isPlainObject(copy) || (copyIsArray = SPITFIRE.isArray(copy)) ) ) {
-					if ( copyIsArray ) {
-						copyIsArray = false;
-						clone = src && SPITFIRE.isArray(src) ? src : [];
-
-					} else {
-						clone = src && SPITFIRE.isPlainObject(src) ? src : {};
+				if (options.hasOwnProperty(name)) {
+					src = target[ name ];
+					copy = options[ name ];
+	
+					// Prevent never-ending loop
+					if ( target === copy ) {
+						continue;
 					}
-
-					// Never move original objects, clone them
-					target[ name ] = SPITFIRE.extend( deep, clone, copy );
-
-				// Don't bring in undefined values
-				} else if ( copy !== undefined ) {
-					target[ name ] = copy;
+	
+					// Recurse if we're merging plain objects or arrays
+					if ( deep && copy && ( SPITFIRE.isPlainObject(copy) || (copyIsArray = SPITFIRE.isArray(copy)) ) ) {
+						if ( copyIsArray ) {
+							copyIsArray = false;
+							clone = src && SPITFIRE.isArray(src) ? src : [];
+	
+						} else {
+							clone = src && SPITFIRE.isPlainObject(src) ? src : {};
+						}
+	
+						// Never move original objects, clone them
+						target[ name ] = SPITFIRE.extend( deep, clone, copy );
+	
+					// Don't bring in undefined values
+					} else if ( copy !== undefined ) {
+						target[ name ] = copy;
+					}
 				}
 			}
 		}
@@ -177,13 +176,17 @@ SPITFIRE.removeListener = function(target, event, handler, context) {
 };
 
 SPITFIRE.merge = function(obj1, obj2) {  
-  if (typeof obj1 === 'undefined') return SPITFIRE.clone(obj2);
-  if (typeof obj2 === 'undefined') return SPITFIRE.clone(obj1);
+  if (typeof obj1 === 'undefined') {
+		return SPITFIRE.clone(obj2);
+	}
+  if (typeof obj2 === 'undefined') {
+		return SPITFIRE.clone(obj1);
+	}
   
-  var temp;
-  temp = SPITFIRE.clone(obj1);
+  var temp = SPITFIRE.clone(obj1),
+			key;
   
-  for (var key in obj2) {
+  for (key in obj2) {
     // check to see if key already exists
     if (typeof temp[key] !== 'undefined') {
       // merge the two objects
@@ -194,20 +197,25 @@ SPITFIRE.merge = function(obj1, obj2) {
   }
   
   return temp;
-}
+};
   
 SPITFIRE.clone = function(obj) {
-  if (typeof obj !== 'object') return obj;
+  if (typeof obj !== 'object') {
+		return obj;
+	}
   
-  var temp = {};
+  var temp = {},
+			key;
   
-  for (var key in obj) {
-    temp[key] = SPITFIRE.clone(obj[key]);
-    temp[key]._name = key;
+  for (key in obj) {
+		if (obj.hasOwnProperty(key)) {
+			temp[key] = SPITFIRE.clone(obj[key]);
+			temp[key]._name = key;
+		}
   }
   
   return temp;
-}
+};
 
 //--------------------------------------
 // SPITFIRE.extendDOM(selector)
@@ -227,22 +235,20 @@ SPITFIRE.extendDOM = function(selector) {
 
 SPITFIRE.extendChildren = function($parent) {
   
-  var self = $parent.filter('[sf-base]');
-  var children = $parent.children();
-
-  var i, len;
+  var self = $parent.filter('[sf-base]'),
+			children = $parent.children(),
+			i, len,
+			el = self[0],
+			basePath = el.getAttribute('sf-base'),
+			nsObjects = basePath.split('.'),
+			j, obj, len2, inst;
+			
   for (i = 0, len = children.length; i < len; i += 1) {
     SPITFIRE.extendChildren($(children[i]));
   }
   
   if (self.length) {
     
-    var el = self[0];
-    var basePath = el.getAttribute('sf-base');
-
-    // loop through namespace to retrieve class function
-    var nsObjects = basePath.split('.');
-    var j, obj, len2;
     obj = window;
     
     for (j = 0, len2 = nsObjects.length; j < len2; j += 1) {
@@ -253,7 +259,7 @@ SPITFIRE.extendChildren = function($parent) {
       throw new SPITFIRE.Error('base class not found');
     }
     
-    var inst = new obj();
+    inst = new obj();
     
     SPITFIRE.extend(el, inst);
     el.init();
@@ -262,7 +268,7 @@ SPITFIRE.extendChildren = function($parent) {
 
 // Tracking
 SPITFIRE.trackEvent = function(category, action, label, value) {
-  _gaq = _gaq || [];
+  var _gaq = _gaq || [];
   
   if (typeof category !== 'undefined' && typeof action !== 'undefined') {
     //log('[TRACKING EVENT // category:' + category + ' action:' + action + ' label:' + label + ' value:' + value + ']');
@@ -271,7 +277,7 @@ SPITFIRE.trackEvent = function(category, action, label, value) {
 };
 
 SPITFIRE.trackPage = function(page) {
-  _gaq = _gaq || [];
+  var _gaq = _gaq || [];
   
   if (typeof page !== 'undefined') {
     //log('[TRACKING PAGE // page:' + page + ']');
@@ -282,12 +288,12 @@ SPITFIRE.trackPage = function(page) {
 if(!Array.indexOf){
   Array.prototype.indexOf = function(obj) {
       for (var i = 0, len = this.length; i < len; i += 1){
-          if (this[i] == obj) {
+          if (this[i] === obj) {
               return i;
           }
       }
       return -1;
-  }
+  };
 }
 
 // make sure Object.create is available in the browser for prototypal inheritance
@@ -298,10 +304,13 @@ if (typeof Object.create !== 'function') {
     return new F();
   };
 }
+/*global window, log*/
+
 // Allows for binding context to functions
 // when using in event listeners and timeouts
 Function.prototype.context = function(obj) {
-  var method = this;
+  var method = this,
+      temp;
   temp = function() {
     return method.apply(obj, arguments);
   };
@@ -314,35 +323,43 @@ window.log = function(){
   log.history = log.history || [];   // store logs to an array for reference
   log.history.push(arguments);
   arguments.callee = arguments.callee.caller;  
-  if(this.console) console.log( Array.prototype.slice.call(arguments) );
+  if (this.console) {
+    console.log( Array.prototype.slice.call(arguments));
+  }
 };
 // make it safe to use console.log always
 (function(b){function c(){}for(var d="assert,count,debug,dir,dirxml,error,exception,group,groupCollapsed,groupEnd,info,log,markTimeline,profile,profileEnd,time,timeEnd,trace,warn".split(","),a;a=d.pop();)b[a]=b[a]||c})(window.console=window.console||{});
+/*global SPITFIRE*/
+
 //--------------------------------------
 // Class
 //--------------------------------------
 
 SPITFIRE.Class = function(classDefinition) {
-  if (classDefinition.isExtended) return;
+  if (classDefinition.isExtended) {
+    return;
+  }
+  
+  var getterHelper, setterHelper, accessorMethodHelper, i, len, synProp, synPropMethodName, obj;
   
   // create synthesized properties
   if (typeof classDefinition.synthesizedProperties !== 'undefined') {
     
     // helper function to bind the accessor method to the correct property name
-    var getterHelper = function(propertyName) {
+    getterHelper = function(propertyName) {
       return function() {
         return this['_' + propertyName];
       };
-    }
+    };
     
-    var setterHelper = function(propertyName) {
+    setterHelper = function(propertyName) {
       return function(value) {
         this['_' + propertyName] = value;
         return this;
       };
-    }
+    };
     
-    var accessorMethodHelper = function(propName) {
+    accessorMethodHelper = function(propName) {
       return function() {
         if (arguments.length > 0) {
           // setter
@@ -354,17 +371,18 @@ SPITFIRE.Class = function(classDefinition) {
       };
     };
     
-    var i, len;
     for (i = 0, len = classDefinition.synthesizedProperties.length; i < len; i += 1) {
-      var synProp = classDefinition.synthesizedProperties[i];
-      var synPropMethodName = synProp.charAt(0).toUpperCase() + synProp.slice(1);
+      synProp = classDefinition.synthesizedProperties[i];
+      synPropMethodName = synProp.charAt(0).toUpperCase() + synProp.slice(1);
       
       // create getter / setter methods
-      if (!('get' + synPropMethodName in classDefinition.prototype))
+      if (!('get' + synPropMethodName in classDefinition.prototype)) {
         classDefinition.prototype['get' + synPropMethodName] = getterHelper(synProp);
+      }
       
-      if (!('set' + synPropMethodName in classDefinition.prototype))  
+      if (!('set' + synPropMethodName in classDefinition.prototype)) {
         classDefinition.prototype['set' + synPropMethodName] = setterHelper(synProp);
+      }
         
       classDefinition.prototype[synProp] = accessorMethodHelper(synPropMethodName);
     }
@@ -375,7 +393,39 @@ SPITFIRE.Class = function(classDefinition) {
   // a singular object, inserting function statements
   // when callSuper is called
   
-  var obj = {};
+  obj = {};
+  
+  function merge(classDef, supr) {
+    var temp, key,
+        pattern = /callSuper/ig;
+    if (typeof classDef !== 'undefined') {
+      temp = SPITFIRE.clone(classDef);
+      
+      for (key in supr) {
+        // check to see if method exists
+        // if so save super method as a _super property
+        // of the current method
+        if (typeof temp[key] !== 'undefined') {
+          // check to see if there is a callSuper method
+          if (temp[key].toString().search(pattern) !== -1) {
+            temp[key]._super = supr[key];
+          }
+        } else {
+          temp[key] = supr[key];
+        }
+      }
+    } else {
+      temp = SPITFIRE.clone(supr);
+    }
+    
+    return temp;
+  }
+  
+  function extend(supr, classDef) {
+    classDef.prototype = merge(classDef.prototype, supr.prototype);
+    
+    return classDef;
+  }
   
   (function (classDef) {
     var parent = classDefinition.superclass;
@@ -387,7 +437,7 @@ SPITFIRE.Class = function(classDefinition) {
       
       obj = extend(parent, obj);
     }
-  })(classDefinition);
+  }(classDefinition));
   
   classDefinition = extend(obj, classDefinition);
   
@@ -409,39 +459,9 @@ SPITFIRE.Class = function(classDefinition) {
   };
   
   classDefinition.isExtended = true;
-  
-  function extend(supr, classDef) {
-    classDef.prototype = merge(classDef.prototype, supr.prototype);
-    
-    return classDef;
-  }
-  
-  function merge(classDef, supr) {
-    var temp,
-        pattern = /callSuper/ig;
-    if (typeof classDef !== 'undefined') {
-      temp = SPITFIRE.clone(classDef);
-      
-      for (var key in supr) {
-        // check to see if method exists
-        // if so save super method as a _super property
-        // of the current method
-        if (typeof temp[key] !== 'undefined') {
-          // check to see if there is a callSuper method
-          if (temp[key].toString().search(pattern) !== -1) {
-            temp[key]._super = supr[key];
-          }
-        } else {
-          temp[key] = supr[key];
-        }
-      }
-    } else {
-      temp = SPITFIRE.clone(supr);
-    }
-    
-    return temp;
-  }
 };
+/*global SPITFIRE*/
+
 //--------------------------------------
 // Object
 //--------------------------------------
@@ -456,9 +476,11 @@ SPITFIRE.Object.prototype = {
   init: function() {
   
   }
-}
+};
 
 SPITFIRE.Class(SPITFIRE.Object);
+/*global SPITFIRE*/
+
 //--------------------------------------
 // Error
 //--------------------------------------
@@ -477,9 +499,11 @@ SPITFIRE.Error.prototype = {
   toString: function() {
     return this.getName() + ': [' + this.getQualifiedClassName() + '] "' + this.getMessage() + '"';
   }
-}
+};
 
 SPITFIRE.Class(SPITFIRE.Error);
+/*global SPITFIRE*/
+
 //--------------------------------------
 // Event
 //--------------------------------------
@@ -497,6 +521,8 @@ SPITFIRE.Event.CHANGE = 'change';
 SPITFIRE.Event.synthesizedProperties = ['bubbles', 'cancelable', 'data', 'target', 'type'];
 SPITFIRE.Event.superclass = SPITFIRE.Object;
 SPITFIRE.Class(SPITFIRE.Event);
+/*global SPITFIRE*/
+
 //--------------------------------------
 // EventDispatcher
 //--------------------------------------
@@ -524,8 +550,8 @@ SPITFIRE.EventDispatcher.prototype = {
       return;
     }
     
-    for (var i = 0, len = this._eventListeners[type].length; i < len; i++) {
-      if (this._eventListeners[type][i] == handler) {
+    for (var i = 0, len = this._eventListeners[type].length; i < len; i += 1) {
+      if (this._eventListeners[type][i] === handler) {
         this._eventListeners[type].splice(i, 1);
       }
     }
@@ -533,10 +559,10 @@ SPITFIRE.EventDispatcher.prototype = {
   
   trigger: function(event) {
     event.setTarget(this);
-    var args = [event];
+    var args = [event], j, len;
     
     if (this._eventListeners[event.getType()]) {
-      for (var j = 0, len = this._eventListeners[event.getType()].length; j < len; j++) {
+      for (j = 0, len = this._eventListeners[event.getType()].length; j < len; j += 1) {
         this._eventListeners[event.getType()][j].apply(this, args);
       }
     }
@@ -544,6 +570,8 @@ SPITFIRE.EventDispatcher.prototype = {
 };
 
 SPITFIRE.Class(SPITFIRE.EventDispatcher);
+/*global SPITFIRE, $*/
+
 //--------------------------------------
 // SPITFIRE.DisplayObject
 //--------------------------------------
@@ -607,7 +635,9 @@ SPITFIRE.DisplayObject.prototype = {
     this._w = value || 270;
     this._$this.width(this._w * this._scaleX);
     
-    if (this._isCentered) this.setL(~~(-this._$this.width() * 0.5));
+    if (this._isCentered) {
+      this.setL(~~(-this._$this.width() * 0.5));
+    }
   },
 
   getH: function() {
@@ -618,11 +648,13 @@ SPITFIRE.DisplayObject.prototype = {
     this._h = value;
     this._$this.height(this._h * this._scaleY);
     
-    if (this._isCentered) this.setT(~~(-this._$this.height() * 0.5));
+    if (this._isCentered) {
+      this.setT(~~(-this._$this.height() * 0.5));
+    }
   },
   
   getScale: function() {
-    return (this._scaleX == this._scaleY) ? this._scaleX : undefined;
+    return (this._scaleX === this._scaleY) ? this._scaleX : undefined;
   },
   
   setScale: function(value) {
@@ -662,12 +694,12 @@ SPITFIRE.DisplayObject.prototype = {
   //--------------------------------------
   
   animate: function(properties, options) {
-    
+    var prop, placeHolderName;
     // handle custom properties
-    for (var prop in properties) {
+    for (prop in properties) {
       if (SPITFIRE.isSynthesizedProperty(prop, SPITFIRE.DisplayObject)) {
         // create a placeholder property to tween
-        var placeHolderName = prop + 'AnimationValue';
+        placeHolderName = prop + 'AnimationValue';
         properties[placeHolderName] = properties[prop];
         
         delete properties[prop];
@@ -698,7 +730,7 @@ SPITFIRE.DisplayObject.prototype = {
   animationStep: function(now, fx) {    
     // animate custom properties
     var pattern = /AnimationValue/;
-    if (fx.prop.search(pattern) != -1) {
+    if (fx.prop.search(pattern) !== -1) {
       this[fx.prop.replace(pattern, '')](now);
     }
     
@@ -710,8 +742,9 @@ SPITFIRE.DisplayObject.prototype = {
   
   animationComplete: function() {
     // call provided complete function
-    if (this.providedAnimationComplete)
+    if (this.providedAnimationComplete) {
       this.providedAnimationComplete();
+    }
     
     // cleanup
     delete this.providedAnimationComplete;
@@ -729,6 +762,8 @@ SPITFIRE.DisplayObject.prototype = {
 };
 
 SPITFIRE.Class(SPITFIRE.DisplayObject);
+/*global SPITFIRE, $, log*/
+
 //--------------------------------------
 // SPITFIRE.Task
 //--------------------------------------
@@ -767,6 +802,8 @@ SPITFIRE.Task.prototype = {
 };
 
 SPITFIRE.Class(SPITFIRE.Task);
+/*global SPITFIRE, $, log*/
+
 //--------------------------------------
 // SPITFIRE.TaskManager
 //--------------------------------------
@@ -791,22 +828,22 @@ SPITFIRE.TaskManager.prototype = {
   setTasks: function(value) {    
     var i, len;
     for (i = 0, len = this._tasks.length; i < len; i += 1) {
-      	this.removeTask(this.tasks()[i]);
+			this.removeTask(this.tasks()[i]);
     }
     
     this._tasks = [];
     
     for (i = 0, len = value.length; i < len; i += 1) {
-    	this.addTask(value[i]);
+			this.addTask(value[i]);
     }
   },
   
   getProgress: function() {
     var loadedProgress = 0,
-        i, len;
+        i, len, task;
     for (i = 0, len = this._progressiveTasks.length; i < len; i += 1) {
-    	var task = this._progressiveTasks[i];
-    	loadedProgress += task.progress;
+			task = this._progressiveTasks[i];
+			loadedProgress += task.progress;
     }
     
 		return loadedProgress / Math.max(this._progressiveTasks.length, 1);
@@ -863,7 +900,7 @@ SPITFIRE.TaskManager.prototype = {
   },
   
   contains: function(task) {
-    return this.tasks().indexOf(task) != -1;
+    return this.tasks().indexOf(task) !== -1;
   },
   
   getTaskAt: function(index) {
@@ -871,10 +908,10 @@ SPITFIRE.TaskManager.prototype = {
   },
   
   getTaskByName: function(name) {
-    var taskFound, i, len;
+    var taskFound, i, len, task;
     for (i = 0, len = this.tasks().length; i < len; i += 1) {
-    	var task = this.tasks()[i];
-    	if (task.name() == name) {
+			task = this.tasks()[i];
+			if (task.name() === name) {
 				taskFound = task;
 				break;
 			}
@@ -896,7 +933,7 @@ SPITFIRE.TaskManager.prototype = {
 			throw new SPITFIRE.Error("The supplied task must be a child of the caller.");
 		}
 		var index = this.getTaskIndex(task);
-		if (index != -1) {
+		if (index !== -1) {
 			this.removeTaskAt(index);
 		}
 		this.setProgressive();
@@ -904,10 +941,11 @@ SPITFIRE.TaskManager.prototype = {
   },
   
   removeTaskAt: function(index) {
-    var task = this.getTaskAt(index);
+    var task = this.getTaskAt(index),
+				progressiveIndex;
 		this.tasks().splice(index, 1);
-		var progressiveIndex = this._progressiveTasks.indexOf(task);
-		if (progressiveIndex != -1) {
+		progressiveIndex = this._progressiveTasks.indexOf(task);
+		if (progressiveIndex !== -1) {
 			this._progressiveTasks.splice(progressiveIndex, 1);
 		}
 		this.setProgressive();
@@ -939,6 +977,8 @@ SPITFIRE.TaskManager.prototype = {
 };
 
 SPITFIRE.Class(SPITFIRE.TaskManager);
+/*global SPITFIRE*/
+
 //--------------------------------------
 // SPITFIRE.State
 //--------------------------------------
@@ -1006,7 +1046,7 @@ SPITFIRE.State.prototype = {
     
     this._children = [];
     
-    for (i = 0, len = value.length; i < len; i++) {
+    for (i = 0, len = value.length; i < len; i += 1) {
       this.addChild(value[i]);
     }
   },
@@ -1020,7 +1060,7 @@ SPITFIRE.State.prototype = {
   },
   
   getActivatedChild: function() {
-    var state, i, len;
+    var state, i, len, child;
     for (i = 0, len = this._children.length; i < len; i+=1) {
       child = this._children[i];
       if (child.activated) {
@@ -1050,7 +1090,7 @@ SPITFIRE.State.prototype = {
   },
   
   setSelected: function(value) {
-    if (value != this._selected) {
+    if (value !== this._selected) {
       this._selected = value;
       this.trigger(new SPITFIRE.StateEvent(SPITFIRE.StateEvent.STATE_CHANGE));
     }
@@ -1076,7 +1116,7 @@ SPITFIRE.State.prototype = {
     for (i = 0, len = locationArray.length; i < len; i+=1) {
       inlineState = locationArray[i];
       location += inlineState.getName();
-      if (inlineState != locationArray[len - 1]) {
+      if (inlineState !== locationArray[len - 1]) {
         location += '/';
       }
     }
@@ -1093,7 +1133,7 @@ SPITFIRE.State.prototype = {
     if (child.getSelected()) {
       this._selectedChild = child;
     } else
-    if (child == this._selectedChild) {
+    if (child === this._selectedChild) {
       this._selectedChild = undefined;
     }
     
@@ -1123,7 +1163,7 @@ SPITFIRE.State.prototype = {
   },
   
   contains: function(child) {
-    return this._children.indexOf(child) != -1;
+    return this._children.indexOf(child) !== -1;
   },
   
   getChildAt: function(index) {
@@ -1134,7 +1174,7 @@ SPITFIRE.State.prototype = {
     var foundChild, i, len, child;
     for (i = 0, len = this._children.length; i < len; i+=1) {
       child = this._children[i];
-      if (child.getName() == name) {
+      if (child.getName() === name) {
         foundChild = child;
         break;
       }
@@ -1156,10 +1196,9 @@ SPITFIRE.State.prototype = {
       throw new SPITFIRE.Error('The supplied child must be a child of the caller.');
     }
     
-    var index = this.getChildIndex(child),
-        child;
+    var index = this.getChildIndex(child);
         
-    if (index != -1) {
+    if (index !== -1) {
       child = this.removeChildAt(index);
     }
     
@@ -1193,7 +1232,7 @@ SPITFIRE.State.prototype = {
     var foundChild, i, len, child;
     for (i = 0, len = this._children.length; i < len; i+=1) {
       child = this._children[i];
-      if (child.getName() == name) {
+      if (child.getName() === name) {
         foundChild = child;
         break;
       }
@@ -1212,26 +1251,26 @@ SPITFIRE.State.prototype = {
   },
   
   findDefaultStates: function() {
-    var states = [];
-    var defaultState = this.getChildByName(this.getDefaultChild());
+    var states = [],
+				defaultState = this.getChildByName(this.getDefaultChild()),
+				location = '',
+        i, len, state;
     
     while (defaultState) {
       states.push(defaultState);
       defaultState = defaultState.getChildByName(defaultState.getDefaultChild());
     }
-    
-    var location = '',
-        i, len;
+
     for (i = 0, len = states.length; i < len; i += 1) {
       if (i === 0) {
-	location += '/';
+				location += '/';
       }
       
-      var state = states[i];
+      state = states[i];
       location += state.getName();
       
       if (i < states.length - 1) {
-	location += '/';
+				location += '/';
       }
     }
     
@@ -1248,7 +1287,7 @@ SPITFIRE.State.prototype = {
   },
   
   browseNextSibling: function() {
-    var nextIndex = index + 1;
+    var nextIndex = this.index + 1;
     
     if (nextIndex > this.getParent().getChildren().length - 1) {
       nextIndex = 0;
@@ -1279,9 +1318,9 @@ SPITFIRE.State.prototype = {
   
   getChildFromPath: function(path) {
     var state = this,
-        i, len;
+        i, len, names;
     if (path.length > 0) {
-      var names = path.split('/');
+      names = path.split('/');
       for (i = 0, len = names.length; i < len; i+=1) {
         state = state.getChildByName(names[i]);
       }
@@ -1308,6 +1347,8 @@ SPITFIRE.State.prototype = {
 };
 
 SPITFIRE.Class(SPITFIRE.State);
+/*global SPITFIRE*/
+
 //--------------------------------------
 // SPITFIRE.ModelEvent
 //--------------------------------------
@@ -1320,6 +1361,8 @@ SPITFIRE.ModelEvent.DATA_UPDATE = 'dataUpdate';
 
 SPITFIRE.ModelEvent.superclass = SPITFIRE.Event;
 SPITFIRE.Class(SPITFIRE.ModelEvent);
+/*global SPITFIRE*/
+
 //--------------------------------------
 // SPITFIRE.StateEvent
 //--------------------------------------
@@ -1334,6 +1377,8 @@ SPITFIRE.StateEvent.STATE_ACTIVATED = 'stateActivated';
 
 SPITFIRE.StateEvent.superclass = SPITFIRE.Event;
 SPITFIRE.Class(SPITFIRE.StateEvent);
+/*global SPITFIRE*/
+
 //--------------------------------------
 // StateManagerEvent
 //--------------------------------------
@@ -1361,6 +1406,8 @@ SPITFIRE.StateManagerEvent.DEEPLINK = 'deeplink';
 SPITFIRE.StateManagerEvent.superclass = SPITFIRE.Event;
 SPITFIRE.StateManagerEvent.synthesizedProperties = ['state'];
 SPITFIRE.Class(SPITFIRE.StateManagerEvent);
+/*global SPITFIRE*/
+
 //--------------------------------------
 // TimerEvent
 //--------------------------------------
@@ -1375,6 +1422,8 @@ SPITFIRE.TimerEvent.TIMER_COMPLETE = 'timerComplete';
 
 SPITFIRE.TimerEvent.superclass = SPITFIRE.Event;
 SPITFIRE.Class(SPITFIRE.TimerEvent);
+/*global SPITFIRE*/
+
 //--------------------------------------
 // SPITFIRE.Point
 //--------------------------------------
@@ -1399,6 +1448,8 @@ SPITFIRE.Point.prototype = {
 };
 
 SPITFIRE.Class(SPITFIRE.Point);
+/*global SPITFIRE*/
+
 //--------------------------------------
 // SPITFIRE.Rectangle
 //--------------------------------------
@@ -1503,6 +1554,8 @@ SPITFIRE.Rectangle.prototype = {
 };
 
 SPITFIRE.Class(SPITFIRE.Rectangle);
+/*global SPITFIRE*/
+
 //--------------------------------------
 // Percent
 //--------------------------------------
@@ -1531,7 +1584,7 @@ SPITFIRE.prototype = {
   },
   
   setPercentage: function(value) {
-    this._percent = value * .01;
+    this._percent = value * 0.01;
   },
   
   getDecimalPercentage: function() {
@@ -1543,7 +1596,7 @@ SPITFIRE.prototype = {
   },
   
   equals: function(percent) {
-    return this.getDecimalPercentage() == percent.getDecimalPercentage();
+    return this.getDecimalPercentage() === percent.getDecimalPercentage();
   },
   
   clone: function() {
@@ -1560,6 +1613,8 @@ SPITFIRE.prototype = {
 };
 
 SPITFIRE.Class(SPITFIRE.Percent);
+/*global SPITFIRE*/
+
 //--------------------------------------
 // SPITFIRE.Model
 //--------------------------------------
@@ -1593,6 +1648,8 @@ SPITFIRE.Model.prototype = {
 };
 
 SPITFIRE.Class(SPITFIRE.Model);
+/*global SPITFIRE, $*/
+
 //--------------------------------------
 // SPITFIRE.DisplayState
 //--------------------------------------
@@ -1612,9 +1669,9 @@ SPITFIRE.DisplayState = function(name, config, cache) {
       stylesheets: [],
       images: []
     }
-  }
-  
-  var configuration = config || defaultConfig;
+  },
+			configuration = config || defaultConfig;
+	
   this.setConfig(configuration);
   this.stylesheets([]);
   this.images([]);
@@ -1639,47 +1696,47 @@ SPITFIRE.DisplayState.prototype = {
   
   getLoadIn: function() {
     // don't load if already cached
-    if (this.getIsCached()) return undefined;
+    if (this.getIsCached()) {
+			return undefined;
+		}
     
     var sequentialTask = new SPITFIRE.SequentialTask(),
-        i, len, task;
+        i, len, task, stylesheet, img,
+				configView = this.config().assets.view,
+				configStylesheets = this.config().assets.stylesheets,
+				configImages = this.config().assets.images;
     
-    // load view
-    var configView = this.config().assets.view;
-    
-    if (configView && configView != '' && !this.checkIsCached(configView)) {
+    if (configView && configView !== '' && !this.checkIsCached(configView)) {
       this.cache.push(configView);
       this.view(new SPITFIRE.JQueryAjaxTask(configView));
       sequentialTask.addTask(this.view());
 
     }
     
-    // load stylesheets
-    var configStylesheets = this.config().assets.stylesheets;
-    
     if (configStylesheets.length > 0) {
       for (i = 0, len = configStylesheets.length; i < len; i += 1) {
-      	var stylesheet = configStylesheets[i];
-				if (this.checkIsCached(stylesheet))
+				stylesheet = configStylesheets[i];
+				if (this.checkIsCached(stylesheet)) {
 					continue;
+				}
 				this.cache.push(stylesheet);
-      	task = new SPITFIRE.JQueryAjaxTask(stylesheet);
-      	this.stylesheets().push(task);
-      	sequentialTask.addTask(task);
+				task = new SPITFIRE.JQueryAjaxTask(stylesheet);
+				this.stylesheets().push(task);
+				sequentialTask.addTask(task);
       }
     }
     
     // load images
-    var configImages = this.config().assets.images;
     if (configImages.length > 0) {
       for (i = 0, len = configImages.length; i < len; i += 1) {
-      	var img = configImages[i];
-				if (this.checkIsCached(img))
+				img = configImages[i];
+				if (this.checkIsCached(img)) {
 					continue;
+				}
 				this.cache.push(img);
-      	task = new SPITFIRE.JQueryAjaxTask(img);
-      	this.images().push(task);
-      	sequentialTask.addTask(task);
+				task = new SPITFIRE.JQueryAjaxTask(img);
+				this.images().push(task);
+				sequentialTask.addTask(task);
       }
     }
     
@@ -1708,18 +1765,18 @@ SPITFIRE.DisplayState.prototype = {
     
     if (this.stylesheets().length > 0) {
       for (i = 0, len = this.stylesheets().length; i < len; i += 1) {
-      	style = document.createElement('style');
-      	style.type = 'text/css';
-      	rules = document.createTextNode(this.stylesheets()[i].content());
-      	
-      	if (style.styleSheet) {
-          style.styleSheet.cssText = rules.nodeValue;
-        } else {
-          style.appendChild(rules);
-        }
-        
-      	head.appendChild(style);
-        this._addedDOMAssets.push(style);
+				style = document.createElement('style');
+				style.type = 'text/css';
+				rules = document.createTextNode(this.stylesheets()[i].content());
+				
+				if (style.styleSheet) {
+					style.styleSheet.cssText = rules.nodeValue;
+				} else {
+					style.appendChild(rules);
+				}
+				
+				head.appendChild(style);
+				this._addedDOMAssets.push(style);
       }
     }
     
@@ -1760,8 +1817,9 @@ SPITFIRE.DisplayState.prototype = {
   
   trackPage: function() {
     var trackingPageId = this.getConfig().trackingPageId;
-    if (typeof trackingPageId !== 'undefined' && trackingPageId !== '')
+    if (typeof trackingPageId !== 'undefined' && trackingPageId !== '') {
       SPITFIRE.trackPage(trackingPageId);
+    }
   },
 
   toString: function() {
@@ -1770,6 +1828,8 @@ SPITFIRE.DisplayState.prototype = {
 };
 
 SPITFIRE.Class(SPITFIRE.DisplayState);
+/*global SPITFIRE*/
+
 //--------------------------------------
 // Redirect
 //--------------------------------------
@@ -1779,12 +1839,14 @@ SPITFIRE.Redirect = function(location, newLocation) {
   this.setQualifiedClassName('SPITFIRE.Redirect');
   this.setLocation(location);
   this.setNewLocation(newLocation);
-}
+};
 
 SPITFIRE.Redirect.superclass = SPITFIRE.Object;
 SPITFIRE.Redirect.synthesizedProperties = ['location', 'newLocation'];
 
 SPITFIRE.Class(SPITFIRE.Redirect);
+/*global SPITFIRE, log*/
+
 //--------------------------------------
 // SPITFIRE.StateManager
 //--------------------------------------
@@ -1797,11 +1859,11 @@ SPITFIRE.StateManager = function(name, root) {
   this.setPageViewType(SPITFIRE.StateManager.PAGE_VIEW_LOCATION);
   this._progressTimer = new SPITFIRE.Timer(33);
   this._progressTimer.bind(SPITFIRE.TimerEvent.TIMER, this.taskManagerProgressHandler.context(this));
-  this._transitionInPath;
-  this._transitionWasInterrupted;
-  this._isInTransition;
-  this._transitions;
-  this._currentTransition;
+  this._transitionInPath = undefined;
+  this._transitionWasInterrupted = undefined;
+  this._isInTransition = undefined;
+  this._transitions = undefined;
+  this._currentTransition = undefined;
   this._redirects = [];
 };
 
@@ -1848,12 +1910,12 @@ SPITFIRE.StateManager.prototype = {
   getLocation: function() {
     var states = this.getSelectedStates(),
         loc = '',
-        i, len;
+        i, len, inlineState;
         
     for (i = 0, len = states.length; i < len; i+=1) {
-      var inlineState = states[i];
+      inlineState = states[i];
       loc += inlineState.getName();
-      if (inlineState != states[states.length - 1]) {
+      if (inlineState !== states[states.length - 1]) {
         loc += '/';
       }
     }
@@ -1862,15 +1924,17 @@ SPITFIRE.StateManager.prototype = {
   },
   
   setLocation: function(value) {
+		var array, loc, locationArray, state;
+		
     if (this.getDeepLinking()) {
-      var array = value.split('/');
+      array = value.split('/');
       array.shift();
-      var loc = '/' + array.join('/');
+      loc = '/' + array.join('/');
       this.getDeepLinking().value(loc);
     } else {
-      var locationArray = value.split('/');
+      locationArray = value.split('/');
       locationArray.shift();
-      var state = this.getTree();
+      state = this.getTree();
       if (locationArray.length > 0) {
         state = state.getChildFromPath(locationArray.join('/'));
       }
@@ -1902,7 +1966,7 @@ SPITFIRE.StateManager.prototype = {
   
   deepLinkingChangeHandler: function(event) {
     var path = this.getDeepLinking().value();
-    if (path == '' || path == '/') {
+    if (path === '' || path === '/') {
       this._transitionInPath = this.getTree().getStateLocation();
     } else {
       this._transitionInPath = this.getTree().getName() + path;
@@ -1965,7 +2029,7 @@ SPITFIRE.StateManager.prototype = {
   
   init: function() {
     if (this.getDeepLinking()) {
-      if (this.getDeepLinking().value() != '/') {
+      if (this.getDeepLinking().value() !== '/') {
         this.deepLinkingChangeHandler();
       } else
       if (this.getStartLocation()) {
@@ -1998,28 +2062,28 @@ SPITFIRE.StateManager.prototype = {
     
     this._transitionInPath = this.checkRedirect(this._transitionInPath);
     
-    var nextLocationArray = this._transitionInPath.split('/');
-    
-    var locationPathArray = [];
+		var nextLocationArray = this._transitionInPath.split('/'),
+				locationPathArray = [],
+				transitionOutPaths = [],
+				transitionInPaths = [],
+				breakIndex = 0, i, len, currentArray, currentPath, nextArray, nextPath;
+				
     if (this.getLocation().length > 0) {
       locationPathArray = this.getLocation().split('/');
     }
-    
-    var breakIndex = 0, i, len, currentArray, currentPath, nextArray, nextPath;
 
     for (i = 0, len = locationPathArray.length; i < len; i+=1) {
       currentArray = locationPathArray.slice(0, i + 1);
       currentPath = currentArray.join('/');
       nextArray = nextLocationArray.slice(0, i + 1);
       nextPath = nextArray.join('/');
-      if (currentPath == nextPath) {
+      if (currentPath === nextPath) {
         breakIndex += 1;
       }
     }
     
     this._transitions = [];
     
-    var transitionOutPaths = [];
     for (i = locationPathArray.length - 1; i >= breakIndex; i-=1) {
       currentArray = locationPathArray.slice(0, i + 1);
       transitionOutPaths.push(currentArray.join('/'));
@@ -2030,7 +2094,6 @@ SPITFIRE.StateManager.prototype = {
     this._transitions.push(new SPITFIRE.TransitionProperties(transitionOutPaths.slice(), 'loadOut', false));
     this._transitions.push(new SPITFIRE.TransitionProperties(transitionOutPaths.slice(), 'transitionOut', false));
     
-    var transitionInPaths = [];
     for (i = breakIndex, len = nextLocationArray.length; i < len; i+=1) {
       nextArray = nextLocationArray.slice(0, i + 1);
       transitionInPaths.push(nextArray.join('/'));
@@ -2038,7 +2101,7 @@ SPITFIRE.StateManager.prototype = {
 
     transitionInPaths = this.activateStates(transitionInPaths);
 
-    if (transitionInPaths.length == 0) {
+    if (transitionInPaths.length === 0) {
       transitionInPaths = this.checkForDefaultStates(this._transitionInPath);
     }
     
@@ -2049,16 +2112,15 @@ SPITFIRE.StateManager.prototype = {
   },
   
   deactivateStates: function(transitionPaths) {
-    var i, len;
+    var i, len, path, pathArray, state, j, len2, currentState;
     for (i = 0, len = transitionPaths.length; i < len; i+=1) {
-      var path = transitionPaths[i];
-      var pathArray = path.split('/');
+      path = transitionPaths[i];
+      pathArray = path.split('/');
       pathArray.shift();
-      var state = this.getTree();
+      state = this.getTree();
       if (pathArray.length > 0) {
-        var j, len2;
         for (j = 0, len2 = pathArray.length; j < len2; j+=1) {
-          var currentState = state;
+          currentState = state;
           state = currentState.getChildByName(pathArray[j]);
         }
       }
@@ -2068,57 +2130,57 @@ SPITFIRE.StateManager.prototype = {
   },
   
   activateStates: function(transitionPaths) {
-    var newPaths = [], i, len;
+    var newPaths = [], i, len, path, pathArray, state, j, len2, currentState, defaultState;
     this._activeStates = [];
     for (i = 0, len = transitionPaths.length; i < len; i += 1) {
-      var path = transitionPaths[i];
-      var pathArray = path.split("/");
+      path = transitionPaths[i];
+      pathArray = path.split("/");
       pathArray.shift();
-      var state = this.getTree();
+      state = this.getTree();
       
       if (pathArray.length > 0) {
-	var j, len2;
-	for (j = 0, len2 = pathArray.length; j < len2; j += 1) {
-	  var currentState = state;
-	  state = currentState.getChildByName(pathArray[j]);
-	  if (!state) {
-	    state = currentState.createChildByName(pathArray[j]);
-	  }
-	}
+				for (j = 0, len2 = pathArray.length; j < len2; j += 1) {
+					currentState = state;
+					state = currentState.getChildByName(pathArray[j]);
+					if (!state) {
+						state = currentState.createChildByName(pathArray[j]);
+					}
+				}
       }
       
       state.setActivated(true);
       this.getActiveStates().push(state);
       newPaths.push(state.getStateLocation());
       
-      if (state.getStateLocation() == transitionPaths[transitionPaths.length - 1]) {
-	var defaultState = state.getChildByName(state.defaultChild());
-	while (defaultState) {
-	  defaultState.setActivated(true);
-	  this.getActiveStates().push(defaultState);
-	  newPaths.push(defaultState.getStateLocation());
-	  defaultState = defaultState.getChildByName(defaultState.getDefaultChild());
-	}
-      }
-      
+      if (state.getStateLocation() === transitionPaths[transitionPaths.length - 1]) {
+				defaultState = state.getChildByName(state.defaultChild());
+				while (defaultState) {
+					defaultState.setActivated(true);
+					this.getActiveStates().push(defaultState);
+					newPaths.push(defaultState.getStateLocation());
+					defaultState = defaultState.getChildByName(defaultState.getDefaultChild());
+				}
+			}  
     }
     
     return newPaths;
   },
   
   checkForDefaultStates: function(path) {
-    var newPaths = [];
-		var pathArray = path.split("/");
+    var newPaths = [],
+				pathArray = path.split("/"),
+				state = this.getTree(),
+				i, len, currentState, defaultState;
+		
 		pathArray.shift();
-		var state = this.getTree();
 		if (pathArray.length > 0) {
-		  var i, len;
 			for (i = 0, len = pathArray.length; i < len; i += 1) {
-				var currentState = state;
+				currentState = state;
 				state = currentState.getChildByName(pathArray[i]);
 			}
 		}
-		var defaultState = state.getChildByName(state.defaultChild);
+		
+		defaultState = state.getChildByName(state.defaultChild);
 		while (defaultState) {
 			defaultState.setActivated(true);
 			this.getActiveStates().push(defaultState);
@@ -2142,32 +2204,32 @@ SPITFIRE.StateManager.prototype = {
     
     this.getTaskManager().bind(SPITFIRE.Event.COMPLETE, this.taskManagerCompleteHandler.context(this));
     
-    var i, len;
+    var i, len, path, pathArray, state, task, stateSelected;
     
     for (i = 0, len = this._currentTransition.getLocations().length; i < len; i += 1) {
-      var path = this._currentTransition.getLocations()[i];
-      var pathArray = path.split("/");
+      path = this._currentTransition.getLocations()[i];
+      pathArray = path.split("/");
       pathArray.shift();
-      var state = this.getTree();
+      state = this.getTree();
       if (pathArray.length > 0) {
 	      state = state.getChildFromPath(pathArray.join("/"));
       }
-      var task = state[this._currentTransition.getTransitionName()]();
+      task = state[this._currentTransition.getTransitionName()]();
       
       if (task) {
 	      this.getTaskManager().addTask(task);
       }
-      var stateSelected = false;;
-      if (this._currentTransition.getTransitionName() == "transitionIn") {
+      stateSelected = false;
+      if (this._currentTransition.getTransitionName() === "transitionIn") {
 	      stateSelected = true;
       }
-      if (this._currentTransition.getTransitionName() == "transitionOut") {
+      if (this._currentTransition.getTransitionName() === "transitionOut") {
 	      stateSelected = false;
       }
 
       this.getTaskManager().addTask(new SPITFIRE.PropertyTask(state, "selected", stateSelected));
     }
-    if (this.getTaskManager().getProgress() == 1) {
+    if (this.getTaskManager().getProgress() === 1) {
 	    this.getTaskManager().getProgressive(false);
     }
     if (this.getTaskManager().getProgressive()) {
@@ -2188,11 +2250,11 @@ SPITFIRE.StateManager.prototype = {
   },
   
   removeRedirect: function(location) {
-    var newRedirects = [];
-    var i, len;
+    var newRedirects = [],
+				i, len, redirect;
 		for (i = 0, len = this.getRedirects().length; i < len; i += 1) {
-		  var redirect = this.getRedirects()[i];
-			if (redirect.getLocation() != location) {
+		  redirect = this.getRedirects()[i];
+			if (redirect.getLocation() !== location) {
 				newRedirects.push(redirect);
 			}
 		}
@@ -2200,10 +2262,10 @@ SPITFIRE.StateManager.prototype = {
   },
   
   checkRedirect: function(path) {
-    var i, len;
+    var i, len, redirect;
 		for (i = 0, len = this.getRedirects().length; i < len; i += 1) {
-		  var redirect = this.getRedirects()[i];
-			if (path == redirect.getLocation()) {
+		  redirect = this.getRedirects()[i];
+			if (path === redirect.getLocation()) {
 				path = redirect.getNewLocation();
 			}
 		}
@@ -2217,6 +2279,8 @@ SPITFIRE.StateManager.prototype = {
 };
 
 SPITFIRE.Class(SPITFIRE.StateManager);
+/*global SPITFIRE*/
+
 //--------------------------------------
 // SPITFIRE.TransitionProperties
 //--------------------------------------
@@ -2226,7 +2290,7 @@ SPITFIRE.TransitionProperties = function(locations, transitionName, showPreloade
   this.locations(locations);
   this.transitionName(transitionName);
   this.showPreloader(showPreloader);
-}
+};
 
 SPITFIRE.TransitionProperties.superclass = SPITFIRE.Object;
 SPITFIRE.TransitionProperties.synthesizedProperties = ['locations', 'transitionName', 'showPreloader', 'currentState'];
@@ -2235,9 +2299,11 @@ SPITFIRE.TransitionProperties.prototype = {
   toString: function() {
     return this.transitionName();
   }
-}
+};
 
 SPITFIRE.Class(SPITFIRE.TransitionProperties);
+/*global SPITFIRE*/
+
 //--------------------------------------
 // SPITFIRE.EventTask
 //--------------------------------------
@@ -2280,6 +2346,8 @@ SPITFIRE.EventTask.prototype = {
 };
 
 SPITFIRE.Class(SPITFIRE.EventTask);
+/*global SPITFIRE*/
+
 //--------------------------------------
 // SPITFIRE.FunctionTask
 //--------------------------------------
@@ -2292,7 +2360,7 @@ SPITFIRE.FunctionTask = function(context, method) {
   this.setArgs([]);
   var i, len;
   for (i = 2, len = arguments.length; i < len; i += 1) {
-  	this.getArgs().push(arguments[i]);
+		this.getArgs().push(arguments[i]);
   }
 };
 
@@ -2315,6 +2383,8 @@ SPITFIRE.FunctionTask.prototype = {
 };
 
 SPITFIRE.Class(SPITFIRE.FunctionTask);
+/*global SPITFIRE, log, $*/
+
 //--------------------------------------
 // SPITFIRE.JQueryAjaxTask
 //--------------------------------------
@@ -2369,6 +2439,8 @@ SPITFIRE.JQueryAjaxTask.prototype = {
 };
 
 SPITFIRE.Class(SPITFIRE.JQueryAjaxTask);
+/*global SPITFIRE, $*/
+
 //--------------------------------------
 // SPITFIRE.JQueryEffectTask
 //--------------------------------------
@@ -2416,6 +2488,8 @@ SPITFIRE.JQueryEffectTask.prototype = {
 };
 
 SPITFIRE.Class(SPITFIRE.JQueryEffectTask);
+/*global SPITFIRE, $*/
+
 //--------------------------------------
 // SPITFIRE.JQueryGetJSONTask
 //--------------------------------------
@@ -2437,10 +2511,8 @@ SPITFIRE.JQueryGetJSONTask.prototype = {
   //--------------------------------------
   
   jsonHandler: function(data, textStatus) {
-    switch (textStatus) {
-      case 'success':
-        this.content(data);
-      break;
+    if (textStatus === 'success') {
+      this.content(data);
     }
     
     this.complete();
@@ -2460,6 +2532,8 @@ SPITFIRE.JQueryGetJSONTask.prototype = {
 };
 
 SPITFIRE.Class(SPITFIRE.JQueryGetJSONTask);
+/*global SPITFIRE, Image, $, log*/
+
 //--------------------------------------
 // SPITFIRE.JQueryImageLoaderTask
 //--------------------------------------
@@ -2511,6 +2585,8 @@ SPITFIRE.JQueryImageLoaderTask.prototype = {
 };
 
 SPITFIRE.Class(SPITFIRE.JQueryImageLoaderTask);
+/*global SPITFIRE, $, log*/
+
 //--------------------------------------
 // SPITFIRE.JQueryLoadTask
 //--------------------------------------
@@ -2519,7 +2595,9 @@ SPITFIRE.JQueryLoadTask = function(url, $target) {
   this.callSuper();
   this.qualifiedClassName('SPITFIRE.JQueryLoadTask');
   
-  if (!url) throw new SPITFIRE.Error('a valid url must be specified');
+  if (!url) {
+    throw new SPITFIRE.Error('a valid url must be specified');
+  }
   
   this.url(url);
   this.$target($target || $('body'));
@@ -2534,7 +2612,7 @@ SPITFIRE.JQueryLoadTask.prototype = {
   //--------------------------------------
   
   loadHandler: function(response, status, xhr) {
-    if (status == 'error') {
+    if (status === 'error') {
       log(this + ' Error: could not load this file');
     }
     
@@ -2555,6 +2633,8 @@ SPITFIRE.JQueryLoadTask.prototype = {
 };
 
 SPITFIRE.Class(SPITFIRE.JQueryLoadTask);
+/*global SPITFIRE, $, log*/
+
 //--------------------------------------
 // SPITFIRE.ParallelTask
 //--------------------------------------
@@ -2582,7 +2662,7 @@ SPITFIRE.ParallelTask.prototype = {
     }
     task.unbind(SPITFIRE.Event.COMPLETE, this.taskCompleteHandler.context(this));
     this._createdTasks.push(task);
-    if (this._createdTasks.length == this.tasks().length) {
+    if (this._createdTasks.length === this.tasks().length) {
       if (this.debug()) {
 	log('tasksComplete ' + this);
       }
@@ -2597,14 +2677,14 @@ SPITFIRE.ParallelTask.prototype = {
   start: function() {
     this._createdTasks = [];
     if (this.tasks().length > 0) {
-      var i, len;
+      var i, len, task;
       for (i = 0, len = this.tasks().length; i < len; i += 1) {
-        	var task = this.tasks()[i];
-        	task.bind(SPITFIRE.Event.COMPLETE, this.taskCompleteHandler.context(this));
-        	if (this.debug()) {
-        	 log('taskStart ' + task);
-        	}
-        	task.start();
+				task = this.tasks()[i];
+				task.bind(SPITFIRE.Event.COMPLETE, this.taskCompleteHandler.context(this));
+				if (this.debug()) {
+				 log('taskStart ' + task);
+				}
+				task.start();
       }
     } else {
       this.complete();
@@ -2617,6 +2697,8 @@ SPITFIRE.ParallelTask.prototype = {
 };
 
 SPITFIRE.Class(SPITFIRE.ParallelTask);
+/*global SPITFIRE, $, log*/
+
 //--------------------------------------
 // SPITFIRE.PropertyTask
 //--------------------------------------
@@ -2648,6 +2730,8 @@ SPITFIRE.PropertyTask.prototype = {
 };
 
 SPITFIRE.Class(SPITFIRE.PropertyTask);
+/*global SPITFIRE, $, log*/
+
 //--------------------------------------
 // SPITFIRE.SequentialTask
 //--------------------------------------
@@ -2677,7 +2761,7 @@ SPITFIRE.SequentialTask.prototype = {
     }
     task.unbind(SPITFIRE.Event.COMPLETE);
     this._createdTasks.push(task);
-    if (this._createdTasks.length == this.tasks().length) {
+    if (this._createdTasks.length === this.tasks().length) {
       this.complete();
     } else {
       this.createTask();
@@ -2698,8 +2782,8 @@ SPITFIRE.SequentialTask.prototype = {
   },
   
   createTask: function() {
-    var index = this._createdTasks.length;
-		var task = this.tasks()[index];
+    var index = this._createdTasks.length,
+				task = this.tasks()[index];
 		task.bind(SPITFIRE.Event.COMPLETE, this.taskCompleteHandler.context(this));
 		if (this.debug()) {
 			log("taskStart " + task);
@@ -2713,6 +2797,8 @@ SPITFIRE.SequentialTask.prototype = {
 };
 
 SPITFIRE.Class(SPITFIRE.SequentialTask);
+/*global SPITFIRE*/
+
 //--------------------------------------
 // SPITFIRE.UIButton
 //--------------------------------------
@@ -2771,6 +2857,8 @@ SPITFIRE.UIButton.prototype = {
 };
 
 SPITFIRE.Class(SPITFIRE.UIButton);
+/*global SPITFIRE, $*/
+
 //--------------------------------------
 // SPITFIRE.UICarousel
 //--------------------------------------
@@ -2827,10 +2915,9 @@ SPITFIRE.UICarousel.prototype = {
   //--------------------------------------
   
   setPositionIndex: function(value) {  
-    var oldPositionIndex = this._positionIndex;
-    
-    var delta = this.items()[oldPositionIndex].carouselIndex() - this.items()[value].carouselIndex();
-    var i, len, item, newIndex, newPos, indexFromCenter, opacity, scale, z,
+    var oldPositionIndex = this._positionIndex,
+        delta = this.items()[oldPositionIndex].carouselIndex() - this.items()[value].carouselIndex(),
+        i, len, item, newIndex, newPos, indexFromCenter, opacity, scale, z,
         half = (this.items().length * 0.5 >> 0) + 1; 
     
     for (i = 0, len = this.items().length; i < len; i += 1) {
@@ -2886,10 +2973,10 @@ SPITFIRE.UICarousel.prototype = {
    *  Creates states and image tasks.
    */
   createStatesTask: function() {
-    var sequentialTask = new SPITFIRE.SequentialTask();
+    var sequentialTask = new SPITFIRE.SequentialTask(),
+        i, len, data, uid, state, item, $el;
     sequentialTask.bind(SPITFIRE.Event.COMPLETE, this.imagesLoadedHandler.context(this));
-    
-    var i, len, data, uid, state, item, $el;
+
     for (i = 0, len = this.data.length; i < len; i += 1) {
       data = this.data[i];
       uid = 'item' + (i + 1);
@@ -2916,15 +3003,21 @@ SPITFIRE.UICarousel.prototype = {
   },
   
   initHandlers: function() {
-    if (typeof this.$previousButton !== 'undefined') this.$previousButton.bind('click', $.proxy(this.previous, this));
-    if (typeof this.$nextButton !== 'undefined') this.$nextButton.bind('click', $.proxy(this.next, this));
+    if (typeof this.$previousButton !== 'undefined') {
+      this.$previousButton.bind('click', $.proxy(this.previous, this));
+    }
+    if (typeof this.$nextButton !== 'undefined') {
+      this.$nextButton.bind('click', $.proxy(this.next, this));
+    }
   },
   
   updateDescription: function() {
-    if (!this.hasDescriptionContainer) return;
+    if (!this.hasDescriptionContainer) {
+      return;
+    }
     
     var desc = this.data[this.getPositionIndex()].description;
-    desc = (typeof desc != 'undefined') ? desc : '';
+    desc = (typeof desc !== 'undefined') ? desc : '';
 
     this.$descriptionContainer.html(desc);
   },
@@ -2966,7 +3059,7 @@ SPITFIRE.UICarousel.prototype = {
     centerItem.carouselIndex(this.centerIndex());
 
     while (count < halfNumItems) {
-      count++;
+      count += 1;
       opacity = (count > this.neighbors()) ? 0 : 1;
       rightItem = this._items[rightIndex];
       
@@ -2976,10 +3069,11 @@ SPITFIRE.UICarousel.prototype = {
         rightItem.carouselIndex(this.centerIndex() + count);
         rightItem.$img.css('opacity', opacity);
         rightXPos += this.itemDistance();
-        rightIndex++;
+        rightIndex += 1;
         
-        if (rightIndex >= this._items.length)
+        if (rightIndex >= this._items.length) {
           rightIndex = 0;
+        }
       }
       
       leftItem = this._items[leftIndex];
@@ -2990,10 +3084,11 @@ SPITFIRE.UICarousel.prototype = {
         leftItem.$img.css('opacity', opacity);
         
         leftXPos -= this.itemDistance();
-        leftIndex--;
+        leftIndex -= 1;
         
-        if (leftIndex < 0)
+        if (leftIndex < 0) {
           leftIndex = this._items.length - 1;
+        }
       }
     }
     
@@ -3031,6 +3126,8 @@ SPITFIRE.UICarousel.prototype = {
 };
 
 SPITFIRE.Class(SPITFIRE.UICarousel);
+/*global SPITFIRE, $*/
+
 //--------------------------------------
 // SPITFIRE.UICarouselItem
 //--------------------------------------
@@ -3125,6 +3222,8 @@ SPITFIRE.UICarouselItem.prototype = {
 };
 
 SPITFIRE.Class(SPITFIRE.UICarouselItem);
+/*global SPITFIRE, $*/
+
 //--------------------------------------
 // SPITFIRE.UISlideshow
 //--------------------------------------
@@ -3155,7 +3254,9 @@ SPITFIRE.UISlideshow = function(config) {
   
   this.hasLoadingIndicator = (typeof config.loadingIndicator !== 'undefined');
   this.$loadingIndicator = (this.hasLoadingIndicator) ? $('#' + config.loadingIndicator) : undefined;
-  if (this.hasLoadingIndicator) this.$loadingIndicator.hide();
+  if (this.hasLoadingIndicator) {
+    this.$loadingIndicator.hide();
+  }
   
   this.hasDrawer = (typeof config.drawer !== 'undefined');
   this.$drawer = (this.hasDrawer) ? $('#' + config.drawer) : undefined;
@@ -3185,7 +3286,9 @@ SPITFIRE.UISlideshow.prototype = {
   },
   
   setCurrentPageIndex: function(value) {
-    if (this._currentPageIndex === value) return;
+    if (this._currentPageIndex === value) {
+      return;
+    }
     this._currentPageIndex = value;
     
     // move to current page
@@ -3240,7 +3343,9 @@ SPITFIRE.UISlideshow.prototype = {
   },
   
   initDrawer: function() {
-    if (!this.hasDrawer) return;
+    if (!this.hasDrawer) {
+      return;
+    }
     
     this._drawerItemX = 0;
     this._drawerThumbsPerPage = this.config.drawerThumbsPerPage || 10;
@@ -3248,11 +3353,11 @@ SPITFIRE.UISlideshow.prototype = {
     this._drawerThumbWidth = this.config.drawerThumbWidth || 100;
     this._$thumbs = [];
     this._numPages = Math.ceil(this.data.length / this._drawerThumbsPerPage);
-    var sequentialTask = new SPITFIRE.SequentialTask();
+    var sequentialTask = new SPITFIRE.SequentialTask(),
+        i, len, item, thumb, $el;
     sequentialTask.bind(SPITFIRE.Event.COMPLETE, this.thumbsLoadedHandler.context(this));
     
     // load thumbnails and add them to drawer
-    var i, len, item, thumb, $el;
     for (i = 0, len = this.data.length; i < len; i += 1) {
       item = this.data[i];
       
@@ -3276,10 +3381,18 @@ SPITFIRE.UISlideshow.prototype = {
   },
   
   initHandlers: function() {
-    if (typeof this.$previousButton !== 'undefined') this.$previousButton.bind('click', $.proxy(this.previousImage, this));
-    if (typeof this.$nextButton !== 'undefined') this.$nextButton.bind('click', $.proxy(this.nextImage, this));
-    if (typeof this.$previousPageButton !== 'undefined') this.$previousPageButton.bind('click', $.proxy(this.previousPage, this));
-    if (typeof this.$nextPageButton !== 'undefined') this.$nextPageButton.bind('click', $.proxy(this.nextPage, this));
+    if (typeof this.$previousButton !== 'undefined') {
+      this.$previousButton.bind('click', $.proxy(this.previousImage, this));
+    }
+    if (typeof this.$nextButton !== 'undefined') {
+      this.$nextButton.bind('click', $.proxy(this.nextImage, this));
+    }
+    if (typeof this.$previousPageButton !== 'undefined') {
+      this.$previousPageButton.bind('click', $.proxy(this.previousPage, this));
+    }
+    if (typeof this.$nextPageButton !== 'undefined') {
+      this.$nextPageButton.bind('click', $.proxy(this.nextPage, this));
+    }
   },
   
   positionThumb: function($el) {
@@ -3290,7 +3403,7 @@ SPITFIRE.UISlideshow.prototype = {
   
   previousImage: function() {
     var currIndex = this.getCurrentIndex();
-    currIndex--;
+    currIndex -= 1;
     currIndex = (currIndex < 0) ? this.states.length - 1 : currIndex;
     
     this.setCurrentIndex(currIndex);
@@ -3298,7 +3411,7 @@ SPITFIRE.UISlideshow.prototype = {
   
   nextImage: function() {
     var currIndex = this.getCurrentIndex();
-    currIndex++;
+    currIndex += 1;
     currIndex = (currIndex >= this.states.length) ? 0 : currIndex;
     
     this.setCurrentIndex(currIndex);
@@ -3306,25 +3419,27 @@ SPITFIRE.UISlideshow.prototype = {
   
   previousPage: function() {
     var currPageIndex = this.getCurrentPageIndex();
-    currPageIndex--;
+    currPageIndex -= 1;
     currPageIndex = (currPageIndex < 0) ? this._numPages - 1 : currPageIndex;
     this.setCurrentPageIndex(currPageIndex);
   },
   
   nextPage: function() {
     var currPageIndex = this.getCurrentPageIndex();
-    currPageIndex++;
+    currPageIndex += 1;
     currPageIndex = (currPageIndex >= this._numPages) ? 0 : currPageIndex;
     
     this.setCurrentPageIndex(currPageIndex);
   },
   
   updateDrawer: function() {
-    if (!this.hasDrawer) return;
+    if (!this.hasDrawer) {
+      return;
+    }
   
-    var i, len, $thumb;
+    var i, len, $thumb, pageIndex;
     for (i = 0, len = this._$thumbs.length; i < len; i += 1) {
-      var $thumb = this._$thumbs[i];
+      $thumb = this._$thumbs[i];
       
       if (i === this.getCurrentIndex()) {
         $thumb.addClass('selected');
@@ -3334,21 +3449,25 @@ SPITFIRE.UISlideshow.prototype = {
     }
     
     // set the correct page
-    var pageIndex = ~~ (this.getCurrentIndex() / this._drawerThumbsPerPage);
+    pageIndex = ~~ (this.getCurrentIndex() / this._drawerThumbsPerPage);
     this.setCurrentPageIndex(pageIndex);
   },
   
   updateDescription: function() {
-    if (!this.hasDescriptionContainer) return;
+    if (!this.hasDescriptionContainer) {
+      return;
+    }
     
     var desc = this.data[this.getCurrentIndex()].description;
-    desc = (typeof desc != 'undefined') ? desc : '';
+    desc = (typeof desc !== 'undefined') ? desc : '';
 
     this.$descriptionContainer.html(desc);
   }
 };
 
 SPITFIRE.Class(SPITFIRE.UISlideshow);
+/*global SPITFIRE, $, window*/
+
 //--------------------------------------
 // SPITFIRE.UISlideshowItem
 //--------------------------------------
@@ -3365,8 +3484,9 @@ SPITFIRE.UISlideshowItem = function(name, url, disableContextMenu) {
   if (disableContextMenu) {
     this.loader.bind('contextmenu', function(event) {
       event = event || window.event;
-      if (event.stopPropagation)
+      if (event.stopPropagation) {
           event.stopPropagation();
+      }
     
       event.cancelBubble = true;
       return false;
@@ -3413,6 +3533,8 @@ SPITFIRE.UISlideshowItem.prototype = {
 };
 
 SPITFIRE.Class(SPITFIRE.UISlideshowItem);
+/*global SPITFIRE*/
+
 SPITFIRE.ArrayUtils = {};
 
 //--------------------------------------
@@ -3423,20 +3545,22 @@ SPITFIRE.ArrayUtils = {};
 
 SPITFIRE.ArrayUtils.getItemByKeys = function(inArray, keyValues) {
   var i = -1,
-      item,
+      item, j,
       hasKeys;
   
   while (++i < inArray.length) {
     item = inArray[i];
     hasKeys = true;
     
-    for (var j in keyValues) {
-      if (!item.hasOwnProperty(j) || item[j] != keyValues[j])
+    for (j in keyValues) {
+      if (!item.hasOwnProperty(j) || item[j] !== keyValues[j]) {
         hasKeys = false;
+      }
     }
         
-    if (hasKeys)
-        return item;
+    if (hasKeys) {
+      return item;
+    }
   }
   
   return undefined;
@@ -3451,20 +3575,22 @@ SPITFIRE.ArrayUtils.getItemByKeys = function(inArray, keyValues) {
 SPITFIRE.ArrayUtils.getItemsByKeys = function(inArray, keyValues) {
   var t = [],
       i = -1,
-      item,
+      item, j,
       hasKeys;
   
   while (++i < inArray.length) {
     item = inArray[i];
     hasKeys = true;
     
-    for (var j in keyValues) {
-      if (!item.hasOwnProperty(j) || item[j] != keyValues[j])
+    for (j in keyValues) {
+      if (!item.hasOwnProperty(j) || item[j] !== keyValues[j]) {
         hasKeys = false;
+      }
     }
         
-    if (hasKeys)
-        t.push(item);
+    if (hasKeys) {
+      t.push(item);
+    }
   }
   
   return t;
@@ -3478,14 +3604,15 @@ SPITFIRE.ArrayUtils.getItemsByKeys = function(inArray, keyValues) {
 
 SPITFIRE.ArrayUtils.getItemByAnyKey = function(inArray, keyValues) {
   var i = -1,
-      item;
+      item, j;
   
   while (++i < inArray.length) {
     item = inArray[i];
     
-    for (var j in keyValues) {
-      if (!item.hasOwnProperty(j) || item[j] != keyValues[j])
+    for (j in keyValues) {
+      if (!item.hasOwnProperty(j) || item[j] !== keyValues[j]) {
         return item;
+      }
     }
   }
   
@@ -3501,15 +3628,15 @@ SPITFIRE.ArrayUtils.getItemByAnyKey = function(inArray, keyValues) {
 SPITFIRE.ArrayUtils.getItemsByAnyKey = function(inArray, keyValues) {
   var t = [],
       i = -1,
-      item,
+      item, j,
       hasKeys;
   
   while (++i < inArray.length) {
     item = inArray[i];
     hasKeys = true;
     
-    for (var j in keyValues) {
-      if (!item.hasOwnProperty(j) || item[j] != keyValues[j]) {
+    for (j in keyValues) {
+      if (!item.hasOwnProperty(j) || item[j] !== keyValues[j]) {
         t.push(item);
         
         break;
@@ -3528,10 +3655,10 @@ SPITFIRE.ArrayUtils.getItemsByAnyKey = function(inArray, keyValues) {
 
 SPITFIRE.ArrayUtils.getItemByKey = function(inArray, key, match) {
   var i, len, item;
-  for (var i = 0, len = inArray.length; i < len; i += 1) {
+  for (i = 0, len = inArray.length; i < len; i += 1) {
     item = inArray[i];
     if (item.hasOwnProperty(key)) {
-      if (item[key] == match) {
+      if (item[key] === match) {
         return item;
       }
     }
@@ -3549,10 +3676,10 @@ SPITFIRE.ArrayUtils.getItemByKey = function(inArray, key, match) {
 SPITFIRE.ArrayUtils.getItemsByKey = function(inArray, key, match) {
   var i, len, item,
       t = [];
-  for (var i = 0, len = inArray.length; i < len; i += 1) {
+  for (i = 0, len = inArray.length; i < len; i += 1) {
     item = inArray[i];
     if (item.hasOwnProperty(key)) {
-      if (item[key] == match) {
+      if (item[key] === match) {
         t.push(item);
       }
     }
@@ -3564,11 +3691,15 @@ SPITFIRE.ArrayUtils.getItemsByKey = function(inArray, key, match) {
 SPITFIRE.ArrayUtils.hasValue = function(inArray, value) {
   var i, len;
   for (i = 0, len = inArray.length; i < len; i += 1) {
-  	if (inArray[i] === value) return true;
+		if (inArray[i] === value) {
+			return true;
+		}
   }
   
   return false;
-}
+};
+/*global SPITFIRE*/
+
 SPITFIRE.ObjectUtils = {};
 
 //--------------------------------------
@@ -3586,6 +3717,8 @@ SPITFIRE.ObjectUtils.getKeyByValue = function(inObject, value) {
   
   return undefined;
 };
+/*global SPITFIRE*/
+
 // Ported to JS from CasaLib AS3
 // http://casalib.org/
 SPITFIRE.RatioUtils = SPITFIRE.RatioUtils || {
@@ -3630,8 +3763,9 @@ SPITFIRE.RatioUtils = SPITFIRE.RatioUtils || {
     snapToPixel = snapToPixel || true;
     var scaled = SPITFIRE.RatioUtils.scaleHeight(size, bounds.width(), snapToPixel);
 		
-		if (scaled.height() < bounds.height())
+		if (scaled.height() < bounds.height()) {
 			scaled = SPITFIRE.RatioUtils.scaleWidth(size, bounds.height(), snapToPixel);
+		}
 		
 		return scaled;
   },
@@ -3640,8 +3774,9 @@ SPITFIRE.RatioUtils = SPITFIRE.RatioUtils || {
     snapToPixel = snapToPixel || true;
     var scaled = SPITFIRE.RatioUtils.scaleHeight(size, bounds.width(), snapToPixel);
 		
-		if (scaled.height() > bounds.height())
+		if (scaled.height() > bounds.height()) {
 			scaled = SPITFIRE.RatioUtils.scaleWidth(size, bounds.height(), snapToPixel);
+		}
 		
 		return scaled;
   },
@@ -3654,6 +3789,8 @@ SPITFIRE.RatioUtils = SPITFIRE.RatioUtils || {
     return scaled;
   }
 };
+/*global SPITFIRE*/
+
 //--------------------------------------
 // Timer
 //--------------------------------------
@@ -3663,7 +3800,7 @@ SPITFIRE.Timer = function(delay, repeatCount) {
   this.delay(delay);
   this.repeatCount(repeatCount || 0);
   this.qualifiedClassName('SPITFIRE.Timer');
-  this._interval;
+  this._interval = undefined;
   this._currentCount = 0;
 };
 
@@ -3690,9 +3827,13 @@ SPITFIRE.Timer.prototype = {
   },
   
   start: function() {
-    if (this._interval) return;
+    if (this._interval) {
+      return;
+    }
     
-    if (this.repeatCount() && this.currentCount() >= this.repeatCount()) return;
+    if (this.repeatCount() && this.currentCount() >= this.repeatCount()) {
+      return;
+    }
     
     this._interval = setTimeout(this.tick.context(this), this.delay());
   },
@@ -3716,6 +3857,6 @@ SPITFIRE.Timer.prototype = {
     this._interval = setTimeout(this.tick.context(this), this.delay());
     this.trigger(new SPITFIRE.TimerEvent(SPITFIRE.TimerEvent.TIMER));
   }
-}
+};
 
 SPITFIRE.Class(SPITFIRE.Timer);

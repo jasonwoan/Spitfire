@@ -1,3 +1,5 @@
+/*global SPITFIRE, $*/
+
 //--------------------------------------
 // SPITFIRE.UISlideshow
 //--------------------------------------
@@ -28,7 +30,9 @@ SPITFIRE.UISlideshow = function(config) {
   
   this.hasLoadingIndicator = (typeof config.loadingIndicator !== 'undefined');
   this.$loadingIndicator = (this.hasLoadingIndicator) ? $('#' + config.loadingIndicator) : undefined;
-  if (this.hasLoadingIndicator) this.$loadingIndicator.hide();
+  if (this.hasLoadingIndicator) {
+    this.$loadingIndicator.hide();
+  }
   
   this.hasDrawer = (typeof config.drawer !== 'undefined');
   this.$drawer = (this.hasDrawer) ? $('#' + config.drawer) : undefined;
@@ -58,7 +62,9 @@ SPITFIRE.UISlideshow.prototype = {
   },
   
   setCurrentPageIndex: function(value) {
-    if (this._currentPageIndex === value) return;
+    if (this._currentPageIndex === value) {
+      return;
+    }
     this._currentPageIndex = value;
     
     // move to current page
@@ -113,7 +119,9 @@ SPITFIRE.UISlideshow.prototype = {
   },
   
   initDrawer: function() {
-    if (!this.hasDrawer) return;
+    if (!this.hasDrawer) {
+      return;
+    }
     
     this._drawerItemX = 0;
     this._drawerThumbsPerPage = this.config.drawerThumbsPerPage || 10;
@@ -121,11 +129,11 @@ SPITFIRE.UISlideshow.prototype = {
     this._drawerThumbWidth = this.config.drawerThumbWidth || 100;
     this._$thumbs = [];
     this._numPages = Math.ceil(this.data.length / this._drawerThumbsPerPage);
-    var sequentialTask = new SPITFIRE.SequentialTask();
+    var sequentialTask = new SPITFIRE.SequentialTask(),
+        i, len, item, thumb, $el;
     sequentialTask.bind(SPITFIRE.Event.COMPLETE, this.thumbsLoadedHandler.context(this));
     
     // load thumbnails and add them to drawer
-    var i, len, item, thumb, $el;
     for (i = 0, len = this.data.length; i < len; i += 1) {
       item = this.data[i];
       
@@ -149,10 +157,18 @@ SPITFIRE.UISlideshow.prototype = {
   },
   
   initHandlers: function() {
-    if (typeof this.$previousButton !== 'undefined') this.$previousButton.bind('click', $.proxy(this.previousImage, this));
-    if (typeof this.$nextButton !== 'undefined') this.$nextButton.bind('click', $.proxy(this.nextImage, this));
-    if (typeof this.$previousPageButton !== 'undefined') this.$previousPageButton.bind('click', $.proxy(this.previousPage, this));
-    if (typeof this.$nextPageButton !== 'undefined') this.$nextPageButton.bind('click', $.proxy(this.nextPage, this));
+    if (typeof this.$previousButton !== 'undefined') {
+      this.$previousButton.bind('click', $.proxy(this.previousImage, this));
+    }
+    if (typeof this.$nextButton !== 'undefined') {
+      this.$nextButton.bind('click', $.proxy(this.nextImage, this));
+    }
+    if (typeof this.$previousPageButton !== 'undefined') {
+      this.$previousPageButton.bind('click', $.proxy(this.previousPage, this));
+    }
+    if (typeof this.$nextPageButton !== 'undefined') {
+      this.$nextPageButton.bind('click', $.proxy(this.nextPage, this));
+    }
   },
   
   positionThumb: function($el) {
@@ -163,7 +179,7 @@ SPITFIRE.UISlideshow.prototype = {
   
   previousImage: function() {
     var currIndex = this.getCurrentIndex();
-    currIndex--;
+    currIndex -= 1;
     currIndex = (currIndex < 0) ? this.states.length - 1 : currIndex;
     
     this.setCurrentIndex(currIndex);
@@ -171,7 +187,7 @@ SPITFIRE.UISlideshow.prototype = {
   
   nextImage: function() {
     var currIndex = this.getCurrentIndex();
-    currIndex++;
+    currIndex += 1;
     currIndex = (currIndex >= this.states.length) ? 0 : currIndex;
     
     this.setCurrentIndex(currIndex);
@@ -179,25 +195,27 @@ SPITFIRE.UISlideshow.prototype = {
   
   previousPage: function() {
     var currPageIndex = this.getCurrentPageIndex();
-    currPageIndex--;
+    currPageIndex -= 1;
     currPageIndex = (currPageIndex < 0) ? this._numPages - 1 : currPageIndex;
     this.setCurrentPageIndex(currPageIndex);
   },
   
   nextPage: function() {
     var currPageIndex = this.getCurrentPageIndex();
-    currPageIndex++;
+    currPageIndex += 1;
     currPageIndex = (currPageIndex >= this._numPages) ? 0 : currPageIndex;
     
     this.setCurrentPageIndex(currPageIndex);
   },
   
   updateDrawer: function() {
-    if (!this.hasDrawer) return;
+    if (!this.hasDrawer) {
+      return;
+    }
   
-    var i, len, $thumb;
+    var i, len, $thumb, pageIndex;
     for (i = 0, len = this._$thumbs.length; i < len; i += 1) {
-      var $thumb = this._$thumbs[i];
+      $thumb = this._$thumbs[i];
       
       if (i === this.getCurrentIndex()) {
         $thumb.addClass('selected');
@@ -207,15 +225,17 @@ SPITFIRE.UISlideshow.prototype = {
     }
     
     // set the correct page
-    var pageIndex = ~~ (this.getCurrentIndex() / this._drawerThumbsPerPage);
+    pageIndex = ~~ (this.getCurrentIndex() / this._drawerThumbsPerPage);
     this.setCurrentPageIndex(pageIndex);
   },
   
   updateDescription: function() {
-    if (!this.hasDescriptionContainer) return;
+    if (!this.hasDescriptionContainer) {
+      return;
+    }
     
     var desc = this.data[this.getCurrentIndex()].description;
-    desc = (typeof desc != 'undefined') ? desc : '';
+    desc = (typeof desc !== 'undefined') ? desc : '';
 
     this.$descriptionContainer.html(desc);
   }

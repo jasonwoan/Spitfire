@@ -1,3 +1,5 @@
+/*global SPITFIRE*/
+
 //--------------------------------------
 // SPITFIRE.State
 //--------------------------------------
@@ -65,7 +67,7 @@ SPITFIRE.State.prototype = {
     
     this._children = [];
     
-    for (i = 0, len = value.length; i < len; i++) {
+    for (i = 0, len = value.length; i < len; i += 1) {
       this.addChild(value[i]);
     }
   },
@@ -79,7 +81,7 @@ SPITFIRE.State.prototype = {
   },
   
   getActivatedChild: function() {
-    var state, i, len;
+    var state, i, len, child;
     for (i = 0, len = this._children.length; i < len; i+=1) {
       child = this._children[i];
       if (child.activated) {
@@ -109,7 +111,7 @@ SPITFIRE.State.prototype = {
   },
   
   setSelected: function(value) {
-    if (value != this._selected) {
+    if (value !== this._selected) {
       this._selected = value;
       this.trigger(new SPITFIRE.StateEvent(SPITFIRE.StateEvent.STATE_CHANGE));
     }
@@ -135,7 +137,7 @@ SPITFIRE.State.prototype = {
     for (i = 0, len = locationArray.length; i < len; i+=1) {
       inlineState = locationArray[i];
       location += inlineState.getName();
-      if (inlineState != locationArray[len - 1]) {
+      if (inlineState !== locationArray[len - 1]) {
         location += '/';
       }
     }
@@ -152,7 +154,7 @@ SPITFIRE.State.prototype = {
     if (child.getSelected()) {
       this._selectedChild = child;
     } else
-    if (child == this._selectedChild) {
+    if (child === this._selectedChild) {
       this._selectedChild = undefined;
     }
     
@@ -182,7 +184,7 @@ SPITFIRE.State.prototype = {
   },
   
   contains: function(child) {
-    return this._children.indexOf(child) != -1;
+    return this._children.indexOf(child) !== -1;
   },
   
   getChildAt: function(index) {
@@ -193,7 +195,7 @@ SPITFIRE.State.prototype = {
     var foundChild, i, len, child;
     for (i = 0, len = this._children.length; i < len; i+=1) {
       child = this._children[i];
-      if (child.getName() == name) {
+      if (child.getName() === name) {
         foundChild = child;
         break;
       }
@@ -215,10 +217,9 @@ SPITFIRE.State.prototype = {
       throw new SPITFIRE.Error('The supplied child must be a child of the caller.');
     }
     
-    var index = this.getChildIndex(child),
-        child;
+    var index = this.getChildIndex(child);
         
-    if (index != -1) {
+    if (index !== -1) {
       child = this.removeChildAt(index);
     }
     
@@ -252,7 +253,7 @@ SPITFIRE.State.prototype = {
     var foundChild, i, len, child;
     for (i = 0, len = this._children.length; i < len; i+=1) {
       child = this._children[i];
-      if (child.getName() == name) {
+      if (child.getName() === name) {
         foundChild = child;
         break;
       }
@@ -271,26 +272,26 @@ SPITFIRE.State.prototype = {
   },
   
   findDefaultStates: function() {
-    var states = [];
-    var defaultState = this.getChildByName(this.getDefaultChild());
+    var states = [],
+				defaultState = this.getChildByName(this.getDefaultChild()),
+				location = '',
+        i, len, state;
     
     while (defaultState) {
       states.push(defaultState);
       defaultState = defaultState.getChildByName(defaultState.getDefaultChild());
     }
-    
-    var location = '',
-        i, len;
+
     for (i = 0, len = states.length; i < len; i += 1) {
       if (i === 0) {
-	location += '/';
+				location += '/';
       }
       
-      var state = states[i];
+      state = states[i];
       location += state.getName();
       
       if (i < states.length - 1) {
-	location += '/';
+				location += '/';
       }
     }
     
@@ -307,7 +308,7 @@ SPITFIRE.State.prototype = {
   },
   
   browseNextSibling: function() {
-    var nextIndex = index + 1;
+    var nextIndex = this.index + 1;
     
     if (nextIndex > this.getParent().getChildren().length - 1) {
       nextIndex = 0;
@@ -338,9 +339,9 @@ SPITFIRE.State.prototype = {
   
   getChildFromPath: function(path) {
     var state = this,
-        i, len;
+        i, len, names;
     if (path.length > 0) {
-      var names = path.split('/');
+      names = path.split('/');
       for (i = 0, len = names.length; i < len; i+=1) {
         state = state.getChildByName(names[i]);
       }

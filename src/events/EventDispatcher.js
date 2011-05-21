@@ -1,3 +1,5 @@
+/*global SPITFIRE*/
+
 //--------------------------------------
 // EventDispatcher
 //--------------------------------------
@@ -25,8 +27,8 @@ SPITFIRE.EventDispatcher.prototype = {
       return;
     }
     
-    for (var i = 0, len = this._eventListeners[type].length; i < len; i++) {
-      if (this._eventListeners[type][i] == handler) {
+    for (var i = 0, len = this._eventListeners[type].length; i < len; i += 1) {
+      if (this._eventListeners[type][i] === handler) {
         this._eventListeners[type].splice(i, 1);
       }
     }
@@ -34,10 +36,10 @@ SPITFIRE.EventDispatcher.prototype = {
   
   trigger: function(event) {
     event.setTarget(this);
-    var args = [event];
+    var args = [event], j, len;
     
     if (this._eventListeners[event.getType()]) {
-      for (var j = 0, len = this._eventListeners[event.getType()].length; j < len; j++) {
+      for (j = 0, len = this._eventListeners[event.getType()].length; j < len; j += 1) {
         this._eventListeners[event.getType()][j].apply(this, args);
       }
     }

@@ -1,3 +1,5 @@
+/*global SPITFIRE, $, log*/
+
 //--------------------------------------
 // SPITFIRE.ParallelTask
 //--------------------------------------
@@ -25,7 +27,7 @@ SPITFIRE.ParallelTask.prototype = {
     }
     task.unbind(SPITFIRE.Event.COMPLETE, this.taskCompleteHandler.context(this));
     this._createdTasks.push(task);
-    if (this._createdTasks.length == this.tasks().length) {
+    if (this._createdTasks.length === this.tasks().length) {
       if (this.debug()) {
 	log('tasksComplete ' + this);
       }
@@ -40,14 +42,14 @@ SPITFIRE.ParallelTask.prototype = {
   start: function() {
     this._createdTasks = [];
     if (this.tasks().length > 0) {
-      var i, len;
+      var i, len, task;
       for (i = 0, len = this.tasks().length; i < len; i += 1) {
-        	var task = this.tasks()[i];
-        	task.bind(SPITFIRE.Event.COMPLETE, this.taskCompleteHandler.context(this));
-        	if (this.debug()) {
-        	 log('taskStart ' + task);
-        	}
-        	task.start();
+				task = this.tasks()[i];
+				task.bind(SPITFIRE.Event.COMPLETE, this.taskCompleteHandler.context(this));
+				if (this.debug()) {
+				 log('taskStart ' + task);
+				}
+				task.start();
       }
     } else {
       this.complete();

@@ -1,3 +1,5 @@
+/*global SPITFIRE, $, log*/
+
 //--------------------------------------
 // SPITFIRE.TaskManager
 //--------------------------------------
@@ -22,22 +24,22 @@ SPITFIRE.TaskManager.prototype = {
   setTasks: function(value) {    
     var i, len;
     for (i = 0, len = this._tasks.length; i < len; i += 1) {
-      	this.removeTask(this.tasks()[i]);
+			this.removeTask(this.tasks()[i]);
     }
     
     this._tasks = [];
     
     for (i = 0, len = value.length; i < len; i += 1) {
-    	this.addTask(value[i]);
+			this.addTask(value[i]);
     }
   },
   
   getProgress: function() {
     var loadedProgress = 0,
-        i, len;
+        i, len, task;
     for (i = 0, len = this._progressiveTasks.length; i < len; i += 1) {
-    	var task = this._progressiveTasks[i];
-    	loadedProgress += task.progress;
+			task = this._progressiveTasks[i];
+			loadedProgress += task.progress;
     }
     
 		return loadedProgress / Math.max(this._progressiveTasks.length, 1);
@@ -94,7 +96,7 @@ SPITFIRE.TaskManager.prototype = {
   },
   
   contains: function(task) {
-    return this.tasks().indexOf(task) != -1;
+    return this.tasks().indexOf(task) !== -1;
   },
   
   getTaskAt: function(index) {
@@ -102,10 +104,10 @@ SPITFIRE.TaskManager.prototype = {
   },
   
   getTaskByName: function(name) {
-    var taskFound, i, len;
+    var taskFound, i, len, task;
     for (i = 0, len = this.tasks().length; i < len; i += 1) {
-    	var task = this.tasks()[i];
-    	if (task.name() == name) {
+			task = this.tasks()[i];
+			if (task.name() === name) {
 				taskFound = task;
 				break;
 			}
@@ -127,7 +129,7 @@ SPITFIRE.TaskManager.prototype = {
 			throw new SPITFIRE.Error("The supplied task must be a child of the caller.");
 		}
 		var index = this.getTaskIndex(task);
-		if (index != -1) {
+		if (index !== -1) {
 			this.removeTaskAt(index);
 		}
 		this.setProgressive();
@@ -135,10 +137,11 @@ SPITFIRE.TaskManager.prototype = {
   },
   
   removeTaskAt: function(index) {
-    var task = this.getTaskAt(index);
+    var task = this.getTaskAt(index),
+				progressiveIndex;
 		this.tasks().splice(index, 1);
-		var progressiveIndex = this._progressiveTasks.indexOf(task);
-		if (progressiveIndex != -1) {
+		progressiveIndex = this._progressiveTasks.indexOf(task);
+		if (progressiveIndex !== -1) {
 			this._progressiveTasks.splice(progressiveIndex, 1);
 		}
 		this.setProgressive();

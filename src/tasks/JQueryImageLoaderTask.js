@@ -1,3 +1,5 @@
+/*global SPITFIRE, Image, $, log*/
+
 //--------------------------------------
 // SPITFIRE.JQueryImageLoaderTask
 //--------------------------------------

@@ -1,3 +1,5 @@
+/*global SPITFIRE, log*/
+
 //--------------------------------------
 // SPITFIRE.StateManager
 //--------------------------------------
@@ -10,11 +12,11 @@ SPITFIRE.StateManager = function(name, root) {
   this.setPageViewType(SPITFIRE.StateManager.PAGE_VIEW_LOCATION);
   this._progressTimer = new SPITFIRE.Timer(33);
   this._progressTimer.bind(SPITFIRE.TimerEvent.TIMER, this.taskManagerProgressHandler.context(this));
-  this._transitionInPath;
-  this._transitionWasInterrupted;
-  this._isInTransition;
-  this._transitions;
-  this._currentTransition;
+  this._transitionInPath = undefined;
+  this._transitionWasInterrupted = undefined;
+  this._isInTransition = undefined;
+  this._transitions = undefined;
+  this._currentTransition = undefined;
   this._redirects = [];
 };
 
@@ -61,12 +63,12 @@ SPITFIRE.StateManager.prototype = {
   getLocation: function() {
     var states = this.getSelectedStates(),
         loc = '',
-        i, len;
+        i, len, inlineState;
         
     for (i = 0, len = states.length; i < len; i+=1) {
-      var inlineState = states[i];
+      inlineState = states[i];
       loc += inlineState.getName();
-      if (inlineState != states[states.length - 1]) {
+      if (inlineState !== states[states.length - 1]) {
         loc += '/';
       }
     }
@@ -75,15 +77,17 @@ SPITFIRE.StateManager.prototype = {
   },
   
   setLocation: function(value) {
+		var array, loc, locationArray, state;
+		
     if (this.getDeepLinking()) {
-      var array = value.split('/');
+      array = value.split('/');
       array.shift();
-      var loc = '/' + array.join('/');
+      loc = '/' + array.join('/');
       this.getDeepLinking().value(loc);
     } else {
-      var locationArray = value.split('/');
+      locationArray = value.split('/');
       locationArray.shift();
-      var state = this.getTree();
+      state = this.getTree();
       if (locationArray.length > 0) {
         state = state.getChildFromPath(locationArray.join('/'));
       }
@@ -115,7 +119,7 @@ SPITFIRE.StateManager.prototype = {
   
   deepLinkingChangeHandler: function(event) {
     var path = this.getDeepLinking().value();
-    if (path == '' || path == '/') {
+    if (path === '' || path === '/') {
       this._transitionInPath = this.getTree().getStateLocation();
     } else {
       this._transitionInPath = this.getTree().getName() + path;
@@ -178,7 +182,7 @@ SPITFIRE.StateManager.prototype = {
   
   init: function() {
     if (this.getDeepLinking()) {
-      if (this.getDeepLinking().value() != '/') {
+      if (this.getDeepLinking().value() !== '/') {
         this.deepLinkingChangeHandler();
       } else
       if (this.getStartLocation()) {
@@ -211,28 +215,28 @@ SPITFIRE.StateManager.prototype = {
     
     this._transitionInPath = this.checkRedirect(this._transitionInPath);
     
-    var nextLocationArray = this._transitionInPath.split('/');
-    
-    var locationPathArray = [];
+		var nextLocationArray = this._transitionInPath.split('/'),
+				locationPathArray = [],
+				transitionOutPaths = [],
+				transitionInPaths = [],
+				breakIndex = 0, i, len, currentArray, currentPath, nextArray, nextPath;
+				
     if (this.getLocation().length > 0) {
       locationPathArray = this.getLocation().split('/');
     }
-    
-    var breakIndex = 0, i, len, currentArray, currentPath, nextArray, nextPath;
 
     for (i = 0, len = locationPathArray.length; i < len; i+=1) {
       currentArray = locationPathArray.slice(0, i + 1);
       currentPath = currentArray.join('/');
       nextArray = nextLocationArray.slice(0, i + 1);
       nextPath = nextArray.join('/');
-      if (currentPath == nextPath) {
+      if (currentPath === nextPath) {
         breakIndex += 1;
       }
     }
     
     this._transitions = [];
     
-    var transitionOutPaths = [];
     for (i = locationPathArray.length - 1; i >= breakIndex; i-=1) {
       currentArray = locationPathArray.slice(0, i + 1);
       transitionOutPaths.push(currentArray.join('/'));
@@ -243,7 +247,6 @@ SPITFIRE.StateManager.prototype = {
     this._transitions.push(new SPITFIRE.TransitionProperties(transitionOutPaths.slice(), 'loadOut', false));
     this._transitions.push(new SPITFIRE.TransitionProperties(transitionOutPaths.slice(), 'transitionOut', false));
     
-    var transitionInPaths = [];
     for (i = breakIndex, len = nextLocationArray.length; i < len; i+=1) {
       nextArray = nextLocationArray.slice(0, i + 1);
       transitionInPaths.push(nextArray.join('/'));
@@ -251,7 +254,7 @@ SPITFIRE.StateManager.prototype = {
 
     transitionInPaths = this.activateStates(transitionInPaths);
 
-    if (transitionInPaths.length == 0) {
+    if (transitionInPaths.length === 0) {
       transitionInPaths = this.checkForDefaultStates(this._transitionInPath);
     }
     
@@ -262,16 +265,15 @@ SPITFIRE.StateManager.prototype = {
   },
   
   deactivateStates: function(transitionPaths) {
-    var i, len;
+    var i, len, path, pathArray, state, j, len2, currentState;
     for (i = 0, len = transitionPaths.length; i < len; i+=1) {
-      var path = transitionPaths[i];
-      var pathArray = path.split('/');
+      path = transitionPaths[i];
+      pathArray = path.split('/');
       pathArray.shift();
-      var state = this.getTree();
+      state = this.getTree();
       if (pathArray.length > 0) {
-        var j, len2;
         for (j = 0, len2 = pathArray.length; j < len2; j+=1) {
-          var currentState = state;
+          currentState = state;
           state = currentState.getChildByName(pathArray[j]);
         }
       }
@@ -281,57 +283,57 @@ SPITFIRE.StateManager.prototype = {
   },
   
   activateStates: function(transitionPaths) {
-    var newPaths = [], i, len;
+    var newPaths = [], i, len, path, pathArray, state, j, len2, currentState, defaultState;
     this._activeStates = [];
     for (i = 0, len = transitionPaths.length; i < len; i += 1) {
-      var path = transitionPaths[i];
-      var pathArray = path.split("/");
+      path = transitionPaths[i];
+      pathArray = path.split("/");
       pathArray.shift();
-      var state = this.getTree();
+      state = this.getTree();
       
       if (pathArray.length > 0) {
-	var j, len2;
-	for (j = 0, len2 = pathArray.length; j < len2; j += 1) {
-	  var currentState = state;
-	  state = currentState.getChildByName(pathArray[j]);
-	  if (!state) {
-	    state = currentState.createChildByName(pathArray[j]);
-	  }
-	}
+				for (j = 0, len2 = pathArray.length; j < len2; j += 1) {
+					currentState = state;
+					state = currentState.getChildByName(pathArray[j]);
+					if (!state) {
+						state = currentState.createChildByName(pathArray[j]);
+					}
+				}
       }
       
       state.setActivated(true);
       this.getActiveStates().push(state);
       newPaths.push(state.getStateLocation());
       
-      if (state.getStateLocation() == transitionPaths[transitionPaths.length - 1]) {
-	var defaultState = state.getChildByName(state.defaultChild());
-	while (defaultState) {
-	  defaultState.setActivated(true);
-	  this.getActiveStates().push(defaultState);
-	  newPaths.push(defaultState.getStateLocation());
-	  defaultState = defaultState.getChildByName(defaultState.getDefaultChild());
-	}
-      }
-      
+      if (state.getStateLocation() === transitionPaths[transitionPaths.length - 1]) {
+				defaultState = state.getChildByName(state.defaultChild());
+				while (defaultState) {
+					defaultState.setActivated(true);
+					this.getActiveStates().push(defaultState);
+					newPaths.push(defaultState.getStateLocation());
+					defaultState = defaultState.getChildByName(defaultState.getDefaultChild());
+				}
+			}  
     }
     
     return newPaths;
   },
   
   checkForDefaultStates: function(path) {
-    var newPaths = [];
-		var pathArray = path.split("/");
+    var newPaths = [],
+				pathArray = path.split("/"),
+				state = this.getTree(),
+				i, len, currentState, defaultState;
+		
 		pathArray.shift();
-		var state = this.getTree();
 		if (pathArray.length > 0) {
-		  var i, len;
 			for (i = 0, len = pathArray.length; i < len; i += 1) {
-				var currentState = state;
+				currentState = state;
 				state = currentState.getChildByName(pathArray[i]);
 			}
 		}
-		var defaultState = state.getChildByName(state.defaultChild);
+		
+		defaultState = state.getChildByName(state.defaultChild);
 		while (defaultState) {
 			defaultState.setActivated(true);
 			this.getActiveStates().push(defaultState);
@@ -355,32 +357,32 @@ SPITFIRE.StateManager.prototype = {
     
     this.getTaskManager().bind(SPITFIRE.Event.COMPLETE, this.taskManagerCompleteHandler.context(this));
     
-    var i, len;
+    var i, len, path, pathArray, state, task, stateSelected;
     
     for (i = 0, len = this._currentTransition.getLocations().length; i < len; i += 1) {
-      var path = this._currentTransition.getLocations()[i];
-      var pathArray = path.split("/");
+      path = this._currentTransition.getLocations()[i];
+      pathArray = path.split("/");
       pathArray.shift();
-      var state = this.getTree();
+      state = this.getTree();
       if (pathArray.length > 0) {
 	      state = state.getChildFromPath(pathArray.join("/"));
       }
-      var task = state[this._currentTransition.getTransitionName()]();
+      task = state[this._currentTransition.getTransitionName()]();
       
       if (task) {
 	      this.getTaskManager().addTask(task);
       }
-      var stateSelected = false;;
-      if (this._currentTransition.getTransitionName() == "transitionIn") {
+      stateSelected = false;
+      if (this._currentTransition.getTransitionName() === "transitionIn") {
 	      stateSelected = true;
       }
-      if (this._currentTransition.getTransitionName() == "transitionOut") {
+      if (this._currentTransition.getTransitionName() === "transitionOut") {
 	      stateSelected = false;
       }
 
       this.getTaskManager().addTask(new SPITFIRE.PropertyTask(state, "selected", stateSelected));
     }
-    if (this.getTaskManager().getProgress() == 1) {
+    if (this.getTaskManager().getProgress() === 1) {
 	    this.getTaskManager().getProgressive(false);
     }
     if (this.getTaskManager().getProgressive()) {
@@ -401,11 +403,11 @@ SPITFIRE.StateManager.prototype = {
   },
   
   removeRedirect: function(location) {
-    var newRedirects = [];
-    var i, len;
+    var newRedirects = [],
+				i, len, redirect;
 		for (i = 0, len = this.getRedirects().length; i < len; i += 1) {
-		  var redirect = this.getRedirects()[i];
-			if (redirect.getLocation() != location) {
+		  redirect = this.getRedirects()[i];
+			if (redirect.getLocation() !== location) {
 				newRedirects.push(redirect);
 			}
 		}
@@ -413,10 +415,10 @@ SPITFIRE.StateManager.prototype = {
   },
   
   checkRedirect: function(path) {
-    var i, len;
+    var i, len, redirect;
 		for (i = 0, len = this.getRedirects().length; i < len; i += 1) {
-		  var redirect = this.getRedirects()[i];
-			if (path == redirect.getLocation()) {
+		  redirect = this.getRedirects()[i];
+			if (path === redirect.getLocation()) {
 				path = redirect.getNewLocation();
 			}
 		}

@@ -1,3 +1,5 @@
+/*global SPITFIRE*/
+
 SPITFIRE.ObjectUtils = {};
 
 //--------------------------------------

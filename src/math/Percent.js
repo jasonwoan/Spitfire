@@ -1,3 +1,5 @@
+/*global SPITFIRE*/
+
 //--------------------------------------
 // Percent
 //--------------------------------------
@@ -26,7 +28,7 @@ SPITFIRE.prototype = {
   },
   
   setPercentage: function(value) {
-    this._percent = value * .01;
+    this._percent = value * 0.01;
   },
   
   getDecimalPercentage: function() {
@@ -38,7 +40,7 @@ SPITFIRE.prototype = {
   },
   
   equals: function(percent) {
-    return this.getDecimalPercentage() == percent.getDecimalPercentage();
+    return this.getDecimalPercentage() === percent.getDecimalPercentage();
   },
   
   clone: function() {

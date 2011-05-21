@@ -1,3 +1,5 @@
+/*global SPITFIRE*/
+
 // Ported to JS from CasaLib AS3
 // http://casalib.org/
 SPITFIRE.RatioUtils = SPITFIRE.RatioUtils || {
@@ -42,8 +44,9 @@ SPITFIRE.RatioUtils = SPITFIRE.RatioUtils || {
     snapToPixel = snapToPixel || true;
     var scaled = SPITFIRE.RatioUtils.scaleHeight(size, bounds.width(), snapToPixel);
 		
-		if (scaled.height() < bounds.height())
+		if (scaled.height() < bounds.height()) {
 			scaled = SPITFIRE.RatioUtils.scaleWidth(size, bounds.height(), snapToPixel);
+		}
 		
 		return scaled;
   },
@@ -52,8 +55,9 @@ SPITFIRE.RatioUtils = SPITFIRE.RatioUtils || {
     snapToPixel = snapToPixel || true;
     var scaled = SPITFIRE.RatioUtils.scaleHeight(size, bounds.width(), snapToPixel);
 		
-		if (scaled.height() > bounds.height())
+		if (scaled.height() > bounds.height()) {
 			scaled = SPITFIRE.RatioUtils.scaleWidth(size, bounds.height(), snapToPixel);
+		}
 		
 		return scaled;
   },

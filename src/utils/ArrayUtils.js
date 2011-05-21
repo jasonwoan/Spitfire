@@ -1,3 +1,5 @@
+/*global SPITFIRE*/
+
 SPITFIRE.ArrayUtils = {};
 
 //--------------------------------------
@@ -8,20 +10,22 @@ SPITFIRE.ArrayUtils = {};
 
 SPITFIRE.ArrayUtils.getItemByKeys = function(inArray, keyValues) {
   var i = -1,
-      item,
+      item, j,
       hasKeys;
   
   while (++i < inArray.length) {
     item = inArray[i];
     hasKeys = true;
     
-    for (var j in keyValues) {
-      if (!item.hasOwnProperty(j) || item[j] != keyValues[j])
+    for (j in keyValues) {
+      if (!item.hasOwnProperty(j) || item[j] !== keyValues[j]) {
         hasKeys = false;
+      }
     }
         
-    if (hasKeys)
-        return item;
+    if (hasKeys) {
+      return item;
+    }
   }
   
   return undefined;
@@ -36,20 +40,22 @@ SPITFIRE.ArrayUtils.getItemByKeys = function(inArray, keyValues) {
 SPITFIRE.ArrayUtils.getItemsByKeys = function(inArray, keyValues) {
   var t = [],
       i = -1,
-      item,
+      item, j,
       hasKeys;
   
   while (++i < inArray.length) {
     item = inArray[i];
     hasKeys = true;
     
-    for (var j in keyValues) {
-      if (!item.hasOwnProperty(j) || item[j] != keyValues[j])
+    for (j in keyValues) {
+      if (!item.hasOwnProperty(j) || item[j] !== keyValues[j]) {
         hasKeys = false;
+      }
     }
         
-    if (hasKeys)
-        t.push(item);
+    if (hasKeys) {
+      t.push(item);
+    }
   }
   
   return t;
@@ -63,14 +69,15 @@ SPITFIRE.ArrayUtils.getItemsByKeys = function(inArray, keyValues) {
 
 SPITFIRE.ArrayUtils.getItemByAnyKey = function(inArray, keyValues) {
   var i = -1,
-      item;
+      item, j;
   
   while (++i < inArray.length) {
     item = inArray[i];
     
-    for (var j in keyValues) {
-      if (!item.hasOwnProperty(j) || item[j] != keyValues[j])
+    for (j in keyValues) {
+      if (!item.hasOwnProperty(j) || item[j] !== keyValues[j]) {
         return item;
+      }
     }
   }
   
@@ -86,15 +93,15 @@ SPITFIRE.ArrayUtils.getItemByAnyKey = function(inArray, keyValues) {
 SPITFIRE.ArrayUtils.getItemsByAnyKey = function(inArray, keyValues) {
   var t = [],
       i = -1,
-      item,
+      item, j,
       hasKeys;
   
   while (++i < inArray.length) {
     item = inArray[i];
     hasKeys = true;
     
-    for (var j in keyValues) {
-      if (!item.hasOwnProperty(j) || item[j] != keyValues[j]) {
+    for (j in keyValues) {
+      if (!item.hasOwnProperty(j) || item[j] !== keyValues[j]) {
         t.push(item);
         
         break;
@@ -113,10 +120,10 @@ SPITFIRE.ArrayUtils.getItemsByAnyKey = function(inArray, keyValues) {
 
 SPITFIRE.ArrayUtils.getItemByKey = function(inArray, key, match) {
   var i, len, item;
-  for (var i = 0, len = inArray.length; i < len; i += 1) {
+  for (i = 0, len = inArray.length; i < len; i += 1) {
     item = inArray[i];
     if (item.hasOwnProperty(key)) {
-      if (item[key] == match) {
+      if (item[key] === match) {
         return item;
       }
     }
@@ -134,10 +141,10 @@ SPITFIRE.ArrayUtils.getItemByKey = function(inArray, key, match) {
 SPITFIRE.ArrayUtils.getItemsByKey = function(inArray, key, match) {
   var i, len, item,
       t = [];
-  for (var i = 0, len = inArray.length; i < len; i += 1) {
+  for (i = 0, len = inArray.length; i < len; i += 1) {
     item = inArray[i];
     if (item.hasOwnProperty(key)) {
-      if (item[key] == match) {
+      if (item[key] === match) {
         t.push(item);
       }
     }
@@ -149,8 +156,10 @@ SPITFIRE.ArrayUtils.getItemsByKey = function(inArray, key, match) {
 SPITFIRE.ArrayUtils.hasValue = function(inArray, value) {
   var i, len;
   for (i = 0, len = inArray.length; i < len; i += 1) {
-  	if (inArray[i] === value) return true;
+		if (inArray[i] === value) {
+			return true;
+		}
   }
   
   return false;
-}
+};

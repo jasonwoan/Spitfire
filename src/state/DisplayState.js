@@ -1,3 +1,5 @@
+/*global SPITFIRE, $*/
+
 //--------------------------------------
 // SPITFIRE.DisplayState
 //--------------------------------------
@@ -17,9 +19,9 @@ SPITFIRE.DisplayState = function(name, config, cache) {
       stylesheets: [],
       images: []
     }
-  }
-  
-  var configuration = config || defaultConfig;
+  },
+			configuration = config || defaultConfig;
+	
   this.setConfig(configuration);
   this.stylesheets([]);
   this.images([]);
@@ -44,47 +46,47 @@ SPITFIRE.DisplayState.prototype = {
   
   getLoadIn: function() {
     // don't load if already cached
-    if (this.getIsCached()) return undefined;
+    if (this.getIsCached()) {
+			return undefined;
+		}
     
     var sequentialTask = new SPITFIRE.SequentialTask(),
-        i, len, task;
+        i, len, task, stylesheet, img,
+				configView = this.config().assets.view,
+				configStylesheets = this.config().assets.stylesheets,
+				configImages = this.config().assets.images;
     
-    // load view
-    var configView = this.config().assets.view;
-    
-    if (configView && configView != '' && !this.checkIsCached(configView)) {
+    if (configView && configView !== '' && !this.checkIsCached(configView)) {
       this.cache.push(configView);
       this.view(new SPITFIRE.JQueryAjaxTask(configView));
       sequentialTask.addTask(this.view());
 
     }
     
-    // load stylesheets
-    var configStylesheets = this.config().assets.stylesheets;
-    
     if (configStylesheets.length > 0) {
       for (i = 0, len = configStylesheets.length; i < len; i += 1) {
-      	var stylesheet = configStylesheets[i];
-				if (this.checkIsCached(stylesheet))
+				stylesheet = configStylesheets[i];
+				if (this.checkIsCached(stylesheet)) {
 					continue;
+				}
 				this.cache.push(stylesheet);
-      	task = new SPITFIRE.JQueryAjaxTask(stylesheet);
-      	this.stylesheets().push(task);
-      	sequentialTask.addTask(task);
+				task = new SPITFIRE.JQueryAjaxTask(stylesheet);
+				this.stylesheets().push(task);
+				sequentialTask.addTask(task);
       }
     }
     
     // load images
-    var configImages = this.config().assets.images;
     if (configImages.length > 0) {
       for (i = 0, len = configImages.length; i < len; i += 1) {
-      	var img = configImages[i];
-				if (this.checkIsCached(img))
+				img = configImages[i];
+				if (this.checkIsCached(img)) {
 					continue;
+				}
 				this.cache.push(img);
-      	task = new SPITFIRE.JQueryAjaxTask(img);
-      	this.images().push(task);
-      	sequentialTask.addTask(task);
+				task = new SPITFIRE.JQueryAjaxTask(img);
+				this.images().push(task);
+				sequentialTask.addTask(task);
       }
     }
     
@@ -113,18 +115,18 @@ SPITFIRE.DisplayState.prototype = {
     
     if (this.stylesheets().length > 0) {
       for (i = 0, len = this.stylesheets().length; i < len; i += 1) {
-      	style = document.createElement('style');
-      	style.type = 'text/css';
-      	rules = document.createTextNode(this.stylesheets()[i].content());
-      	
-      	if (style.styleSheet) {
-          style.styleSheet.cssText = rules.nodeValue;
-        } else {
-          style.appendChild(rules);
-        }
-        
-      	head.appendChild(style);
-        this._addedDOMAssets.push(style);
+				style = document.createElement('style');
+				style.type = 'text/css';
+				rules = document.createTextNode(this.stylesheets()[i].content());
+				
+				if (style.styleSheet) {
+					style.styleSheet.cssText = rules.nodeValue;
+				} else {
+					style.appendChild(rules);
+				}
+				
+				head.appendChild(style);
+				this._addedDOMAssets.push(style);
       }
     }
     
@@ -165,8 +167,9 @@ SPITFIRE.DisplayState.prototype = {
   
   trackPage: function() {
     var trackingPageId = this.getConfig().trackingPageId;
-    if (typeof trackingPageId !== 'undefined' && trackingPageId !== '')
+    if (typeof trackingPageId !== 'undefined' && trackingPageId !== '') {
       SPITFIRE.trackPage(trackingPageId);
+    }
   },
 
   toString: function() {

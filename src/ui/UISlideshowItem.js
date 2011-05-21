@@ -1,3 +1,5 @@
+/*global SPITFIRE, $, window*/
+
 //--------------------------------------
 // SPITFIRE.UISlideshowItem
 //--------------------------------------
@@ -14,8 +16,9 @@ SPITFIRE.UISlideshowItem = function(name, url, disableContextMenu) {
   if (disableContextMenu) {
     this.loader.bind('contextmenu', function(event) {
       event = event || window.event;
-      if (event.stopPropagation)
+      if (event.stopPropagation) {
           event.stopPropagation();
+      }
     
       event.cancelBubble = true;
       return false;

@@ -1,22 +1,24 @@
+/*global window, $*/
+"use strict";
+
 var SPITFIRE = SPITFIRE || {};
 
 var $s = $s || SPITFIRE;
 
-SPITFIRE.browser = {  
-  Opera: window.opera ? true : false,
-  IE: document.all && !this.Opera ? true : false,
-  IE6: this.IE && typeof(window.XMLHttpRequest) === "undefined" ? true : false,
-  IE8: this.IE && typeof(document.querySelectorAll) !== "undefined" ? true : false,
-  IE7: this.IE && ! this.IE6 && !this.IE8 ? true : false,
-  WebKit: /WebKit/i.test(navigator.userAgent) ? true : false,
-  iPhone: /iPhone|iPod/i.test(navigator.userAgent)? true : false,
-  Chrome: /Chrome/i.test(navigator.userAgent) ? true : false,
-  Safari: /Safari/i.test(navigator.userAgent) && !this.Chrome ? true : false,
-  Konqueror: navigator.vendor === "KDE" ? true : false,
-  Konqueror4: this.Konqueror && /native code/.test(document.getElementsByClassName) ? true : false,
-  Gecko: !this.WebKit && navigator.product === "Gecko" ? true : false,
-  Gecko19: this.Gecko && Array.reduce ? true : false
-};
+SPITFIRE.browser = {};
+SPITFIRE.browser.Opera = window.opera ? true : false;
+SPITFIRE.browser.IE = document.all && !SPITFIRE.browser.Opera ? true : false;
+SPITFIRE.browser.IE6 = SPITFIRE.browser.IE && typeof(window.XMLHttpRequest) === "undefined" ? true : false;
+SPITFIRE.browser.IE8 = SPITFIRE.browser.IE && typeof(document.querySelectorAll) !== "undefined" ? true : false;
+SPITFIRE.browser.IE7 = SPITFIRE.browser.IE && ! SPITFIRE.browser.IE6 && !SPITFIRE.browser.IE8 ? true : false;
+SPITFIRE.browser.WebKit = /WebKit/i.test(navigator.userAgent) ? true : false;
+SPITFIRE.browser.iPhone = /iPhone|iPod/i.test(navigator.userAgent) ? true : false;
+SPITFIRE.browser.Chrome = /Chrome/i.test(navigator.userAgent) ? true : false;
+SPITFIRE.browser.Safari = /Safari/i.test(navigator.userAgent) && !SPITFIRE.browser.Chrome ? true : false;
+SPITFIRE.browser.Konqueror = navigator.vendor === "KDE" ? true : false;
+SPITFIRE.browser.Konqueror4 = SPITFIRE.browser.Konqueror && /native code/.test(document.getElementsByClassName) ? true : false;
+SPITFIRE.browser.Gecko = !SPITFIRE.browser.WebKit && navigator.product === "Gecko" ? true : false;
+SPITFIRE.browser.Gecko19 = SPITFIRE.browser.Gecko && Array.reduce ? true : false;
 
 SPITFIRE.isArray = function(obj) {
   return typeof obj === 'object' && obj.length;
@@ -29,7 +31,7 @@ SPITFIRE.isFunction = function(obj) {
 //  Credit: jQuery
 //  A crude way of determining if an object is a window
 SPITFIRE.isWindow = function(obj) {
-		return obj && typeof obj === "object" && 'setInterval' in obj;
+	return obj && typeof obj === "object" && 'setInterval' in obj;
 };
 
 //  Credit: jQuery
@@ -41,30 +43,25 @@ SPITFIRE.isPlainObject = function(obj) {
 		return false;
 	}
 	
-	var hasOwn = Object.prototype.hasOwnProperty;
+	var hasOwn = Object.prototype.hasOwnProperty,
+			key;
 
 	// Not own constructor property must be Object
-	if ( obj.constructor &&
+	if (obj.constructor &&
 		!hasOwn.call(obj, "constructor") &&
-		!hasOwn.call(obj.constructor.prototype, "isPrototypeOf") ) {
+		!hasOwn.call(obj.constructor.prototype, "isPrototypeOf")) {
 		return false;
 	}
-
-	// Own properties are enumerated firstly, so to speed up,
-	// if last one is own, then all properties are own.
-
-	var key;
-	for ( key in obj ) {}
-
-	return key === undefined || hasOwn.call( obj, key );
+	
+	return typeof key === 'undefined' || hasOwn.call(obj, key);
 };
 
 SPITFIRE.isSynthesizedProperty = function(property, classDefinition) {
   var arr = classDefinition.synthesizedProperties,
-      isSynthesizedProperty = false;
+      isSynthesizedProperty = false,
+			i, len;
   
   if (arr) {
-    var i, len;
     for (i = 0, len = arr.length; i < len; i += 1) {
       if (arr[i] === property) {
         isSynthesizedProperty = true;
@@ -115,38 +112,40 @@ SPITFIRE.extend = function() {
 	// extend TCD itself if only one argument is passed
 	if ( length === i ) {
 		target = this;
-		--i;
+		i -= 1;
 	}
 
-	for ( ; i < length; i++ ) {
+	for ( ; i < length; i += 1 ) {
 		// Only deal with non-null/undefined values
-		if ( (options = arguments[ i ]) != null ) {
+		if ( (options = arguments[ i ]) !== null ) {
 			// Extend the base object
 			for ( name in options ) {
-				src = target[ name ];
-				copy = options[ name ];
-
-				// Prevent never-ending loop
-				if ( target === copy ) {
-					continue;
-				}
-
-			  // Recurse if we're merging plain objects or arrays
-				if ( deep && copy && ( SPITFIRE.isPlainObject(copy) || (copyIsArray = SPITFIRE.isArray(copy)) ) ) {
-					if ( copyIsArray ) {
-						copyIsArray = false;
-						clone = src && SPITFIRE.isArray(src) ? src : [];
-
-					} else {
-						clone = src && SPITFIRE.isPlainObject(src) ? src : {};
+				if (options.hasOwnProperty(name)) {
+					src = target[ name ];
+					copy = options[ name ];
+	
+					// Prevent never-ending loop
+					if ( target === copy ) {
+						continue;
 					}
-
-					// Never move original objects, clone them
-					target[ name ] = SPITFIRE.extend( deep, clone, copy );
-
-				// Don't bring in undefined values
-				} else if ( copy !== undefined ) {
-					target[ name ] = copy;
+	
+					// Recurse if we're merging plain objects or arrays
+					if ( deep && copy && ( SPITFIRE.isPlainObject(copy) || (copyIsArray = SPITFIRE.isArray(copy)) ) ) {
+						if ( copyIsArray ) {
+							copyIsArray = false;
+							clone = src && SPITFIRE.isArray(src) ? src : [];
+	
+						} else {
+							clone = src && SPITFIRE.isPlainObject(src) ? src : {};
+						}
+	
+						// Never move original objects, clone them
+						target[ name ] = SPITFIRE.extend( deep, clone, copy );
+	
+					// Don't bring in undefined values
+					} else if ( copy !== undefined ) {
+						target[ name ] = copy;
+					}
 				}
 			}
 		}
@@ -177,13 +176,17 @@ SPITFIRE.removeListener = function(target, event, handler, context) {
 };
 
 SPITFIRE.merge = function(obj1, obj2) {  
-  if (typeof obj1 === 'undefined') return SPITFIRE.clone(obj2);
-  if (typeof obj2 === 'undefined') return SPITFIRE.clone(obj1);
+  if (typeof obj1 === 'undefined') {
+		return SPITFIRE.clone(obj2);
+	}
+  if (typeof obj2 === 'undefined') {
+		return SPITFIRE.clone(obj1);
+	}
   
-  var temp;
-  temp = SPITFIRE.clone(obj1);
+  var temp = SPITFIRE.clone(obj1),
+			key;
   
-  for (var key in obj2) {
+  for (key in obj2) {
     // check to see if key already exists
     if (typeof temp[key] !== 'undefined') {
       // merge the two objects
@@ -194,20 +197,25 @@ SPITFIRE.merge = function(obj1, obj2) {
   }
   
   return temp;
-}
+};
   
 SPITFIRE.clone = function(obj) {
-  if (typeof obj !== 'object') return obj;
+  if (typeof obj !== 'object') {
+		return obj;
+	}
   
-  var temp = {};
+  var temp = {},
+			key;
   
-  for (var key in obj) {
-    temp[key] = SPITFIRE.clone(obj[key]);
-    temp[key]._name = key;
+  for (key in obj) {
+		if (obj.hasOwnProperty(key)) {
+			temp[key] = SPITFIRE.clone(obj[key]);
+			temp[key]._name = key;
+		}
   }
   
   return temp;
-}
+};
 
 //--------------------------------------
 // SPITFIRE.extendDOM(selector)
@@ -227,22 +235,20 @@ SPITFIRE.extendDOM = function(selector) {
 
 SPITFIRE.extendChildren = function($parent) {
   
-  var self = $parent.filter('[sf-base]');
-  var children = $parent.children();
-
-  var i, len;
+  var self = $parent.filter('[sf-base]'),
+			children = $parent.children(),
+			i, len,
+			el = self[0],
+			basePath = el.getAttribute('sf-base'),
+			nsObjects = basePath.split('.'),
+			j, obj, len2, inst;
+			
   for (i = 0, len = children.length; i < len; i += 1) {
     SPITFIRE.extendChildren($(children[i]));
   }
   
   if (self.length) {
     
-    var el = self[0];
-    var basePath = el.getAttribute('sf-base');
-
-    // loop through namespace to retrieve class function
-    var nsObjects = basePath.split('.');
-    var j, obj, len2;
     obj = window;
     
     for (j = 0, len2 = nsObjects.length; j < len2; j += 1) {
@@ -253,7 +259,7 @@ SPITFIRE.extendChildren = function($parent) {
       throw new SPITFIRE.Error('base class not found');
     }
     
-    var inst = new obj();
+    inst = new obj();
     
     SPITFIRE.extend(el, inst);
     el.init();
@@ -262,7 +268,7 @@ SPITFIRE.extendChildren = function($parent) {
 
 // Tracking
 SPITFIRE.trackEvent = function(category, action, label, value) {
-  _gaq = _gaq || [];
+  var _gaq = _gaq || [];
   
   if (typeof category !== 'undefined' && typeof action !== 'undefined') {
     //log('[TRACKING EVENT // category:' + category + ' action:' + action + ' label:' + label + ' value:' + value + ']');
@@ -271,7 +277,7 @@ SPITFIRE.trackEvent = function(category, action, label, value) {
 };
 
 SPITFIRE.trackPage = function(page) {
-  _gaq = _gaq || [];
+  var _gaq = _gaq || [];
   
   if (typeof page !== 'undefined') {
     //log('[TRACKING PAGE // page:' + page + ']');

@@ -1,3 +1,5 @@
+/*global SPITFIRE, $*/
+
 //--------------------------------------
 // SPITFIRE.UICarousel
 //--------------------------------------
@@ -54,10 +56,9 @@ SPITFIRE.UICarousel.prototype = {
   //--------------------------------------
   
   setPositionIndex: function(value) {  
-    var oldPositionIndex = this._positionIndex;
-    
-    var delta = this.items()[oldPositionIndex].carouselIndex() - this.items()[value].carouselIndex();
-    var i, len, item, newIndex, newPos, indexFromCenter, opacity, scale, z,
+    var oldPositionIndex = this._positionIndex,
+        delta = this.items()[oldPositionIndex].carouselIndex() - this.items()[value].carouselIndex(),
+        i, len, item, newIndex, newPos, indexFromCenter, opacity, scale, z,
         half = (this.items().length * 0.5 >> 0) + 1; 
     
     for (i = 0, len = this.items().length; i < len; i += 1) {
@@ -113,10 +114,10 @@ SPITFIRE.UICarousel.prototype = {
    *  Creates states and image tasks.
    */
   createStatesTask: function() {
-    var sequentialTask = new SPITFIRE.SequentialTask();
+    var sequentialTask = new SPITFIRE.SequentialTask(),
+        i, len, data, uid, state, item, $el;
     sequentialTask.bind(SPITFIRE.Event.COMPLETE, this.imagesLoadedHandler.context(this));
-    
-    var i, len, data, uid, state, item, $el;
+
     for (i = 0, len = this.data.length; i < len; i += 1) {
       data = this.data[i];
       uid = 'item' + (i + 1);
@@ -143,15 +144,21 @@ SPITFIRE.UICarousel.prototype = {
   },
   
   initHandlers: function() {
-    if (typeof this.$previousButton !== 'undefined') this.$previousButton.bind('click', $.proxy(this.previous, this));
-    if (typeof this.$nextButton !== 'undefined') this.$nextButton.bind('click', $.proxy(this.next, this));
+    if (typeof this.$previousButton !== 'undefined') {
+      this.$previousButton.bind('click', $.proxy(this.previous, this));
+    }
+    if (typeof this.$nextButton !== 'undefined') {
+      this.$nextButton.bind('click', $.proxy(this.next, this));
+    }
   },
   
   updateDescription: function() {
-    if (!this.hasDescriptionContainer) return;
+    if (!this.hasDescriptionContainer) {
+      return;
+    }
     
     var desc = this.data[this.getPositionIndex()].description;
-    desc = (typeof desc != 'undefined') ? desc : '';
+    desc = (typeof desc !== 'undefined') ? desc : '';
 
     this.$descriptionContainer.html(desc);
   },
@@ -193,7 +200,7 @@ SPITFIRE.UICarousel.prototype = {
     centerItem.carouselIndex(this.centerIndex());
 
     while (count < halfNumItems) {
-      count++;
+      count += 1;
       opacity = (count > this.neighbors()) ? 0 : 1;
       rightItem = this._items[rightIndex];
       
@@ -203,10 +210,11 @@ SPITFIRE.UICarousel.prototype = {
         rightItem.carouselIndex(this.centerIndex() + count);
         rightItem.$img.css('opacity', opacity);
         rightXPos += this.itemDistance();
-        rightIndex++;
+        rightIndex += 1;
         
-        if (rightIndex >= this._items.length)
+        if (rightIndex >= this._items.length) {
           rightIndex = 0;
+        }
       }
       
       leftItem = this._items[leftIndex];
@@ -217,10 +225,11 @@ SPITFIRE.UICarousel.prototype = {
         leftItem.$img.css('opacity', opacity);
         
         leftXPos -= this.itemDistance();
-        leftIndex--;
+        leftIndex -= 1;
         
-        if (leftIndex < 0)
+        if (leftIndex < 0) {
           leftIndex = this._items.length - 1;
+        }
       }
     }
     

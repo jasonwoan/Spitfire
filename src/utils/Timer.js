@@ -1,3 +1,5 @@
+/*global SPITFIRE*/
+
 //--------------------------------------
 // Timer
 //--------------------------------------
@@ -7,7 +9,7 @@ SPITFIRE.Timer = function(delay, repeatCount) {
   this.delay(delay);
   this.repeatCount(repeatCount || 0);
   this.qualifiedClassName('SPITFIRE.Timer');
-  this._interval;
+  this._interval = undefined;
   this._currentCount = 0;
 };
 
@@ -34,9 +36,13 @@ SPITFIRE.Timer.prototype = {
   },
   
   start: function() {
-    if (this._interval) return;
+    if (this._interval) {
+      return;
+    }
     
-    if (this.repeatCount() && this.currentCount() >= this.repeatCount()) return;
+    if (this.repeatCount() && this.currentCount() >= this.repeatCount()) {
+      return;
+    }
     
     this._interval = setTimeout(this.tick.context(this), this.delay());
   },
@@ -60,6 +66,6 @@ SPITFIRE.Timer.prototype = {
     this._interval = setTimeout(this.tick.context(this), this.delay());
     this.trigger(new SPITFIRE.TimerEvent(SPITFIRE.TimerEvent.TIMER));
   }
-}
+};
 
 SPITFIRE.Class(SPITFIRE.Timer);

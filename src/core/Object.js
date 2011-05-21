@@ -1,3 +1,5 @@
+/*global SPITFIRE*/
+
 //--------------------------------------
 // Object
 //--------------------------------------
@@ -12,6 +14,6 @@ SPITFIRE.Object.prototype = {
   init: function() {
   
   }
-}
+};
 
 SPITFIRE.Class(SPITFIRE.Object);

@@ -1,3 +1,5 @@
+/*global SPITFIRE, $*/
+
 //--------------------------------------
 // SPITFIRE.JQueryGetJSONTask
 //--------------------------------------
@@ -19,10 +21,8 @@ SPITFIRE.JQueryGetJSONTask.prototype = {
   //--------------------------------------
   
   jsonHandler: function(data, textStatus) {
-    switch (textStatus) {
-      case 'success':
-        this.content(data);
-      break;
+    if (textStatus === 'success') {
+      this.content(data);
     }
     
     this.complete();

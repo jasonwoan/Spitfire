@@ -1,3 +1,5 @@
+/*global SPITFIRE*/
+
 //--------------------------------------
 // Error
 //--------------------------------------
@@ -16,6 +18,6 @@ SPITFIRE.Error.prototype = {
   toString: function() {
     return this.getName() + ': [' + this.getQualifiedClassName() + '] "' + this.getMessage() + '"';
   }
-}
+};
 
 SPITFIRE.Class(SPITFIRE.Error);

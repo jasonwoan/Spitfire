@@ -1,3 +1,5 @@
+/*global SPITFIRE, $*/
+
 //--------------------------------------
 // SPITFIRE.DisplayObject
 //--------------------------------------
@@ -61,7 +63,9 @@ SPITFIRE.DisplayObject.prototype = {
     this._w = value || 270;
     this._$this.width(this._w * this._scaleX);
     
-    if (this._isCentered) this.setL(~~(-this._$this.width() * 0.5));
+    if (this._isCentered) {
+      this.setL(~~(-this._$this.width() * 0.5));
+    }
   },
 
   getH: function() {
@@ -72,11 +76,13 @@ SPITFIRE.DisplayObject.prototype = {
     this._h = value;
     this._$this.height(this._h * this._scaleY);
     
-    if (this._isCentered) this.setT(~~(-this._$this.height() * 0.5));
+    if (this._isCentered) {
+      this.setT(~~(-this._$this.height() * 0.5));
+    }
   },
   
   getScale: function() {
-    return (this._scaleX == this._scaleY) ? this._scaleX : undefined;
+    return (this._scaleX === this._scaleY) ? this._scaleX : undefined;
   },
   
   setScale: function(value) {
@@ -116,12 +122,12 @@ SPITFIRE.DisplayObject.prototype = {
   //--------------------------------------
   
   animate: function(properties, options) {
-    
+    var prop, placeHolderName;
     // handle custom properties
-    for (var prop in properties) {
+    for (prop in properties) {
       if (SPITFIRE.isSynthesizedProperty(prop, SPITFIRE.DisplayObject)) {
         // create a placeholder property to tween
-        var placeHolderName = prop + 'AnimationValue';
+        placeHolderName = prop + 'AnimationValue';
         properties[placeHolderName] = properties[prop];
         
         delete properties[prop];
@@ -152,7 +158,7 @@ SPITFIRE.DisplayObject.prototype = {
   animationStep: function(now, fx) {    
     // animate custom properties
     var pattern = /AnimationValue/;
-    if (fx.prop.search(pattern) != -1) {
+    if (fx.prop.search(pattern) !== -1) {
       this[fx.prop.replace(pattern, '')](now);
     }
     
@@ -164,8 +170,9 @@ SPITFIRE.DisplayObject.prototype = {
   
   animationComplete: function() {
     // call provided complete function
-    if (this.providedAnimationComplete)
+    if (this.providedAnimationComplete) {
       this.providedAnimationComplete();
+    }
     
     // cleanup
     delete this.providedAnimationComplete;

@@ -184,7 +184,6 @@ test("State works", function() {
   var childState = new SPITFIRE.State('testChildState');
   var childState2 = new SPITFIRE.State('testChildState2');
   var childState3 = new SPITFIRE.State('testChildState3');
-  
   state.addChild(childState);
   state.addChild(childState2);
   state.root(this);

@@ -1,3 +1,5 @@
+/*global SPITFIRE*/
+
 //--------------------------------------
 // SPITFIRE.FunctionTask
 //--------------------------------------
@@ -10,7 +12,7 @@ SPITFIRE.FunctionTask = function(context, method) {
   this.setArgs([]);
   var i, len;
   for (i = 2, len = arguments.length; i < len; i += 1) {
-  	this.getArgs().push(arguments[i]);
+		this.getArgs().push(arguments[i]);
   }
 };
 
