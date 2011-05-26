@@ -1,5 +1,5 @@
 /*global window, $*/
-"use strict";
+//"use strict";
 
 var SPITFIRE = SPITFIRE || {};
 

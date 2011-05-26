@@ -119,6 +119,7 @@ SPITFIRE.StateManager.prototype = {
   
   deepLinkingChangeHandler: function(event) {
     var path = this.getDeepLinking().value();
+		
     if (path === '' || path === '/') {
       this._transitionInPath = this.getTree().getStateLocation();
     } else {

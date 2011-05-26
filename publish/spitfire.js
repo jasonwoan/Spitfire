@@ -1,5 +1,5 @@
 /*global window, $*/
-"use strict";
+//"use strict";
 
 var SPITFIRE = SPITFIRE || {};
 
@@ -317,18 +317,15 @@ Function.prototype.context = function(obj) {
   return temp;
 };
 
-// usage: log('inside coolFunc', this, arguments);
-// paulirish.com/2009/log-a-lightweight-wrapper-for-consolelog/
+// usage: log('inside coolFunc',this,arguments);
+// http://paulirish.com/2009/log-a-lightweight-wrapper-for-consolelog/
 window.log = function(){
   log.history = log.history || [];   // store logs to an array for reference
   log.history.push(arguments);
-  arguments.callee = arguments.callee.caller;  
-  if (this.console) {
-    console.log( Array.prototype.slice.call(arguments));
+  if (typeof console !== 'undefined') {
+    console.log( Array.prototype.slice.call(arguments) );
   }
 };
-// make it safe to use console.log always
-(function(b){function c(){}for(var d="assert,count,debug,dir,dirxml,error,exception,group,groupCollapsed,groupEnd,info,log,markTimeline,profile,profileEnd,time,timeEnd,trace,warn".split(","),a;a=d.pop();)b[a]=b[a]||c})(window.console=window.console||{});
 /*global SPITFIRE*/
 
 //--------------------------------------
@@ -1966,6 +1963,7 @@ SPITFIRE.StateManager.prototype = {
   
   deepLinkingChangeHandler: function(event) {
     var path = this.getDeepLinking().value();
+		
     if (path === '' || path === '/') {
       this._transitionInPath = this.getTree().getStateLocation();
     } else {
