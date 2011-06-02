@@ -22,6 +22,7 @@ SPITFIRE.StateManagerEvent.TRANSITION_IN_STATE_COMPLETE = 'transitionInStateComp
 SPITFIRE.StateManagerEvent.TRANSITION_OUT_STATE_COMPLETE = 'transitionOutStateComplete';
 SPITFIRE.StateManagerEvent.LOAD_IN_STATE_COMPLETE = 'loadInStateComplete';
 SPITFIRE.StateManagerEvent.LOAD_OUT_STATE_COMPLETE = 'loadOutStateComplete';
+SPITFIRE.StateManagerEvent.BROWSE_COMPLETE = 'browseComplete';
 SPITFIRE.StateManagerEvent.DEEPLINK = 'deeplink';
 
 SPITFIRE.StateManagerEvent.superclass = SPITFIRE.Event;
