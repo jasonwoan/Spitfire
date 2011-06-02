@@ -126,6 +126,8 @@ SPITFIRE.StateManager.prototype = {
       this._transitionInPath = this.getTree().getName() + path;
     }
     
+		this.trigger(new SPITFIRE.StateManagerEvent(SPITFIRE.StateManagerEvent.DEEPLINK, { path: path }));
+		
     this.checkIfInTransition();
   },
   
