@@ -280,3 +280,10 @@ SPITFIRE.trackPage = function(page) {
     _gaq.push(['_trackPageview', page]);
   }
 };
+
+SPITFIRE.bindAll = function(obj, methodNames) {
+  for (var i = 0; i < methodNames.length; i++) {
+    var methodName = methodNames[i];
+    obj[methodName] = obj[methodName].context(obj);
+  }
+};
