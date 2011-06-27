@@ -1394,6 +1394,7 @@ SPITFIRE.StateManagerEvent.TRANSITION_IN_STATE_COMPLETE = 'transitionInStateComp
 SPITFIRE.StateManagerEvent.TRANSITION_OUT_STATE_COMPLETE = 'transitionOutStateComplete';
 SPITFIRE.StateManagerEvent.LOAD_IN_STATE_COMPLETE = 'loadInStateComplete';
 SPITFIRE.StateManagerEvent.LOAD_OUT_STATE_COMPLETE = 'loadOutStateComplete';
+SPITFIRE.StateManagerEvent.BROWSE_COMPLETE = 'browseComplete';
 SPITFIRE.StateManagerEvent.DEEPLINK = 'deeplink';
 
 SPITFIRE.StateManagerEvent.superclass = SPITFIRE.Event;
@@ -1965,7 +1966,9 @@ SPITFIRE.StateManager.prototype = {
     } else {
       this._transitionInPath = this.getTree().getName() + path;
     }
-    
+		
+		this.trigger(new SPITFIRE.StateManagerEvent(SPITFIRE.StateManagerEvent.DEEPLINK, { path: path }));
+		
     this.checkIfInTransition();
   },
   
@@ -1988,12 +1991,12 @@ SPITFIRE.StateManager.prototype = {
     if (this.getTrackPageViews()) {
       var param;
       switch(this.getPageViewType()) {
-	case SPITFIRE.StateManager.PAGE_VIEW_LOCATION:
-	  param = this.getLocation();
-	break;
-	case SPITFIRE.StateManager.PAGE_VIEW_NAME:
-	  param = this.getLocation();
-	break;
+				case SPITFIRE.StateManager.PAGE_VIEW_LOCATION:
+					param = this.getLocation();
+				break;
+				case SPITFIRE.StateManager.PAGE_VIEW_NAME:
+					param = this.getLocation();
+				break;
       }
     }
   },
@@ -2013,7 +2016,9 @@ SPITFIRE.StateManager.prototype = {
       this._isInTransition = false;
       if (this._transitionWasInterrupted) {
 	      this.startTransitions();
-      }
+      } else {
+				this.trigger(new SPITFIRE.StateManagerEvent(SPITFIRE.StateManagerEvent.BROWSE_COMPLETE));
+			}
     }
   },
   
